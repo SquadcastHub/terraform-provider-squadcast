@@ -1,2 +1,2 @@
 # terraform-provider-squadcast
- Squadcast Terraform provider 
+Terraform provider for interacting with Squadcast API's
