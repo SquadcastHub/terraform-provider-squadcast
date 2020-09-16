@@ -102,7 +102,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	defer res.Body.Close()
 	responseData, err := ioutil.ReadAll(res.Body)
 
-	if res.StatusCode > 300 {
+	if res.StatusCode > 299 {
 		return errors.New(string(responseData))
 	}
 
@@ -117,7 +117,6 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	return nil
 }
 
-// TODO: verify if resource exist.
 func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var serviceName = resourceData.Get("name").(string)
 	var squadcastConfig = configMetaData.(Config)
@@ -126,7 +125,32 @@ func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaD
 		log.Printf("[INFO] Access token is not set")
 	}
 
-	resourceData.SetId(serviceName)
+	reqBody, err := json.Marshal(map[string]string{})
+
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, getAPIFullURL(path)+"?name="+serviceName, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", squadcastConfig.AccessToken)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+	responseData, err := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode > 299 {
+		return errors.New(string(responseData))
+	}
+
+	json.Unmarshal(responseData, &serviceRes)
 
 	return nil
 }
@@ -172,7 +196,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 	defer res.Body.Close()
 	responseData, err := ioutil.ReadAll(res.Body)
 
-	if res.StatusCode > 300 {
+	if res.StatusCode > 299 {
 		return errors.New(string(responseData))
 	}
 
