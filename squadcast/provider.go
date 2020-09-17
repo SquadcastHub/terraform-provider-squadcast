@@ -12,10 +12,10 @@ func Provider() terraform.ResourceProvider {
 	p := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 
-			"refresh_token": {
+			"squadcast_token": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SQUADCAST_TOKEN", nil),
+				DefaultFunc: schema.EnvDefaultFunc("squadcast_token", nil),
 			},
 		},
 
@@ -54,7 +54,7 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
-	refreshToken := d.Get("refresh_token").(string)
+	refreshToken := d.Get("squadcast_token").(string)
 
 	if refreshToken != "" {
 		token, err := GetAccessToken(refreshToken)
