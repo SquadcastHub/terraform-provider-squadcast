@@ -20,7 +20,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			// "squadcast_escalation_policy": dataSourcesquadcastEscalationPolicy(),
+			"squadcast_escalation_policy": dataSourceSquadcastEscalationPolicy(),
 			// "squadcast_schedule":          dataSourceSquadcastSchedule(),
 			// "squadcast_user":              dataSourceSquadcastUser(),
 			// "squadcast_squad":              dataSourceSquadcastSquad(),

@@ -14,7 +14,7 @@ import (
 
 var serviceRes types.ServiceRes
 
-const path string = "/services"
+const servicePath string = "/services"
 
 func resourceSquadcastService() *schema.Resource {
 	return &schema.Resource{
@@ -87,7 +87,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, getAPIFullURL(path), bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodPost, getAPIFullURL(servicePath), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaD
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, getAPIFullURL(path)+"?name="+serviceName, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodGet, getAPIFullURL(servicePath)+"?name="+serviceName, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -181,7 +181,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPut, getAPIFullURL(path)+"/"+serviceID, bytes.NewBuffer(reqBody)) // serviceID
+	req, err := http.NewRequest(http.MethodPut, getAPIFullURL(servicePath)+"/"+serviceID, bytes.NewBuffer(reqBody)) // serviceID
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func resourceSquadcastServiceDelete(resourceData *schema.ResourceData, configMet
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodDelete, getAPIFullURL(path)+"/"+serviceID, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodDelete, getAPIFullURL(servicePath)+"/"+serviceID, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
