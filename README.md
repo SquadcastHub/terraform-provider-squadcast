@@ -30,5 +30,5 @@ TODO
 
 ### Squadcast personal refresh token
 You will need to create a [personal refresh token](https://app.squadcast.com) 
-Once the token has been created, it must be exported in your environment as `SQUADCAST_TOKEN`.
+Once the token has been created, it must be exported in your environment as `SQUADCAST_REFRESH_TOKEN`.
 

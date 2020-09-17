@@ -29,7 +29,7 @@ func TestProvider_impl(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("SQUADCAST_TOKEN"); v == "" {
-		t.Fatal("SQUADCAST_TOKEN must be set for acceptance tests")
+	if v := os.Getenv("squadcast_refresh_token"); v == "" {
+		t.Fatal("squadcast_refresh_token must be set for acceptance tests")
 	}
 }

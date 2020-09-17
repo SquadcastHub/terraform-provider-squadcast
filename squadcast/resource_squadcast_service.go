@@ -110,7 +110,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 
 	resourceData.Set("name", serviceRes.Data.Name)
 	resourceData.Set("sid", serviceRes.Data.Id)
-	resourceData.SetId(serviceRes.Data.Name)
+	resourceData.SetId(serviceRes.Data.Id)
 
 	log.Printf("[INFO] Successfully created service: %s", serviceName)
 
