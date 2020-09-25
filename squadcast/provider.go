@@ -56,18 +56,17 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	refreshToken := d.Get("squadcast_token").(string)
 
-	if refreshToken != "" {
-		token, err := GetAccessToken(refreshToken)
-		if err != nil {
-			return nil, errors.New("Unable to fetch access token")
-		}
-
-		config := Config{
-			AccessToken: token,
-		}
-		return config, nil
+	if refreshToken == "" {
+		return nil, errors.New("Please provide valid refresh token")
 	}
 
-	return nil, errors.New("Please provide valid refresh token")
+	token, err := getAccessToken(refreshToken)
+	if err != nil {
+		return nil, errors.New("Unable to fetch access token")
+	}
+
+	return Config{
+		AccessToken: token,
+	}, nil
 
 }

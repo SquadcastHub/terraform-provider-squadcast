@@ -159,7 +159,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 	var squadcastConfig = configMetaData.(Config)
 
 	if squadcastConfig.AccessToken != "" {
-		log.Printf("[INFO] Access token is not set")
+		return errors.New("[INFO] Access token is not set")
 	}
 
 	var serviceName = resourceData.Get("name").(string)
