@@ -1,9 +1,9 @@
 package types
 
-// create escalation-policy api response struct
+// EscalationPolicyRes is to unmarshal api response
 type EscalationPolicyRes struct {
 	Data []struct {
-		Id   string `json:"id"`
+		ID   string `json:"id"`
 		Name string `json:"name"`
 		Slug string `json:"slug"`
 	} `json:"data"`

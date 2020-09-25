@@ -21,7 +21,7 @@ func getAPIFullURL(path string) string {
 	return squadcastAPIHost + squadcastAPIVersion + path
 }
 
-// Fetch Bearer access token using refresh token
+// GetAccessToken fetches bearer access token using refresh token
 func GetAccessToken(refreshToken string) (string, error) {
 	if accessToken == nil || accessToken.ExpiresAt <= time.Now().Unix() {
 		if err := updateAccessToken(refreshToken); err != nil {

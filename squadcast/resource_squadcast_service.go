@@ -71,7 +71,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 
 	var serviceName = resourceData.Get("name").(string)
 	var serviceDescription = resourceData.Get("description").(string)
-	var escalationPolicyId = resourceData.Get("escalation_policy_id").(string)
+	var escalationPolicyID = resourceData.Get("escalation_policy_id").(string)
 	var emailPrefix = resourceData.Get("email_prefix").(string)
 
 	log.Printf("[INFO] Creating new service: %s", serviceName)
@@ -79,7 +79,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	reqBody, err := json.Marshal(map[string]string{
 		"name":                 serviceName,
 		"description":          serviceDescription,
-		"escalation_policy_id": escalationPolicyId,
+		"escalation_policy_id": escalationPolicyID,
 		"email_prefix":         emailPrefix,
 	})
 
@@ -109,8 +109,8 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	json.Unmarshal(responseData, &serviceRes)
 
 	resourceData.Set("name", serviceRes.Data.Name)
-	resourceData.Set("sid", serviceRes.Data.Id)
-	resourceData.SetId(serviceRes.Data.Id)
+	resourceData.Set("sid", serviceRes.Data.ID)
+	resourceData.SetId(serviceRes.Data.ID)
 
 	log.Printf("[INFO] Successfully created service: %s", serviceName)
 
@@ -164,7 +164,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 
 	var serviceName = resourceData.Get("name").(string)
 	var serviceDescription = resourceData.Get("description").(string)
-	var escalationPolicyId = resourceData.Get("escalation_policy_id").(string)
+	var escalationPolicyID = resourceData.Get("escalation_policy_id").(string)
 	var emailPrefix = resourceData.Get("email_prefix").(string)
 	var serviceID = resourceData.Get("sid").(string)
 
@@ -173,7 +173,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 	reqBody, err := json.Marshal(map[string]string{
 		"name":                 serviceName,
 		"description":          serviceDescription,
-		"escalation_policy_id": escalationPolicyId,
+		"escalation_policy_id": escalationPolicyID,
 		"email_prefix":         emailPrefix,
 	})
 
