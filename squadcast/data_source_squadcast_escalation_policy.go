@@ -69,7 +69,7 @@ func dataSourceSquadcastEscalationPolicyRead(resourceData *schema.ResourceData, 
 	}
 
 	json.Unmarshal(responseData, &escalationPolicyRes)
-	resourceData.SetId(escalationPolicyRes.Data[0].Id)
+	resourceData.SetId(escalationPolicyRes.Data[0].ID)
 
 	return nil
 }

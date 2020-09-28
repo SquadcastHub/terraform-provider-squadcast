@@ -19,7 +19,7 @@ func TestAccSquadcastService_basic(t *testing.T) {
 		CheckDestroy: testAccTestCheckDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: interpolateTerraformTemplate(testAccTestConfig_basic),
+				Config: interpolateTerraformTemplate(testAccTestConfigBasic),
 				Check: resource.ComposeTestCheckFunc(
 					testAccTestCheckExists("squadcast_service.pingdom", &test),
 				),
@@ -50,16 +50,16 @@ func testAccTestCheckDestroy(s *terraform.State) error {
 }
 
 func interpolateTerraformTemplate(template string) string {
-	testContactGroupId := "pingdom_monitoring"
+	testContactGroupID := "pingdom_monitoring"
 
 	if v := os.Getenv("SQUADCAST_SERVICE_NAME"); v != "" {
-		testContactGroupId = v
+		testContactGroupID = v
 	}
 
-	return fmt.Sprintf(template, testContactGroupId)
+	return fmt.Sprintf(template, testContactGroupID)
 }
 
-const testAccTestConfig_basic = `
+const testAccTestConfigBasic = `
 resource "squadcast_service" "pingdom" {
 	name = "%s"
 	description = "Service created from Terraform acceptance testing"
