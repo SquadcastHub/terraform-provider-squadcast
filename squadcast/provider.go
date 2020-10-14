@@ -15,7 +15,7 @@ func Provider() terraform.ResourceProvider {
 			"squadcast_token": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("squadcast_token", nil),
+				DefaultFunc: schema.EnvDefaultFunc("SQUADCAST_TOKEN", nil),
 			},
 		},
 

@@ -38,7 +38,7 @@ func dataSourceSquadcastEscalationPolicyRead(resourceData *schema.ResourceData, 
 	var escalationPolicyName = resourceData.Get("name").(string)
 	var squadcastConfig = configMetaData.(Config)
 
-	if squadcastConfig.AccessToken != "" {
+	if squadcastConfig.AccessToken == "" {
 		return errors.New("[INFO] Access token is not set")
 	}
 

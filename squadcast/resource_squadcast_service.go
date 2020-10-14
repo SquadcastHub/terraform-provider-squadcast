@@ -75,7 +75,7 @@ func resourceSquadcastService() *schema.Resource {
 func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var squadcastConfig = configMetaData.(Config)
 
-	if squadcastConfig.AccessToken != "" {
+	if squadcastConfig.AccessToken == "" {
 		return errors.New("[INFO] Access token is not set")
 	}
 
@@ -133,7 +133,7 @@ func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaD
 	var serviceName = resourceData.Get("name").(string)
 	var squadcastConfig = configMetaData.(Config)
 
-	if squadcastConfig.AccessToken != "" {
+	if squadcastConfig.AccessToken == "" {
 		return errors.New("[INFO] Access token is not set")
 	}
 
@@ -170,7 +170,7 @@ func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaD
 func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMetaData interface{}) error {
 	var squadcastConfig = configMetaData.(Config)
 
-	if squadcastConfig.AccessToken != "" {
+	if squadcastConfig.AccessToken == "" {
 		return errors.New("[INFO] Access token is not set")
 	}
 
@@ -225,7 +225,7 @@ func resourceSquadcastServiceDelete(resourceData *schema.ResourceData, configMet
 
 	var squadcastConfig = configMetaData.(Config)
 
-	if squadcastConfig.AccessToken != "" {
+	if squadcastConfig.AccessToken == "" {
 		return errors.New("[INFO] Access token is not set")
 	}
 
