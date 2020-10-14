@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SquadcastHub/auxpkg/v2/types"
+	"github.com/terraform-provider-squadcast/types"
 )
 
 type APICallError struct {

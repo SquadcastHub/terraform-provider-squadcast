@@ -58,6 +58,16 @@ func resourceSquadcastService() *schema.Resource {
 				Required:    true,
 				// ForceNew:    true,
 			},
+			"alert_source": {
+				Type:        schema.TypeString,
+				Description: "Alert source integration name",
+				Required:    true,
+			},
+			"webhook_url": {
+				Type:        schema.TypeString,
+				Description: "Webhook URL for the service",
+				Computed:    true,
+			},
 		},
 	}
 }
@@ -66,13 +76,14 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	var squadcastConfig = configMetaData.(Config)
 
 	if squadcastConfig.AccessToken != "" {
-		log.Printf("[INFO] Access token is not set")
+		return errors.New("[INFO] Access token is not set")
 	}
 
 	var serviceName = resourceData.Get("name").(string)
 	var serviceDescription = resourceData.Get("description").(string)
 	var escalationPolicyID = resourceData.Get("escalation_policy_id").(string)
 	var emailPrefix = resourceData.Get("email_prefix").(string)
+	var alertSource = resourceData.Get("alert_source").(string)
 
 	log.Printf("[INFO] Creating new service: %s", serviceName)
 
@@ -110,6 +121,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 
 	resourceData.Set("name", serviceRes.Data.Name)
 	resourceData.Set("sid", serviceRes.Data.ID)
+	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.ApiKey)
 	resourceData.SetId(serviceRes.Data.ID)
 
 	log.Printf("[INFO] Successfully created service: %s", serviceName)
@@ -122,7 +134,7 @@ func resourceSquadcastServiceRead(resourceData *schema.ResourceData, configMetaD
 	var squadcastConfig = configMetaData.(Config)
 
 	if squadcastConfig.AccessToken != "" {
-		log.Printf("[INFO] Access token is not set")
+		return errors.New("[INFO] Access token is not set")
 	}
 
 	reqBody, err := json.Marshal(map[string]string{})
@@ -165,6 +177,7 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 	var serviceName = resourceData.Get("name").(string)
 	var serviceDescription = resourceData.Get("description").(string)
 	var escalationPolicyID = resourceData.Get("escalation_policy_id").(string)
+	var alertSource = resourceData.Get("alert_source").(string)
 	var emailPrefix = resourceData.Get("email_prefix").(string)
 	var serviceID = resourceData.Get("sid").(string)
 
@@ -201,6 +214,9 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 	}
 
 	json.Unmarshal(responseData, &serviceRes)
+
+	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.ApiKey)
+
 	log.Printf("[INFO] Successfully updated service: %s", serviceName)
 	return nil
 }
@@ -210,7 +226,7 @@ func resourceSquadcastServiceDelete(resourceData *schema.ResourceData, configMet
 	var squadcastConfig = configMetaData.(Config)
 
 	if squadcastConfig.AccessToken != "" {
-		log.Printf("[INFO] Access token is not set")
+		return errors.New("[INFO] Access token is not set")
 	}
 
 	var serviceID = resourceData.Get("sid").(string)

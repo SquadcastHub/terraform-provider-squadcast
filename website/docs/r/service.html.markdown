@@ -22,6 +22,7 @@ resource "squadcast_service" "main" {
   description = "Integrating Datadog with Squadcast"
   escalation_policy_id =  data.squadcast_escalation_policy.main.id
   email_prefix = "xyz"
+}
 ```
 
 ## Argument Reference

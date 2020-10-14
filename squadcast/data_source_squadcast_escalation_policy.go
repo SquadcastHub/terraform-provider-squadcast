@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -40,7 +39,7 @@ func dataSourceSquadcastEscalationPolicyRead(resourceData *schema.ResourceData, 
 	var squadcastConfig = configMetaData.(Config)
 
 	if squadcastConfig.AccessToken != "" {
-		log.Printf("[INFO] Access token is not set")
+		return errors.New("[INFO] Access token is not set")
 	}
 
 	reqBody, err := json.Marshal(map[string]string{})
