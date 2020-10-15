@@ -16,5 +16,5 @@ examples/*.tfstate.backup
 *.test
 *.iml
 *.tfvars
-
+dist/
 website/vendor
