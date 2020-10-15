@@ -8,17 +8,24 @@ Terraform Provider
 
 Requirements
 ------------
-
 -	[Terraform](https://www.terraform.io/downloads.html) 0.10.x
 -	[Go](https://golang.org/doc/install) 1.13 (to build the provider plugin)
 
-Building The Provider
----------------------
-TODO
-
 Using the provider
 ----------------------
-TODO
+```hcl
+terraform {
+  required_providers {
+    squadcast = {
+      source  = "SquadcastHub/squadcast"
+    }
+  }
+}
+
+provider "squadcast" {
+  squadcast_token = "YOUR-SQUADCAST-TOKEN"
+}
+```
 
 Developing the Provider
 ---------------------------
@@ -26,7 +33,7 @@ TODO
 
 Acceptance test prerequisites
 -----------------------------
-TODO
+`make testacc`
 
 ### Squadcast personal refresh token
 You will need to create a [personal refresh token](https://app.squadcast.com) 

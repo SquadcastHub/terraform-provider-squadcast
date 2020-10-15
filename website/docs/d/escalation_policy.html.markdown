@@ -19,11 +19,12 @@ data "squadcast_escalation_policy" "test" {
   name = "Engineering Escalation Policy"
 }
 
-resource "squadcast_service" "test" {
-  name                    = "My Web App"
-  auto_resolve_timeout    = 14400
-  acknowledgement_timeout = 600
-  escalation_policy       = data.squadcast_escalation_policy.test.id
+resource "squadcast_service" "roz" {
+  name = "datadog_service11"
+  description = "Integrating Datadog with Squadcast....."
+  escalation_policy_id =  data.squadcast_escalation_policy.rozd.id  
+  email_prefix = "xya10@gmal.com"
+  alert_source = "datadog"
 }
 ```
 
@@ -35,6 +36,5 @@ The following arguments are supported:
 
 ## Attributes Reference
 * `id` - The ID of the found escalation policy.
-* `name` - The short name of the found escalation policy.
 
 [1]: https://v2.developer.squadcast.com/v2/page/api-reference#!/Escalation_Policies/get_escalation_policies
