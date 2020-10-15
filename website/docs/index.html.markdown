@@ -12,7 +12,7 @@ Squadcast is an end-to-end incident management software that's designed to help 
 
 The provider configuration block accepts the following argument:
 
-* ``squadcast_token`` - (Required) Refresh token of your Squadcast profile.TThis can also be passed as a ``squadcast_token`` environment variable
+* ``squadcast_token`` - (Required) Refresh token of your Squadcast profile. This can also be passed as a ``squadcast_token`` environment variable
 
 Use the navigation to the left to read about the available resources.
 
