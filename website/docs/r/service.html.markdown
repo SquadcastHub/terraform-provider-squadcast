@@ -21,7 +21,7 @@ resource "squadcast_service" "roz" {
   name = "datadog_service11"
   description = "Integrating Datadog with Squadcast....."
   escalation_policy_id =  data.squadcast_escalation_policy.rozd.id  
-  email_prefix = "xya10@gmal.com"
+  email_prefix = "xya"
   alert_source = "datadog"
 }
 

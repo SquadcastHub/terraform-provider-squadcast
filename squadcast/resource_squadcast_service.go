@@ -121,7 +121,12 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 
 	resourceData.Set("name", serviceRes.Data.Name)
 	resourceData.Set("sid", serviceRes.Data.ID)
-	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.ApiKey)
+	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.APIKey)
+
+	// webhook pattern is same for all alert sources except email
+	if alertSource == "email" {
+		resourceData.Set("webhook_url", serviceRes.Data.Email)
+	}
 	resourceData.SetId(serviceRes.Data.ID)
 
 	log.Printf("[INFO] Successfully created service: %s", serviceName)
@@ -215,7 +220,12 @@ func resourceSquadcastServiceUpdate(resourceData *schema.ResourceData, configMet
 
 	json.Unmarshal(responseData, &serviceRes)
 
-	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.ApiKey)
+	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.APIKey)
+
+	// webhook pattern is same for all alert sources except email
+	if alertSource == "email" {
+		resourceData.Set("webhook_url", serviceRes.Data.Email)
+	}
 
 	log.Printf("[INFO] Successfully updated service: %s", serviceName)
 	return nil

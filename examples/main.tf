@@ -2,7 +2,7 @@
 terraform {
   required_providers {
     squadcast = {
-      versions = ["0.4"]
+      versions = ["~> 0.4"]
       source = "squadcast.com/tp/squadcast"
     }
   }
@@ -10,7 +10,7 @@ terraform {
 
 
 provider "squadcast" {
-  squadcast_token = "YOUR_SQUADCAST_TOKEN"
+  # squadcast_token = "YOUR_SQUADCAST_TOKEN"
 }
 
 data "squadcast_escalation_policy" "rozd" {
@@ -18,11 +18,11 @@ data "squadcast_escalation_policy" "rozd" {
 }
 
 resource "squadcast_service" "roz" {
-  name = "datadog_service11"
+  name = "datadog_service113"
   description = "Integrating Datadog with Squadcast....."
   escalation_policy_id =  data.squadcast_escalation_policy.rozd.id  
-  email_prefix = "xya10@gmal.com"
-  alert_source = "datadog"
+  email_prefix = "xya"
+  alert_source = "email"
 }
 
 output "webhook_url" {

@@ -64,7 +64,7 @@ resource "squadcast_service" "pingdom" {
 	name = "%s"
 	description = "Service created from Terraform acceptance testing"
 	escalation_policy_id = "5f35a422ce4a1800086df873"
-	email_prefix = "xyz@gmal.com"
+	email_prefix = "xyz"
 	alert_source = "datadog"
 }
 `
