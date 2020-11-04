@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-provider-squadcast/types"
@@ -83,7 +84,7 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	var serviceDescription = resourceData.Get("description").(string)
 	var escalationPolicyID = resourceData.Get("escalation_policy_id").(string)
 	var emailPrefix = resourceData.Get("email_prefix").(string)
-	var alertSource = resourceData.Get("alert_source").(string)
+	var alertSource = strings.ToLower(resourceData.Get("alert_source").(string))
 
 	log.Printf("[INFO] Creating new service: %s", serviceName)
 
@@ -123,10 +124,14 @@ func resourceSquadcastServiceCreate(resourceData *schema.ResourceData, configMet
 	resourceData.Set("sid", serviceRes.Data.ID)
 	resourceData.Set("webhook_url", squadcastAPIHost+"/v1/incidents/"+alertSource+"/"+serviceRes.Data.APIKey)
 
-	// webhook pattern is same for all alert sources except email
+	// webhook pattern is same for all alert sources except email and APIv2
 	if alertSource == "email" {
 		resourceData.Set("webhook_url", serviceRes.Data.Email)
 	}
+	if alertSource == "apiv2" {
+		resourceData.Set("webhook_url", squadcastAPIHost+"/v2/incidents/api/"+serviceRes.Data.APIKey)
+	}
+
 	resourceData.SetId(serviceRes.Data.ID)
 
 	log.Printf("[INFO] Successfully created service: %s", serviceName)
