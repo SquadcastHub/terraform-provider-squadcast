@@ -38,7 +38,7 @@ The following arguments are supported:
 * `description` - (Optional) Short description of the service.
 * `escalation_policy_id` - Object id of the service
 * `email_prefix` - Email prefix for the service 
-* `alert_source` (Required) The name of the alert source being used with the service. eg: `datadog`, `pingdom`
+* `alert_source` (Required) The name of the alert source being used with the service. eg: `datadog`, `pingdom`. supported alert source can be found [here](https://support.squadcast.com/docs/amazon-cloudwatch-aws)
 
 ## Attributes Reference
 
