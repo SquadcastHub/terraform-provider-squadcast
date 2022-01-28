@@ -10,13 +10,6 @@ import (
 	"github.com/terraform-provider-squadcast/types"
 )
 
-var accessToken *types.AccessToken
-
-const (
-	squadcastAPIHost    string = "https://api.squadcast.com"
-	squadcastAPIVersion string = "/v3"
-)
-
 func getAPIFullURL(path string) string {
 	return squadcastAPIHost + squadcastAPIVersion + path
 }
