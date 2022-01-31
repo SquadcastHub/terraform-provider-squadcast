@@ -24,6 +24,7 @@ terraform {
 
 provider "squadcast" {
   squadcast_token = "YOUR-SQUADCAST-TOKEN"
+  dc = "US"
 }
 ```
 

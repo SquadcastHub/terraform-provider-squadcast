@@ -17,6 +17,12 @@ func Provider() terraform.ResourceProvider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SQUADCAST_TOKEN", nil),
 			},
+			"dc": {
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("DC", "US"),
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -54,8 +60,12 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
-	refreshToken := d.Get("squadcast_token").(string)
+	dc := d.Get("dc").(string)
+	if err := setSquadcastAPIHost(dc); err != nil {
+		return nil, err
+	}
 
+	refreshToken := d.Get("squadcast_token").(string)
 	if refreshToken == "" {
 		return nil, errors.New("Please provide valid refresh token")
 	}
@@ -69,4 +79,13 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		AccessToken: token,
 	}, nil
 
+}
+
+// setSquadcastAPIHost updates `squadcastAPIHost` based on the `DC`
+func setSquadcastAPIHost(dc string) error {
+	if val, ok := apiEndpoints[dc]; ok {
+		squadcastAPIHost = val
+		return nil
+	}
+	return errors.New("Please provide valid DC")
 }
