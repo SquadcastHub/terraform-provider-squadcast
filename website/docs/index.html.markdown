@@ -13,6 +13,7 @@ Squadcast is an end-to-end incident management software that's designed to help 
 The provider configuration block accepts the following argument:
 
 * ``squadcast_token`` - (Required) Refresh token of your Squadcast profile. 
+* ``dc`` - (Optional) Datacenter you are connecting to. Accepted values are "US" and "EU". Provider will connect to US by default when arguements are not passed.(i.e app.squadcast.com) 
 
 Use the navigation to the left to read about the available resources.
 
@@ -30,6 +31,7 @@ terraform {
 
 provider "squadcast" {
   squadcast_token = "YOUR-SQUADCAST-TOKEN"
+  dc = "US"
 }
 
 data "squadcast_escalation_policy" "main" {

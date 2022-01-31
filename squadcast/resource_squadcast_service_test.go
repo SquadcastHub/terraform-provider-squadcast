@@ -63,7 +63,7 @@ const testAccTestConfigBasic = `
 resource "squadcast_service" "pingdom" {
 	name = "%s"
 	description = "Service created from Terraform acceptance testing"
-	escalation_policy_id = "5f35a422ce4a1800086df873"
+	escalation_policy_id = "5e5762e27c02f80014911950"
 	email_prefix = "xyz"
 	alert_source = "datadog"
 }
