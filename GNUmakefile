@@ -1,25 +1,21 @@
-TEST?=$$(go list ./... |grep -v 'vendor')
-GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+# Run acceptance tests
+.PHONY: testacc
 
-default: build
+HOSTNAME=squadcast.com
+NAMESPACE=squadcast
+NAME=squadcast
+BINARY=terraform-provider-${NAME}
+VERSION=0.0.1
+OS_ARCH=darwin_amd64
 
-tools:
-	GO111MODULE=off go get -u github.com/client9/misspell/cmd/misspell
-	GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+default: install
 
-build: fmtcheck
-	go install
+build:
+	go build -o ${BINARY}
 
-fmt:
-	@echo "==> Fixing source code with gofmt..."
-	gofmt -w $(GOFMT_FILES)
+install: build
+	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 
-fmtcheck:
-	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
-
-lint:
-	@echo "==> Checking source code against linters..."
-	~/go/bin/golint ./...
-
-testacc: fmtcheck
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+testacc:
+	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
