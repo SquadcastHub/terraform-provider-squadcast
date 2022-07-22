@@ -49,11 +49,10 @@ resource "squadcast_slo" "test" {
   }
 
   notify {
-    users = [data.squadcast_user.example.id]
+    user_ids = [data.squadcast_user.example.id]
   }
 
-  owner_type = "team"
-  team_id    = data.squadcast_team.example.id
+  team_id = data.squadcast_team.example.id
 }
 ```
 
