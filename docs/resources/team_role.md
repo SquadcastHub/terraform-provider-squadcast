@@ -13,9 +13,13 @@ Use this resource to manage the Team roles and their permissions
 ## Example Usage
 
 ```terraform
+data "squadcast_team" "example" {
+  name = "test"
+}
+
 resource "squadcast_team_role" "test" {
   name      = "test"
-  team_id   = "owner_id"
+  team_id   = data.squadcast_team.example.id
   abilities = []
 }
 ```
@@ -34,4 +38,11 @@ resource "squadcast_team_role" "test" {
 - `default` (Boolean) TeamRole default.
 - `id` (String) TeamRole id.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID:roleID
+terraform import squadcast_team_role.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+```

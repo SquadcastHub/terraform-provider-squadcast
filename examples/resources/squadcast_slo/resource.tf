@@ -1,12 +1,23 @@
+data "squadcast_team" "example" {
+  name = "test"
+}
+
+data "squadcast_user" "example" {
+  email = "test@example.com"
+}
+
+data "squadcast_service" "example" {
+  name = "test-parent"
+}
+
 resource "squadcast_slo" "test" {
   name               = "checkout-flow"
   description        = "Slo for checkout flow"
   target_slo         = 99.99
-  service_ids        = ["615d3e23aff6885f46d291be"]
+  service_ids        = [data.squadcast_service.example.id]
   slis               = ["latency", "high-err-rate"]
   time_interval_type = "rolling"
   duration_in_days   = 7
-  org_id             = "604592dabc35ea0008bb0584"
 
   rules {
     name = "breached_error_budget"
@@ -23,9 +34,9 @@ resource "squadcast_slo" "test" {
   }
 
   notify {
-    users = ["5e1c2309342445001180f9c2", "617793e650d38001057faaaf"]
+    users = [data.squadcast_user.example.id]
   }
 
   owner_type = "team"
-  team_id    = "611262fcd5b4ea846b534a8a"
+  team_id    = data.squadcast_team.example.id
 }

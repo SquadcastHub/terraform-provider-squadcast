@@ -13,20 +13,18 @@ description: |-
 ## Example Usage
 
 ```terraform
-resource "squadcast_service" "test_parent" {
-  name                 = "test-service-parent"
-  team_id              = "owner_id"
-  escalation_policy_id = "escalatio_policy_id"
-  email_prefix         = "test-service-parent"
+data "squadcast_team" "example" {
+  name = "test"
 }
 
-resource "squadcast_service" "test" {
-  name                 = "test service"
-  description          = "some description here."
-  team_id              = "owner_id"
-  escalation_policy_id = "escalatio_policy_id"
-  email_prefix         = "test_service"
-  dependencies         = [squadcast_service.test_parent.id]
+data "squadcast_escalation_policy" "example" {
+  name = "test"
+}
+resource "squadcast_service" "test_parent" {
+  name                 = "test-service-parent"
+  team_id              = data.squadcast_team.example.id
+  escalation_policy_id = data.squadcast_escalation_policy.example.id
+  email_prefix         = "test-service-parent"
 }
 ```
 
@@ -52,4 +50,11 @@ resource "squadcast_service" "test" {
 - `email` (String) Email.
 - `id` (String) Service id.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID:serviceID
+terraform import squadcast_service.test_parent 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+```

@@ -13,22 +13,38 @@ description: |-
 ## Example Usage
 
 ```terraform
+data "squadcast_team" "example" {
+  name = "test"
+}
+
+data "squadcast_user" "example" {
+  email = "test@example.com"
+}
+
+data "squadcast_squad" "example" {
+  name = "test"
+}
+
+data "squadcast_schedule" "example" {
+  name = "test"
+}
+
 resource "squadcast_escalation_policy" "test" {
   name        = "test escalation policy"
   description = "It's an amazing policy"
 
-  team_id = "owner_id"
+  team_id = data.squadcast_team.example.id
 
   rules {
     delay_minutes = 0
 
     targets {
-      id   = "user_id"
+      id   = data.squadcast_user.example.id
       type = "user"
     }
 
     targets {
-      id   = "user_id"
+      id   = data.squadcast_user.example.id
       type = "user"
     }
   }
@@ -37,12 +53,12 @@ resource "squadcast_escalation_policy" "test" {
     delay_minutes = 5
 
     targets {
-      id   = "user_id"
+      id   = data.squadcast_user.example.id
       type = "user"
     }
 
     targets {
-      id   = "user_id"
+      id   = data.squadcast_user.example.id
       type = "user"
     }
 
@@ -58,12 +74,12 @@ resource "squadcast_escalation_policy" "test" {
     delay_minutes = 10
 
     targets {
-      id   = "squad_id"
+      id   = data.squadcast_squad.example.id
       type = "squad"
     }
 
     targets {
-      id   = "schedule_id"
+      id   = data.squadcast_schedule.example.id
       type = "schedule"
     }
 
@@ -167,4 +183,11 @@ Required:
 - `delay_minutes` (Number) The number of minutes to wait before repeating the escalation policy
 - `times` (Number) The number of times you want this escalation policy to be repeated, maximum allowed to repeat 3 times
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID:escalationPolicyID
+terraform import squadcast_escalation_policy.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+```

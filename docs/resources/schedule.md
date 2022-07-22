@@ -13,9 +13,13 @@ description: |-
 ## Example Usage
 
 ```terraform
+data "squadcast_team" "example" {
+  name = "test"
+}
+
 resource "squadcast_schedule" "test" {
   name    = "test schedule"
-  team_id = "owner_id"
+  team_id = data.squadcast_team.example.id
   color   = "#9900ef"
 }
 ```
@@ -37,4 +41,11 @@ resource "squadcast_schedule" "test" {
 
 - `id` (String) Schedule id.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID:scheduleID
+terraform import squadcast_schedule.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+```

@@ -1,5 +1,9 @@
+data "squadcast_service" "example" {
+  name = "test-parent"
+}
+
 resource "squadcast_service_maintenance" "test" {
-  service_id = "service_id"
+  service_id = data.squadcast_service.example.id
 
   windows {
     from             = "2032-06-01T10:30:00.000Z"
