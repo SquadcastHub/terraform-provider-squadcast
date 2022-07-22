@@ -20,6 +20,9 @@ func resourceSlo() *schema.Resource {
 		ReadContext:   resourceSloRead,
 		UpdateContext: resourceSloUpdate,
 		DeleteContext: resourceSloDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceSloImport,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -188,6 +191,25 @@ var alertsMap = map[string]string{"is_breached_err_budget": "breached_error_budg
 	"increased_false_positives":           "increased_false_positives_threshold",
 	"remaining_err_budget_threshold":      "remaining_error_budget",
 	"remaining_error_budget":              "remaining_err_budget_threshold",
+}
+
+func resourceSloImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	client := meta.(*api.Client)
+
+	teamID, id, err := parse2PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
+
+	slo, err := client.GetSlo(ctx, client.OrganizationID, teamID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	idStr := strconv.FormatUint(uint64(slo.ID), 10)
+	d.SetId(idStr)
+
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
