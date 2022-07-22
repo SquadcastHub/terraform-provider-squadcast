@@ -103,4 +103,11 @@ Read-Only:
 - `is_checked` (Boolean) Is checked?
 - `slo_id` (Number) The ID of the SLO
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID:sloID
+terraform import squadcast_slo.example 61443b953ffd52818bf1617a:1023
+```
