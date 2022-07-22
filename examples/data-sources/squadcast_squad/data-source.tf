@@ -1,2 +1,4 @@
-# @puneet
-# add some example!
+data "squadcast_squad" "test" {
+  name    = "test"
+  team_id = "teamObjectId"
+}

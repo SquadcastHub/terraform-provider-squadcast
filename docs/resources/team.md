@@ -35,4 +35,11 @@ data "squadcast_team" "test" {
 - `default_role_ids` (Map of String)
 - `id` (String) Team id.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# teamID
+terraform import squadcast_team.test 62d2fe23a57381088224d726
+```
