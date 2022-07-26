@@ -13,22 +13,22 @@ You can manage the members of a Team here.
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
-data "squadcast_user" "example" {
+data "squadcast_user" "example_resource_name" {
   email = "test@example.com"
 }
 
-data "squadcast_team_role" "example" {
-  name = "test"
+data "squadcast_team_role" "example_resource_name" {
+  name = "example role name"
 }
 
 resource "squadcast_team_member" "test" {
-  team_id  = data.squadcast_team.example.id
-  user_id  = data.squadcast_user.example.id
-  role_ids = [data.squadcast_team_role.example.id]
+  team_id  = data.squadcast_team.example_resource_name.id
+  user_id  = data.squadcast_user.example_resource_name.id
+  role_ids = [data.squadcast_team_role.example_resource_name.id]
 }
 ```
 
@@ -39,7 +39,7 @@ resource "squadcast_team_member" "test" {
 
 - `role_ids` (List of String) role ids.
 - `team_id` (String) Team id.
-- `user_id` (String) user id?.
+- `user_id` (String) user id (ObjectId).
 
 ### Read-Only
 
@@ -50,6 +50,7 @@ resource "squadcast_team_member" "test" {
 Import is supported using the following syntax:
 
 ```shell
-# teamID:teamMemberID
-terraform import squadcast_team_member.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+# teamID:emailID
+# Use 'Get All Teams' API to get the id of the team
+terraform import squadcast_team_member.example_resource_name 62d2fe23a57381088224d726:test@example.com
 ```

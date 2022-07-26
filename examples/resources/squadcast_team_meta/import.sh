@@ -1,2 +1,2 @@
-# teamID
-terraform import squadcast_team_meta.test 62d2fe23a57381088224d726
+# teamName
+terraform import squadcast_team_meta.example_resource_name "example team name"

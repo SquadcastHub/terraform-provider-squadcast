@@ -13,13 +13,13 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
-resource "squadcast_schedule" "test" {
-  name    = "test schedule"
-  team_id = data.squadcast_team.example.id
+resource "squadcast_schedule" "example_resource_name" {
+  name    = "example schedule name"
+  team_id = data.squadcast_team.example_resource_name.id
   color   = "#9900ef"
 }
 ```
@@ -47,5 +47,6 @@ Import is supported using the following syntax:
 
 ```shell
 # teamID:scheduleID
+# Use 'Get All Teams' and 'Get All Schedules' APIs to get the id of the team and schedule respectively 
 terraform import squadcast_schedule.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
 ```

@@ -1,35 +1,35 @@
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
-data "squadcast_user" "example" {
+data "squadcast_user" "example_resource_name" {
   email = "test@example.com"
 }
 
-data "squadcast_squad" "example" {
-  name = "test"
+data "squadcast_squad" "example_resource_name" {
+  name = "example squad name"
 }
 
-data "squadcast_schedule" "example" {
-  name = "test"
+data "squadcast_schedule" "example_resource_name" {
+  name = "example schedule name"
 }
 
-resource "squadcast_escalation_policy" "test" {
-  name        = "test escalation policy"
+resource "squadcast_escalation_policy" "example_resource_name" {
+  name        = "example escalation policy name"
   description = "It's an amazing policy"
 
-  team_id = data.squadcast_team.example.id
+  team_id = data.squadcast_team.example_resource_name.id
 
   rules {
     delay_minutes = 0
 
     targets {
-      id   = data.squadcast_user.example.id
+      id   = data.squadcast_user.example_resource_name.id
       type = "user"
     }
 
     targets {
-      id   = data.squadcast_user.example.id
+      id   = data.squadcast_user.example_resource_name.id
       type = "user"
     }
   }
@@ -38,12 +38,12 @@ resource "squadcast_escalation_policy" "test" {
     delay_minutes = 5
 
     targets {
-      id   = data.squadcast_user.example.id
+      id   = data.squadcast_user.example_resource_name.id
       type = "user"
     }
 
     targets {
-      id   = data.squadcast_user.example.id
+      id   = data.squadcast_user.example_resource_name.id
       type = "user"
     }
 
@@ -59,12 +59,12 @@ resource "squadcast_escalation_policy" "test" {
     delay_minutes = 10
 
     targets {
-      id   = data.squadcast_squad.example.id
+      id   = data.squadcast_squad.example_resource_name.id
       type = "squad"
     }
 
     targets {
-      id   = data.squadcast_schedule.example.id
+      id   = data.squadcast_schedule.example_resource_name.id
       type = "schedule"
     }
 

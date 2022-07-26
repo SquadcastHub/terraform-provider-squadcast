@@ -13,23 +13,23 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example" {
+data "squadcast_team" "example_resource_name" {
   name = "test"
 }
 
-data "squadcast_user" "example" {
+data "squadcast_user" "example_resource_name" {
   email = "test@example.com"
 }
 
-data "squadcast_service" "example" {
+data "squadcast_service" "example_resource_name" {
   name = "test-parent"
 }
 
-resource "squadcast_slo" "test" {
+resource "squadcast_slo" "example_resource_name" {
   name               = "checkout-flow"
   description        = "Slo for checkout flow"
   target_slo         = 99.99
-  service_ids        = [data.squadcast_service.example.id]
+  service_ids        = [data.squadcast_service.example_resource_name.id]
   slis               = ["latency", "high-err-rate"]
   time_interval_type = "rolling"
   duration_in_days   = 7
@@ -49,10 +49,11 @@ resource "squadcast_slo" "test" {
   }
 
   notify {
-    user_ids = [data.squadcast_user.example.id]
+    users = [data.squadcast_user.example_resource_name.id]
   }
 
-  team_id = data.squadcast_team.example.id
+  owner_type = "team"
+  team_id    = data.squadcast_team.example_resource_name.id
 }
 ```
 
@@ -119,5 +120,6 @@ Import is supported using the following syntax:
 
 ```shell
 # teamID:sloID
+# Use 'Get All Teams' and 'Get All Slos' APIs to get the id of the team and slo respectively 
 terraform import squadcast_slo.test 61443b953ffd52818bf1617a:1023
 ```

@@ -39,7 +39,7 @@ func resourceServiceMaintenance() *schema.Resource {
 				ForceNew:     true,
 			},
 			"windows": {
-				Description: "window",
+				Description: "Date and Time range during which maintenance would be carried out",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -63,7 +63,7 @@ func resourceServiceMaintenance() *schema.Resource {
 							ValidateFunc: validation.IsRFC3339Time,
 						},
 						"repeat_frequency": {
-							Description:  "repeat frequency.",
+							Description:  "repeat frequency. ('day', 'week', '2 weeks', '3 weeks', 'month')",
 							Type:         schema.TypeString,
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"day", "week", "2 weeks", "3 weeks", "month"}, false),

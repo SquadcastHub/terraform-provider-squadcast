@@ -13,18 +13,18 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
-data "squadcast_escalation_policy" "example" {
-  name = "test"
+data "squadcast_escalation_policy" "example_resource_name" {
+  name = "example escalation policy name"
 }
-resource "squadcast_service" "test_parent" {
-  name                 = "test-service-parent"
-  team_id              = data.squadcast_team.example.id
-  escalation_policy_id = data.squadcast_escalation_policy.example.id
-  email_prefix         = "test-service-parent"
+resource "squadcast_service" "example_resource_name" {
+  name                 = "example service name"
+  team_id              = data.squadcast_team.example_resource_name.id
+  escalation_policy_id = data.squadcast_escalation_policy.example_resource_name.id
+  email_prefix         = "example-service-email"
 }
 ```
 
@@ -40,7 +40,7 @@ resource "squadcast_service" "test_parent" {
 
 ### Optional
 
-- `dependencies` (List of String) dependencies.
+- `dependencies` (List of String) dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
 
 ### Read-Only
@@ -56,5 +56,6 @@ Import is supported using the following syntax:
 
 ```shell
 # teamID:serviceID
+# Use 'Get All Teams' and 'Get All Services' APIs to get the id of the team and service respectively 
 terraform import squadcast_service.test_parent 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
 ```

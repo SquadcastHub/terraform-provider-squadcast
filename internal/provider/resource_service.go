@@ -70,7 +70,7 @@ func resourceService() *schema.Resource {
 				Computed:    true,
 			},
 			"dependencies": {
-				Description: "dependencies.",
+				Description: "dependencies (serviceIds)",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
