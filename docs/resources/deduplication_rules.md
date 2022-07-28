@@ -22,7 +22,7 @@ data "squadcast_service" "example_resource_name" {
 }
 
 resource "squadcast_deduplication_rules" "example_resource_name" {
-  team_id    = data.squadcast_team.exaexample_resource_namemple.id
+  team_id    = data.squadcast_team.example_resource_name.id
   service_id = data.squadcast_service.example_resource_name.id
 
   rules {
