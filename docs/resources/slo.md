@@ -14,7 +14,7 @@ description: |-
 
 ```terraform
 data "squadcast_team" "example_resource_name" {
-  name = "test"
+  name = "example team name"
 }
 
 data "squadcast_user" "example_resource_name" {
@@ -22,7 +22,7 @@ data "squadcast_user" "example_resource_name" {
 }
 
 data "squadcast_service" "example_resource_name" {
-  name = "test-parent"
+  name = "example service name"
 }
 
 resource "squadcast_slo" "example_resource_name" {
@@ -49,11 +49,10 @@ resource "squadcast_slo" "example_resource_name" {
   }
 
   notify {
-    users = [data.squadcast_user.example_resource_name.id]
+    user_ids = [data.squadcast_user.example_resource_name.id]
   }
 
-  owner_type = "team"
-  team_id    = data.squadcast_team.example_resource_name.id
+  team_id = data.squadcast_team.example_resource_name.id
 }
 ```
 

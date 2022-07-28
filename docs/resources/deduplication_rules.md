@@ -14,7 +14,7 @@ description: |-
 
 ```terraform
 data "squadcast_team" "example_resource_name" {
-  name = "example team_name"
+  name = "example team name"
 }
 
 data "squadcast_service" "example_resource_name" {
