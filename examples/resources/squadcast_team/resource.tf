@@ -1,3 +1,3 @@
-data "squadcast_team" "test" {
-  name = "Default Team"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }

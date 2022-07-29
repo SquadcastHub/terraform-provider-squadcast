@@ -50,7 +50,7 @@ func resourceDeduplicationRules() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"is_basic": {
-							Description: "is basic?.",
+							Description: "is_basic will be true when users use the drop down selectors which will have lhs, op & rhs value, whereas it will be false when they use the advanced mode and it would have the expression for it's value",
 							Type:        schema.TypeBool,
 							Required:    true,
 						},
@@ -60,7 +60,7 @@ func resourceDeduplicationRules() *schema.Resource {
 							Optional:    true,
 						},
 						"expression": {
-							Description: "expression.",
+							Description: "The expression which needs to be evaluated to be true for this rule to apply.",
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
@@ -71,36 +71,36 @@ func resourceDeduplicationRules() *schema.Resource {
 							Default:     false,
 						},
 						"time_window": {
-							Description: "time window.",
+							Description: "integer for time_unit",
 							Type:        schema.TypeInt,
 							Optional:    true,
 							Default:     1,
 						},
 						"time_unit": {
-							Description: "time unit.",
+							Description: "time unit (mins or hours)",
 							Type:        schema.TypeString,
 							Optional:    true,
 							Default:     "hour",
 						},
 						"basic_expressions": {
-							Description: "basic expression.",
+							Description: "The basic expression which needs to be evaluated to be true for this rule to apply.",
 							Type:        schema.TypeList,
 							Optional:    true,
 							MinItems:    1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"lhs": {
-										Description: "lhs",
+										Description: "left hand side dropdown value",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"op": {
-										Description: "op",
+										Description: "operator",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"rhs": {
-										Description: "rhs",
+										Description: "right hand side value",
 										Type:        schema.TypeString,
 										Required:    true,
 									},

@@ -1,20 +1,20 @@
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
-data "squadcast_user" "example" {
+data "squadcast_user" "example_resource_name" {
   email = "test@example.com"
 }
 
-data "squadcast_service" "example" {
-  name = "test-parent"
+data "squadcast_service" "example_resource_name" {
+  name = "example service name"
 }
 
-resource "squadcast_slo" "test" {
+resource "squadcast_slo" "example_resource_name" {
   name               = "checkout-flow"
   description        = "Slo for checkout flow"
   target_slo         = 99.99
-  service_ids        = [data.squadcast_service.example.id]
+  service_ids        = [data.squadcast_service.example_resource_name.id]
   slis               = ["latency", "high-err-rate"]
   time_interval_type = "rolling"
   duration_in_days   = 7
@@ -34,8 +34,8 @@ resource "squadcast_slo" "test" {
   }
 
   notify {
-    user_ids = [data.squadcast_user.example.id]
+    user_ids = [data.squadcast_user.example_resource_name.id]
   }
 
-  team_id = data.squadcast_team.example.id
+  team_id = data.squadcast_team.example_resource_name.id
 }

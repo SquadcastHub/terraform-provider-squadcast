@@ -35,7 +35,7 @@ func resourceTeamMember() *schema.Resource {
 				ForceNew:     true,
 			},
 			"user_id": {
-				Description:  "user id?.",
+				Description:  "user id (ObjectId).",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,

@@ -45,9 +45,10 @@ func resourceSquad() *schema.Resource {
 				ForceNew:     true,
 			},
 			"member_ids": {
-				Type:     schema.TypeList,
-				Required: true,
-				MinItems: 1,
+				Description: "User ObjectId.",
+				Type:        schema.TypeList,
+				Required:    true,
+				MinItems:    1,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

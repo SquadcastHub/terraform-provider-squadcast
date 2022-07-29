@@ -51,12 +51,12 @@ func resourceRoutingRules() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"is_basic": {
-							Description: "is basic?.",
+							Description: "is_basic will be true when users use the drop down selectors which will have lhs, op & rhs value, whereas it will be false when they use the advanced mode and it would have the expression for it's value",
 							Type:        schema.TypeBool,
 							Required:    true,
 						},
 						"expression": {
-							Description: "expression.",
+							Description: "The expression which needs to be evaluated to be true for this rule to apply.",
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
@@ -73,19 +73,19 @@ func resourceRoutingRules() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"user", "escalationpolicy", "squad"}, false),
 						},
 						"basic_expressions": {
-							Description: "basic expression.",
+							Description: "The basic expression which needs to be evaluated to be true for this rule to apply.",
 							Type:        schema.TypeList,
 							Optional:    true,
 							MinItems:    1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"lhs": {
-										Description: "lhs",
+										Description: "left hand side dropdown value",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"rhs": {
-										Description: "rhs",
+										Description: "right hand side value",
 										Type:        schema.TypeString,
 										Required:    true,
 									},

@@ -13,12 +13,12 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_service" "example" {
-  name = "test-parent"
+data "squadcast_service" "example_resource_name" {
+  name = "example service name"
 }
 
-resource "squadcast_service_maintenance" "test" {
-  service_id = data.squadcast_service.example.id
+resource "squadcast_service_maintenance" "example_resource_name" {
+  service_id = data.squadcast_service.example_resource_name.id
 
   windows {
     from             = "2032-06-01T10:30:00.000Z"
@@ -43,7 +43,7 @@ resource "squadcast_service_maintenance" "test" {
 
 ### Optional
 
-- `windows` (Block List) window (see [below for nested schema](#nestedblock--windows))
+- `windows` (Block List) Date and Time range during which maintenance would be carried out (see [below for nested schema](#nestedblock--windows))
 
 ### Read-Only
 
@@ -59,7 +59,7 @@ Required:
 
 Optional:
 
-- `repeat_frequency` (String) repeat frequency.
+- `repeat_frequency` (String) repeat frequency. ('day', 'week', '2 weeks', '3 weeks', 'month')
 - `repeat_till` (String) Till when you want to repeat this Maintenance mode
 
 ## Import
@@ -67,6 +67,7 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-# teamID:serviceMaintenenceID
+# teamID:serviceID
+# Use 'Get All Teams' and 'Get All Services' APIs to get the id of the team and service respectively 
 terraform import squadcast_service_maintenance.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
 ```

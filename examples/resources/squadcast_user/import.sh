@@ -1,2 +1,2 @@
-# teamID:userID
-terraform import squadcast_user.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+# emailID
+terraform import squadcast_user.example_resource_name test@example.com

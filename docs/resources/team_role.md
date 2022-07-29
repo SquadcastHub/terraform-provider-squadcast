@@ -13,14 +13,14 @@ Use this resource to manage the Team roles and their permissions
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example team name"
 }
 
 resource "squadcast_team_role" "test" {
   name      = "test"
   team_id   = data.squadcast_team.example.id
-  abilities = []
+  abilities = ["create-escalation-policies", "read-escalation-policies", "update-escalation-policies"]
 }
 ```
 
@@ -29,7 +29,9 @@ resource "squadcast_team_role" "test" {
 
 ### Required
 
-- `abilities` (List of String) abilities.
+- `abilities` (List of String) abilities. 
+ Current available abilities are : 
+ create-escalation-policies, create-postmortems, create-runbooks, create-schedules, create-services, create-slos, create-squads, create-status-pages, delete-escalation-policies, delete-postmortems, delete-runbooks, delete-schedules, delete-services, delete-slos, delete-squads, delete-status-pages, read-escalation-policies, read-postmortems, read-runbooks, read-schedules, read-services, read-slos, read-squads, read-status-pages, read-team-analytics, update-escalation-policies, update-postmortems, update-runbooks, update-schedules, update-services, update-slos, update-squads, update-status-pages
 - `name` (String) TeamRole name.
 - `team_id` (String) Team id.
 
@@ -43,6 +45,6 @@ resource "squadcast_team_role" "test" {
 Import is supported using the following syntax:
 
 ```shell
-# teamID:roleID
-terraform import squadcast_team_role.test 62d2fe23a57381088224d726:62da76c088f407f9ca756ca5
+# teamID:teamRole(ex: Admin, User, Observer)
+terraform import squadcast_team_role.example_resource_name 62d2fe23a57381088224d726:Admin
 ```

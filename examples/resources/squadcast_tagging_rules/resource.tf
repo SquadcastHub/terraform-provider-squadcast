@@ -1,14 +1,14 @@
-data "squadcast_team" "example" {
-  name = "test"
+data "squadcast_team" "example_resource_name" {
+  name = "example test name"
 }
 
-data "squadcast_service" "example" {
-  name = "test-parent"
+data "squadcast_service" "example_resource_name" {
+  name = "example service name"
 }
 
-resource "squadcast_tagging_rules" "test" {
-  team_id    = data.squadcast_team.example.id
-  service_id = data.squadcast_service.example.id
+resource "squadcast_tagging_rules" "example_resource_name" {
+  team_id    = data.squadcast_team.example_resource_name.id
+  service_id = data.squadcast_service.example_resource_name.id
 
   rules {
     is_basic   = false

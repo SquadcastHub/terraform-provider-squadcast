@@ -99,7 +99,7 @@ func dataSourceEscalationPolicy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"enabled": {
-										Description: "Enables Round Robin escalation within this layer.",
+										Description: "Round Robin Escalation is an incident assignment strategy where users are placed in a ring and assigned to incidents sequentially. This strategy can help ensure that incidents are equitably distributed. It can also lower incident response time if a service experiences concurrent incidents, since the incidents will not all be assigned to the same responder.",
 										Type:        schema.TypeBool,
 										Computed:    true,
 									},
