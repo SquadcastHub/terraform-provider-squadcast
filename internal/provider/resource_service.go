@@ -86,6 +86,45 @@ func resourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"maintainer": {
+				Description: "service owner",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description: "Service owner ID",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"type": {
+							Description: "The type of service owner - user or squad",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
+			"tags": {
+				Description: "service tags",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Description: "key",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"value": {
+							Description: "value",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -108,13 +147,36 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 	tflog.Info(ctx, "Creating service", tf.M{
 		"name": d.Get("name").(string),
 	})
-	service, err := client.CreateService(ctx, &api.CreateServiceReq{
+	//TODO - update this
+
+	serviceCreateReq := api.CreateServiceReq{
 		Name:               d.Get("name").(string),
 		TeamID:             d.Get("team_id").(string),
 		Description:        d.Get("description").(string),
 		EscalationPolicyID: d.Get("escalation_policy_id").(string),
 		EmailPrefix:        d.Get("email_prefix").(string),
-	})
+	}
+
+	mtags := d.Get("tags").([]any)
+	var tags []api.ServiceTag = nil
+	err := Decode(mtags, &tags)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	serviceCreateReq.Tags = tags
+
+	mMaintainer := d.Get("maintainer").([]any)
+	var maintainer []api.ServiceMaintainer
+	merr := Decode(mMaintainer, &maintainer)
+	if merr != nil {
+		return diag.FromErr(err)
+	}
+	if len(maintainer) > 0 {
+		serviceCreateReq.Maintainer = &maintainer[0]
+	}
+
+	service, err := client.CreateService(ctx, &serviceCreateReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -159,6 +221,7 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 		return diag.FromErr(err)
 	}
 	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
+	//todo - list active alertsources
 
 	if err = tf.EncodeAndSet(service, d); err != nil {
 		return diag.FromErr(err)
@@ -170,13 +233,36 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	_, err := client.UpdateService(ctx, d.Id(), &api.UpdateServiceReq{
+	updateReq := api.UpdateServiceReq{
 		Name:               d.Get("name").(string),
 		Description:        d.Get("description").(string),
 		EscalationPolicyID: d.Get("escalation_policy_id").(string),
 		EmailPrefix:        d.Get("email_prefix").(string),
-	})
+	}
+
+	mtags := d.Get("tags").([]any)
+	var tags []api.ServiceTag = nil
+	err := Decode(mtags, &tags)
+
 	if err != nil {
+		return diag.FromErr(err)
+	}
+	if tags != nil {
+		updateReq.Tags = tags
+	}
+
+	mMaintainer := d.Get("maintainer").([]any)
+	var maintainer []api.ServiceMaintainer
+	merr := Decode(mMaintainer, &maintainer)
+	if merr != nil {
+		return diag.FromErr(err)
+	}
+	if len(maintainer) > 0 {
+		updateReq.Maintainer = &maintainer[0]
+	}
+
+	_, uerr := client.UpdateService(ctx, d.Id(), &updateReq)
+	if uerr != nil {
 		return diag.FromErr(err)
 	}
 

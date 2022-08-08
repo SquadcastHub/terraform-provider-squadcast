@@ -68,6 +68,45 @@ func dataSourceService() *schema.Resource {
 					ValidateFunc: tf.ValidateObjectID,
 				},
 			},
+			"maintainer": {
+				Description: "service owner",
+				Type:        schema.TypeMap,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description: "Service owner ID",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"type": {
+							Description: "The type of service owner - user or squad",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
+			"tags": {
+				Description: "service tags",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Description: "key",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"value": {
+							Description: "value",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+					},
+				},
+			},
 			"alert_source_endpoints": {
 				Description: "alert sources.",
 				Type:        schema.TypeMap,
