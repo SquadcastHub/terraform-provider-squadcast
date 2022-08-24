@@ -52,7 +52,7 @@ func resourceUser() *schema.Resource {
 				Description:  "User role.",
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"user", "stakeholder"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"user", "stakeholder", "account_owner"}, false),
 			},
 			"abilities": {
 				Description: "user abilities/permissions.",
