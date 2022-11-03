@@ -87,7 +87,7 @@ func resourceTaggingRules() *schema.Resource {
 						"tags": {
 							Description: "tags.",
 							Type:        schema.TypeList,
-							Required:    true,
+							Optional:    true,
 							MinItems:    1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
