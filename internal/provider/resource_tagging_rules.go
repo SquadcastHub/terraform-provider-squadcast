@@ -159,6 +159,7 @@ func resourceTaggingRulesCreate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
+		// update expression to set default tags when tags are empty.
 		if len(tags) == 0 {
 			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
 		}
@@ -238,6 +239,7 @@ func resourceTaggingRulesUpdate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
+		// update expression to set default tags when tags are empty.
 		if len(tags) == 0 {
 			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
 		}
