@@ -88,8 +88,6 @@ func resourceTaggingRules() *schema.Resource {
 							Description: "tags.",
 							Type:        schema.TypeList,
 							Optional:    true,
-							Default:     []string{},
-							// MinItems:    1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": {
@@ -161,6 +159,9 @@ func resourceTaggingRulesCreate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
+		if len(tags) == 0 {
+			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
+		}
 	}
 
 	tflog.Info(ctx, "Creating tagging_rules", tf.M{
@@ -237,6 +238,9 @@ func resourceTaggingRulesUpdate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
+		if len(tags) == 0 {
+			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
+		}
 	}
 
 	_, err = client.UpdateTaggingRules(ctx, d.Get("service_id").(string), d.Get("team_id").(string), &api.UpdateTaggingRulesReq{Rules: rules})

@@ -149,6 +149,7 @@ resource "squadcast_escalation_policy" "test" {
 			type = "user"
 		}
 	}
+	depends_on = [squadcast_team_member.test]
 }
 
 resource "squadcast_service" "test" {
@@ -210,6 +211,7 @@ resource "squadcast_escalation_policy" "test" {
 			type = "user"
 		}
 	}
+	depends_on = [squadcast_team_member.test]
 }
 
 resource "squadcast_service" "test" {
