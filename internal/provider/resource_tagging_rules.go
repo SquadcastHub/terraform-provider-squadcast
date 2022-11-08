@@ -85,7 +85,7 @@ func resourceTaggingRules() *schema.Resource {
 							},
 						},
 						"tags": {
-							Description: "tags.",
+							Description: "The tags supposed to be set for a given payload(incident), Expression must be set when tags are empty and must contain addTags parameters.",
 							Type:        schema.TypeList,
 							Optional:    true,
 							Elem: &schema.Resource{
@@ -159,10 +159,6 @@ func resourceTaggingRulesCreate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
-		// update expression to set default tags when tags are empty.
-		if len(tags) == 0 {
-			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
-		}
 	}
 
 	tflog.Info(ctx, "Creating tagging_rules", tf.M{
@@ -239,10 +235,6 @@ func resourceTaggingRulesUpdate(ctx context.Context, d *schema.ResourceData, met
 		}
 
 		rules[i].Tags = tags
-		// update expression to set default tags when tags are empty.
-		if len(tags) == 0 {
-			rules[i].Expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"
-		}
 	}
 
 	_, err = client.UpdateTaggingRules(ctx, d.Get("service_id").(string), d.Get("team_id").(string), &api.UpdateTaggingRulesReq{Rules: rules})
