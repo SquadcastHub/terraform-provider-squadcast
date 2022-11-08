@@ -85,10 +85,9 @@ func resourceTaggingRules() *schema.Resource {
 							},
 						},
 						"tags": {
-							Description: "tags.",
+							Description: "The tags supposed to be set for a given payload(incident), Expression must be set when tags are empty and must contain addTags parameters.",
 							Type:        schema.TypeList,
-							Required:    true,
-							MinItems:    1,
+							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": {
