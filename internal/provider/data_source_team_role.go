@@ -60,7 +60,7 @@ func dataSourceTeamRoleRead(ctx context.Context, d *schema.ResourceData, meta an
 
 	tflog.Info(ctx, "Reading team_role", tf.M{
 		"name": teamRoleName,
-		"id":  team_id,
+		"id":   team_id,
 	})
 	teamRole, err := client.GetTeamRoleByName(ctx, team_id, teamRoleName)
 	if err != nil {
