@@ -37,13 +37,13 @@ func resourceTeamRole() *schema.Resource {
 				ForceNew:     true,
 			},
 			"name": {
-				Description:  "TeamRole name.",
+				Description:  "Team role name.",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 255),
 			},
 			"default": {
-				Description: "TeamRole default.",
+				Description: "Team role default.",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
