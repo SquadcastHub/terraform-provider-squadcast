@@ -3,18 +3,18 @@
 page_title: "squadcast_team_role Data Source - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Use this data source to get information about various Team Roles.
+  Team roles are a way to define abilities/permissions for a user in the team. Each team role can be considered as a set of permissions that can be assigned to a user. Use this data source to get information about various team roles.
 ---
 
 # squadcast_team_role (Data Source)
 
-Use this data source to get information about various Team Roles.
+Team roles are a way to define abilities/permissions for a user in the team. Each team role can be considered as a set of permissions that can be assigned to a user. Use this data source to get information about various team roles.
 
 ## Example Usage
 
 ```terraform
 data "squadcast_team_role" "test" {
-  name = "testRole"
+  name    = "testRole"
   team_id = "teamObjectId"
 }
 ```
@@ -29,8 +29,8 @@ data "squadcast_team_role" "test" {
 
 ### Read-Only
 
-- `abilities` (List of String)
-- `default` (Boolean) Role is default?.
+- `abilities` (List of String) All the abilities attached to a role.
+- `default` (Boolean) Role is default.
 - `id` (String) Role id.
 
 

@@ -71,7 +71,7 @@ func dataSourceTeam() *schema.Resource {
 							Computed:    true,
 						},
 						"default": {
-							Description: "Role is default?.",
+							Description: "Role is default.",
 							Type:        schema.TypeBool,
 							Computed:    true,
 						},

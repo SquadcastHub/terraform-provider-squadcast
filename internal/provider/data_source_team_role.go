@@ -13,7 +13,8 @@ import (
 
 func dataSourceTeamRole() *schema.Resource {
 	return &schema.Resource{
-		Description: "Use this data source to get information about various Team Roles.",
+		Description: "Team roles are a way to define abilities/permissions for a user in the team. Each team role can be considered as a set of permissions that can be assigned to a user. " +
+			"Use this data source to get information about various team roles.",
 
 		ReadContext: dataSourceTeamRoleRead,
 
@@ -37,13 +38,14 @@ func dataSourceTeamRole() *schema.Resource {
 				ValidateFunc: validation.StringLenBetween(1, 255),
 			},
 			"default": {
-				Description: "Role is default?.",
+				Description: "Role is default.",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
 			"abilities": {
-				Type:     schema.TypeList,
-				Computed: true,
+				Description: "All the abilities attached to a role.",
+				Type:        schema.TypeList,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
