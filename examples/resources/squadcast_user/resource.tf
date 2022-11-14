@@ -1,4 +1,4 @@
-resource "squadcast_user" "test" {
+resource "squadcast_user" "example_user_resource" {
   first_name = "test"
   last_name  = "lastname"
   email      = "test@example.com"
