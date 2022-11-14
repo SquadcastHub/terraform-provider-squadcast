@@ -13,13 +13,13 @@ Use this resource to manage the Team roles and their permissions
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_resource_name" {
+data "squadcast_team" "example_team_resource" {
   name = "example team name"
 }
 
-resource "squadcast_team_role" "test" {
+resource "squadcast_team_role" "example_team_role_resource" {
   name      = "test"
-  team_id   = data.squadcast_team.example.id
+  team_id   = data.squadcast_team.example_team_resource.id
   abilities = ["create-escalation-policies", "read-escalation-policies", "update-escalation-policies"]
 }
 ```
@@ -32,12 +32,12 @@ resource "squadcast_team_role" "test" {
 - `abilities` (List of String) abilities. 
  Current available abilities are : 
  create-escalation-policies, create-postmortems, create-runbooks, create-schedules, create-services, create-slos, create-squads, create-status-pages, delete-escalation-policies, delete-postmortems, delete-runbooks, delete-schedules, delete-services, delete-slos, delete-squads, delete-status-pages, read-escalation-policies, read-postmortems, read-runbooks, read-schedules, read-services, read-slos, read-squads, read-status-pages, read-team-analytics, update-escalation-policies, update-postmortems, update-runbooks, update-schedules, update-services, update-slos, update-squads, update-status-pages
-- `name` (String) TeamRole name.
+- `name` (String) Team role name.
 - `team_id` (String) Team id.
 
 ### Read-Only
 
-- `default` (Boolean) TeamRole default.
+- `default` (Boolean) Team role default.
 - `id` (String) TeamRole id.
 
 ## Import

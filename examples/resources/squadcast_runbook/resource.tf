@@ -1,10 +1,10 @@
-data "squadcast_team" "example_resource_name" {
+data "squadcast_team" "example_team_resource" {
   name = "example team name"
 }
 
-resource "squadcast_runbook" "example_resource_name" {
+resource "squadcast_runbook" "example_runbook_resource" {
   name    = "example runbook name"
-  team_id = data.squadcast_team.example_resource_name.id
+  team_id = data.squadcast_team.example_team_resource.id
 
   steps {
     content = "some text here"

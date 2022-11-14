@@ -1,9 +1,14 @@
-data "squadcast_service" "example_resource_name" {
-  name = "example service name"
+data "squadcast_team" "example_team_resource" {
+  name = "example team name"
 }
 
-resource "squadcast_service_maintenance" "example_resource_name" {
-  service_id = data.squadcast_service.example_resource_name.id
+data "squadcast_service" "example_service_resource" {
+  name = "example service name"
+  team_id = data.squadcast_team.example_team_resource.id
+}
+
+resource "squadcast_service_maintenance" "example_service_maintenance_resource" {
+  service_id = data.squadcast_service.example_service_resource.id
 
   windows {
     from             = "2032-06-01T10:30:00.000Z"

@@ -13,7 +13,7 @@ Use this resource to manage the Team meta details like Name, descripton etc.
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_resource_name" {
+data "squadcast_team" "example_team_resource" {
   name = "example team name"
 }
 ```
