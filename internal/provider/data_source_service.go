@@ -59,6 +59,44 @@ func dataSourceService() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"maintainer": {
+				Description: "service owner",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description: "The id of the maintainer.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"type": {
+							Description: "The type of the maintainer. (user or team)",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
+			"tags": {
+				Description: "Service tags",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Description: "key",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"value": {
+							Description: "value",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+					},
+				},
+			},
 			"dependencies": {
 				Description: "dependencies.",
 				Type:        schema.TypeList,

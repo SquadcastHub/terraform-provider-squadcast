@@ -20,6 +20,8 @@ type Service struct {
 	EscalationPolicyID string            `json:"escalation_policy_id" tf:"escalation_policy_id"`
 	OnMaintenance      bool              `json:"on_maintenance" tf:"-"`
 	Owner              OwnerRef          `json:"owner" tf:"-"`
+	Maintainer         *ServiceMaintainer `json:"maintainer" tf:"maintainer"`
+	Tags               []ServiceTag       `json:"tags" tf:"tags`
 	Dependencies       []string          `json:"depends" tf:"dependencies"`
 	AlertSources       map[string]string `json:"-" tf:"alert_source_endpoints"`
 }
@@ -33,6 +35,11 @@ func (s *Service) Encode() (tf.M, error) {
 	}
 
 	m["team_id"] = s.Owner.ID
+	
+	m["maintainer"] = tf.List(tf.M{
+		"type": s.Maintainer.Type,
+		"id":   s.Maintainer.ID,
+	})
 
 	return m, nil
 }
@@ -61,6 +68,8 @@ type CreateServiceReq struct {
 	TeamID             string `json:"owner_id"`
 	EscalationPolicyID string `json:"escalation_policy_id"`
 	EmailPrefix        string `json:"email_prefix"`
+	Maintainer         *ServiceMaintainer `json:"maintainer"`
+	Tags               []ServiceTag       `json:"tags"`
 }
 
 type UpdateServiceReq struct {
@@ -68,6 +77,18 @@ type UpdateServiceReq struct {
 	Description        string `json:"description"`
 	EscalationPolicyID string `json:"escalation_policy_id"`
 	EmailPrefix        string `json:"email_prefix"`
+	Maintainer         *ServiceMaintainer `json:"maintainer"`
+	Tags               []ServiceTag       `json:"tags"`
+}
+
+type ServiceMaintainer struct {
+	ID   string `json:"id" tf:"id"`
+	Type string `json:"type" tf:"type"`
+}
+
+type ServiceTag struct {
+	Key   string `json:"key" tf:"key"`
+	Value string `json:"value" tf:"value"`
 }
 
 type UpdateServiceDependenciesReq struct {
