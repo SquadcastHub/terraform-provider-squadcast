@@ -26,6 +26,10 @@ type Service struct {
 	AlertSources       map[string]string `json:"-" tf:"alert_source_endpoints"`
 }
 
+func (serviceTag ServiceTag) Encode() (tf.M, error) {
+	return tf.Encode(serviceTag)
+}
+
 func (s *Service) Encode() (tf.M, error) {
 	s.EmailPrefix = strings.Split(s.Email, "@")[0]
 
@@ -40,6 +44,12 @@ func (s *Service) Encode() (tf.M, error) {
 		"type": s.Maintainer.Type,
 		"id":   s.Maintainer.ID,
 	})
+
+	tagsEncoded, terr := tf.EncodeSlice(s.Tags)
+	if terr != nil {
+		return nil, terr
+	}
+	m["tags"] = tagsEncoded
 
 	return m, nil
 }
