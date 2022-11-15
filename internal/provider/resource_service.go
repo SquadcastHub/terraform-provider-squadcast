@@ -127,6 +127,14 @@ func resourceService() *schema.Resource {
 					},
 				},
 			},
+			"alert_sources": {
+				Description: "Alert sources.",
+				Type:        schema.TypeList,
+				Optional:   true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -186,6 +194,26 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 
 	d.SetId(service.ID)
 
+	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
+	if len(malertsources) > 0 {
+		var alertSourceIDs []string
+		alertSources, err := client.ListAlertSources(ctx)
+		for _, alertSource := range alertSources {
+			for _, malertsource := range malertsources {
+				if alertSource.ShortName == malertsource {
+					alertSourceIDs = append(alertSourceIDs, alertSource.ID)
+				}
+			}
+		}
+		alertSourcesReq := api.AddAlertSourcesReq{
+			AlertSources: alertSourceIDs,
+		}
+		_, err = client.AddAlertSources(ctx, service.ID, &alertSourcesReq)
+		if err != nil {	
+			return diag.FromErr(err)
+		}
+	}
+	
 	_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
 		Data: tf.ListToSlice[string](d.Get("dependencies")),
 	})
@@ -267,6 +295,26 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	_, uerr := client.UpdateService(ctx, d.Id(), &updateReq)
 	if uerr != nil {
 		return diag.FromErr(err)
+	}
+
+	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
+	if len(malertsources) > 0 {
+		var alertSourceIDs []string
+		alertSources, err := client.ListAlertSources(ctx)
+		for _, alertSource := range alertSources {
+			for _, malertsource := range malertsources {
+				if alertSource.ShortName == malertsource {
+					alertSourceIDs = append(alertSourceIDs, alertSource.ID)
+				}
+			}
+		}
+		alertSourcesReq := api.AddAlertSourcesReq{
+			AlertSources: alertSourceIDs,
+		}
+		_, err = client.AddAlertSources(ctx, d.Id(), &alertSourcesReq)
+		if err != nil {	
+			return diag.FromErr(err)
+		}
 	}
 
 	_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
