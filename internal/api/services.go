@@ -93,10 +93,6 @@ type UpdateServiceReq struct {
 	Tags               []ServiceTag       `json:"tags"`
 }
 
-type AddAlertSourcesReq struct {
-	AlertSources []string `json:"alert_sources"`
-}
-
 type ServiceMaintainer struct {
 	ID   string `json:"id" tf:"id"`
 	Type string `json:"type" tf:"type"`
@@ -131,7 +127,4 @@ func (client *Client) DeleteService(ctx context.Context, id string) (*any, error
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }
 
-func (client *Client) AddAlertSources(ctx context.Context, serviceID string, alertSources *AddAlertSourcesReq) (*any, error) {
-	url := fmt.Sprintf("%s/catalog-services/%s/alert-sources", client.BaseURLV3, serviceID)
-	return Request[AddAlertSourcesReq, any](http.MethodPut, url, client, ctx, alertSources)
-}
+

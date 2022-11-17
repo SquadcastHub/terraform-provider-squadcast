@@ -59,6 +59,23 @@ func dataSourceService() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"dependencies": {
+				Description: "dependencies.",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type:         schema.TypeString,
+					ValidateFunc: tf.ValidateObjectID,
+				},
+			},
+			"alert_source_endpoints": {
+				Description: "alert sources.",
+				Type:        schema.TypeMap,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"maintainer": {
 				Description: "service owner",
 				Type:        schema.TypeList,
@@ -81,7 +98,7 @@ func dataSourceService() *schema.Resource {
 			"tags": {
 				Description: "Service tags",
 				Type:        schema.TypeList,
-				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"key": {
@@ -95,23 +112,6 @@ func dataSourceService() *schema.Resource {
 							Required:    true,
 						},
 					},
-				},
-			},
-			"dependencies": {
-				Description: "dependencies.",
-				Type:        schema.TypeList,
-				Computed:    true,
-				Elem: &schema.Schema{
-					Type:         schema.TypeString,
-					ValidateFunc: tf.ValidateObjectID,
-				},
-			},
-			"alert_source_endpoints": {
-				Description: "alert sources.",
-				Type:        schema.TypeMap,
-				Computed:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
 				},
 			},
 		},
