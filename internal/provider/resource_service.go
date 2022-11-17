@@ -166,26 +166,30 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 
 	mtags := d.Get("tags").([]any)
-	var tags []api.ServiceTag
 
-	err := Decode(mtags, &tags)
-	if err != nil {
-		return diag.FromErr(err)
+	if len(mtags) > 0 {
+		var tags []api.ServiceTag
+		err := Decode(mtags, &tags)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		serviceCreateReq.Tags = tags
 	}
-
-	serviceCreateReq.Tags = tags
 
 	mmaintainer := d.Get("maintainer").([]interface{})
-	maintainerMap, ok := mmaintainer[0].(map[string]interface{})
-	if !ok {
-		return diag.Errorf("maintainer is invalid")
+	if len(mmaintainer) > 0 {
+		maintainerMap, ok := mmaintainer[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("maintainer is invalid")
+		}
+
+		var maintainer api.ServiceMaintainer
+		maintainer.ID = maintainerMap["id"].(string)
+		maintainer.Type = maintainerMap["type"].(string)
+
+		serviceCreateReq.Maintainer = &maintainer
 	}
-
-	var maintainer api.ServiceMaintainer
-	maintainer.ID = maintainerMap["id"].(string)
-	maintainer.Type = maintainerMap["type"].(string)
-
-	serviceCreateReq.Maintainer = &maintainer
 
 	service, err := client.CreateService(ctx, &serviceCreateReq)
 	if err != nil {
@@ -213,14 +217,17 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 			return diag.FromErr(err)
 		}
 	}
-	
-	_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
-		Data: tf.ListToSlice[string](d.Get("dependencies")),
-	})
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
+	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
+	if len(mdependencies) > 0 {
+			_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
+			Data: mdependencies,
+		})
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	
 	return resourceServiceRead(ctx, d, meta)
 }
 
@@ -271,29 +278,33 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 
 	mtags := d.Get("tags").([]any)
-	var tags []api.ServiceTag = nil
-	err := Decode(mtags, &tags)
 
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	if tags != nil {
+	if len(mtags) > 0 {
+		var tags []api.ServiceTag
+		err := Decode(mtags, &tags)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		updateReq.Tags = tags
 	}
 
 	mmaintainer := d.Get("maintainer").([]interface{})
-	maintainerMap, ok := mmaintainer[0].(map[string]interface{})
-	if !ok {
-		return diag.Errorf("maintainer is invalid")
+	if len(mmaintainer) > 0 {
+		maintainerMap, ok := mmaintainer[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("maintainer is invalid")
+		}
+
+		var maintainer api.ServiceMaintainer
+		maintainer.ID = maintainerMap["id"].(string)
+		maintainer.Type = maintainerMap["type"].(string)
+
+		updateReq.Maintainer = &maintainer
 	}
-	var maintainer api.ServiceMaintainer
-	maintainer.ID = maintainerMap["id"].(string)
-	maintainer.Type = maintainerMap["type"].(string)
 
-	updateReq.Maintainer = &maintainer
-
-	_, uerr := client.UpdateService(ctx, d.Id(), &updateReq)
-	if uerr != nil {
+	_, err := client.UpdateService(ctx, d.Id(), &updateReq)
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -317,11 +328,14 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		}
 	}
 
-	_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
-		Data: tf.ListToSlice[string](d.Get("dependencies")),
-	})
-	if err != nil {
-		return diag.FromErr(err)
+	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
+	if len(mdependencies) > 0 {
+			_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
+			Data: mdependencies,
+		})
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return resourceServiceRead(ctx, d, meta)

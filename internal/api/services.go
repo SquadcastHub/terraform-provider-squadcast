@@ -40,10 +40,12 @@ func (s *Service) Encode() (tf.M, error) {
 
 	m["team_id"] = s.Owner.ID
 	
-	m["maintainer"] = tf.List(tf.M{
-		"type": s.Maintainer.Type,
-		"id":   s.Maintainer.ID,
-	})
+	if s.Maintainer != nil {
+		m["maintainer"] = tf.List(tf.M{
+			"type": s.Maintainer.Type,
+			"id":   s.Maintainer.ID,
+		})
+	}
 
 	tagsEncoded, terr := tf.EncodeSlice(s.Tags)
 	if terr != nil {
