@@ -130,7 +130,7 @@ func resourceService() *schema.Resource {
 			"alert_sources": {
 				Description: "Alert sources.",
 				Type:        schema.TypeList,
-				Optional:   true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -213,21 +213,21 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 			AlertSources: alertSourceIDs,
 		}
 		_, err = client.AddAlertSources(ctx, service.ID, &alertSourcesReq)
-		if err != nil {	
+		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
 	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
 	if len(mdependencies) > 0 {
-			_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
+		_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
 		})
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
-	
+
 	return resourceServiceRead(ctx, d, meta)
 }
 
@@ -323,14 +323,14 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 			AlertSources: alertSourceIDs,
 		}
 		_, err = client.AddAlertSources(ctx, d.Id(), &alertSourcesReq)
-		if err != nil {	
+		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
 	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
 	if len(mdependencies) > 0 {
-			_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
+		_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
 		})
 		if err != nil {
