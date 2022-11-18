@@ -126,5 +126,3 @@ func (client *Client) DeleteService(ctx context.Context, id string) (*any, error
 	url := fmt.Sprintf("%s/services/%s", client.BaseURLV3, id)
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }
-
-

@@ -1,15 +1,15 @@
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example test name"
 }
 
-data "squadcast_service" "example_service_resource" {
+data "squadcast_service" "example_service" {
   name = "example service name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_tagging_rules" "example_tagging_rules_resource" {
-  team_id    = data.squadcast_team.example_team_resource.id
-  service_id = data.squadcast_service.example_service_resource.id
+resource "squadcast_tagging_rules" "example_tagging_rules" {
+  team_id    = data.squadcast_team.example_team.id
+  service_id = data.squadcast_service.example_service.id
 
   rules {
     is_basic   = false
@@ -47,8 +47,8 @@ resource "squadcast_tagging_rules" "example_tagging_rules_resource" {
 
 # addTags must be set in expression when tags are not passed
 resource "squadcast_tagging_rules" "example_tagging_rules_resource_withouttags" {
-  team_id    = data.squadcast_team.example_team_resource.id
-  service_id = data.squadcast_service.example_service_resource.id
+  team_id    = data.squadcast_team.example_team.id
+  service_id = data.squadcast_service.example_service.id
 
   rules {
     is_basic   = false

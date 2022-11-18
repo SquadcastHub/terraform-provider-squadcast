@@ -13,25 +13,25 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_user" "example_user_resource" {
+data "squadcast_user" "example_user" {
   email = "test@example.com"
 }
 
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }
 
-data "squadcast_escalation_policy" "example_escalaion_policy_resource" {
+data "squadcast_escalation_policy" "example_escalaion_policy" {
   name = "example escalation policy name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
-resource "squadcast_service" "example_service_resource" {
+resource "squadcast_service" "example_service" {
   name                 = "example service name"
-  team_id              = data.squadcast_team.example_team_resource.id
-  escalation_policy_id = data.squadcast_escalation_policy.example_escalaion_policy_resource.id
+  team_id              = data.squadcast_team.example_team.id
+  escalation_policy_id = data.squadcast_escalation_policy.example_escalaion_policy.id
   email_prefix          = "example-service-email"
   maintainer = {
-    id = data.squadcast_user.example_user_resource.id
+    id = data.squadcast_user.example_user.id
     type = "user"
   }
   tags {
@@ -58,11 +58,11 @@ resource "squadcast_service" "example_service_resource" {
 
 ### Optional
 
-- `alert_sources` (List of String) List of alert source names (shortNames).
-- `dependencies` (List of String) dependencies (serviceIds)
+- `alert_sources` (List of String) List of alert source names.
+- `dependencies` (List of String) Dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
-- `maintainer` (Block List, Max: 1) service owner (see [below for nested schema](#nestedblock--maintainer))
-- `tags` (Block List) service tags (see [below for nested schema](#nestedblock--tags))
+- `maintainer` (Block List, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
+- `tags` (Block List) Service tags. (see [below for nested schema](#nestedblock--tags))
 
 ### Read-Only
 
@@ -77,7 +77,7 @@ resource "squadcast_service" "example_service_resource" {
 Required:
 
 - `id` (String) The id of the maintainer.
-- `type` (String) The type of the maintainer. (user or team)
+- `type` (String) The type of the maintainer. (user or squad)
 
 
 <a id="nestedblock--tags"></a>

@@ -1,3 +1,3 @@
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }

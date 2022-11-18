@@ -69,7 +69,7 @@ func dataSourceService() *schema.Resource {
 				},
 			},
 			"alert_source_endpoints": {
-				Description: "alert sources.",
+				Description: "Alert sources.",
 				Type:        schema.TypeMap,
 				Computed:    true,
 				Elem: &schema.Schema{
@@ -77,7 +77,7 @@ func dataSourceService() *schema.Resource {
 				},
 			},
 			"maintainer": {
-				Description: "service owner",
+				Description: "Service owner",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{
@@ -88,7 +88,7 @@ func dataSourceService() *schema.Resource {
 							Computed:    true,
 						},
 						"type": {
-							Description: "The type of the maintainer. (user or team)",
+							Description: "The type of the maintainer. (user or squad)",
 							Type:        schema.TypeString,
 							Computed:    true,
 						},

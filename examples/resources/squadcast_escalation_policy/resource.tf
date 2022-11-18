@@ -1,37 +1,37 @@
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }
 
-data "squadcast_user" "example_user_resource" {
+data "squadcast_user" "example_user" {
   email = "test@example.com"
 }
 
-data "squadcast_squad" "example_squad_resource" {
+data "squadcast_squad" "example_squad" {
   name = "example squad name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
 
-data "squadcast_schedule" "example_schedule_resource" {
+data "squadcast_schedule" "example_schedule" {
   name = "example schedule name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_escalation_policy" "example_escalaion_policy_resource" {
+resource "squadcast_escalation_policy" "example_escalaion_policy" {
   name        = "example escalation policy name"
   description = "It's an amazing policy"
 
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 
   rules {
     delay_minutes = 0
 
     targets {
-      id   = data.squadcast_user.example_user_resource.id
+      id   = data.squadcast_user.example_user.id
       type = "user"
     }
 
     targets {
-      id   = data.squadcast_user.example_user_resource.id
+      id   = data.squadcast_user.example_user.id
       type = "user"
     }
   }
@@ -40,12 +40,12 @@ resource "squadcast_escalation_policy" "example_escalaion_policy_resource" {
     delay_minutes = 5
 
     targets {
-      id   = data.squadcast_user.example_user_resource.id
+      id   = data.squadcast_user.example_user.id
       type = "user"
     }
 
     targets {
-      id   = data.squadcast_user.example_user_resource.id
+      id   = data.squadcast_user.example_user.id
       type = "user"
     }
 
@@ -61,12 +61,12 @@ resource "squadcast_escalation_policy" "example_escalaion_policy_resource" {
     delay_minutes = 10
 
     targets {
-      id   = data.squadcast_squad.example_squad_resource.id
+      id   = data.squadcast_squad.example_squad.id
       type = "squad"
     }
 
     targets {
-      id   = data.squadcast_schedule.example_schedule_resource.id
+      id   = data.squadcast_schedule.example_schedule.id
       type = "schedule"
     }
 

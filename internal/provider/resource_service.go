@@ -70,7 +70,7 @@ func resourceService() *schema.Resource {
 				Computed:    true,
 			},
 			"dependencies": {
-				Description: "dependencies (serviceIds)",
+				Description: "Dependencies (serviceIds)",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -87,7 +87,7 @@ func resourceService() *schema.Resource {
 				},
 			},
 			"maintainer": {
-				Description: "service owner",
+				Description: "Service owner.",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -100,16 +100,16 @@ func resourceService() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "The type of the maintainer. (user or team)",
+							Description:  "The type of the maintainer. (user or squad)",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
 						},
 					},
 				},
 			},
 			"tags": {
-				Description: "service tags",
+				Description: "Service tags.",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -128,7 +128,7 @@ func resourceService() *schema.Resource {
 				},
 			},
 			"alert_sources": {
-				Description: "List of alert source names (shortNames).",
+				Description: "List of alert source names.",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -204,10 +204,13 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 		alertSources, err := client.ListAlertSources(ctx)
 		for _, alertSource := range alertSources {
 			for _, malertsource := range malertsources {
-				if alertSource.ShortName == malertsource {
+				if alertSource.Type == malertsource {
 					alertSourceIDs = append(alertSourceIDs, alertSource.ID)
 				}
 			}
+		}
+		if len(alertSourceIDs) == 0 {
+			return diag.Errorf("Invalid alert sources provided.")
 		}
 		alertSourcesReq := api.AddAlertSourcesReq{
 			AlertSources: alertSourceIDs,
@@ -314,10 +317,13 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		alertSources, err := client.ListAlertSources(ctx)
 		for _, alertSource := range alertSources {
 			for _, malertsource := range malertsources {
-				if alertSource.ShortName == malertsource {
+				if alertSource.Type == malertsource {
 					alertSourceIDs = append(alertSourceIDs, alertSource.ID)
 				}
 			}
+		}
+		if len(alertSourceIDs) == 0 {
+			return diag.Errorf("Invalid alert sources provided")
 		}
 		alertSourcesReq := api.AddAlertSourcesReq{
 			AlertSources: alertSourceIDs,

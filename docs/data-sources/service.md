@@ -29,7 +29,7 @@ data "squadcast_service" "test" {
 
 ### Read-Only
 
-- `alert_source_endpoints` (Map of String) alert sources.
+- `alert_source_endpoints` (Map of String) Alert sources.
 - `api_key` (String) Unique API key of the service
 - `dependencies` (List of String) dependencies.
 - `description` (String) Detailed description about the service.
@@ -37,7 +37,7 @@ data "squadcast_service" "test" {
 - `email_prefix` (String) Email prefix.
 - `escalation_policy_id` (String) Escalation policy id.
 - `id` (String) Service id.
-- `maintainer` (List of Object) service owner (see [below for nested schema](#nestedatt--maintainer))
+- `maintainer` (List of Object) Service owner (see [below for nested schema](#nestedatt--maintainer))
 - `tags` (List of Object) Service tags (see [below for nested schema](#nestedatt--tags))
 
 <a id="nestedatt--maintainer"></a>
