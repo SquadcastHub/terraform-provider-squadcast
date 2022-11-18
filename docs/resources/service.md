@@ -13,6 +13,10 @@ description: |-
 ## Example Usage
 
 ```terraform
+data "squadcast_user" "example_user_resource" {
+  email = "test@example.com"
+}
+
 data "squadcast_team" "example_team_resource" {
   name = "example team name"
 }
@@ -25,7 +29,20 @@ resource "squadcast_service" "example_service_resource" {
   name                 = "example service name"
   team_id              = data.squadcast_team.example_team_resource.id
   escalation_policy_id = data.squadcast_escalation_policy.example_escalaion_policy_resource.id
-  email_prefix         = "example-service-email"
+  email_prefix          = "example-service-email"
+  maintainer = {
+    id = data.squadcast_user.example_user_resource.id
+    type = "user"
+  }
+  tags {
+    key = "testkey"
+    value = "testval"
+  }
+  tags {
+    key = "testkey2"
+    value = "testval2"
+  }
+  alert_sources = ["example-alert-source"]
 }
 ```
 
@@ -41,8 +58,11 @@ resource "squadcast_service" "example_service_resource" {
 
 ### Optional
 
+- `alert_sources` (List of String) List of alert source names (shortNames).
 - `dependencies` (List of String) dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
+- `maintainer` (Block List, Max: 1) service owner (see [below for nested schema](#nestedblock--maintainer))
+- `tags` (Block List) service tags (see [below for nested schema](#nestedblock--tags))
 
 ### Read-Only
 
@@ -50,6 +70,23 @@ resource "squadcast_service" "example_service_resource" {
 - `api_key` (String) Unique API key of this service.
 - `email` (String) Email.
 - `id` (String) Service id.
+
+<a id="nestedblock--maintainer"></a>
+### Nested Schema for `maintainer`
+
+Required:
+
+- `id` (String) The id of the maintainer.
+- `type` (String) The type of the maintainer. (user or team)
+
+
+<a id="nestedblock--tags"></a>
+### Nested Schema for `tags`
+
+Required:
+
+- `key` (String) key
+- `value` (String) value
 
 ## Import
 

@@ -37,5 +37,24 @@ data "squadcast_service" "test" {
 - `email_prefix` (String) Email prefix.
 - `escalation_policy_id` (String) Escalation policy id.
 - `id` (String) Service id.
+- `maintainer` (List of Object) service owner (see [below for nested schema](#nestedatt--maintainer))
+- `tags` (List of Object) Service tags (see [below for nested schema](#nestedatt--tags))
+
+<a id="nestedatt--maintainer"></a>
+### Nested Schema for `maintainer`
+
+Read-Only:
+
+- `id` (String)
+- `type` (String)
+
+
+<a id="nestedatt--tags"></a>
+### Nested Schema for `tags`
+
+Read-Only:
+
+- `key` (String)
+- `value` (String)
 
 

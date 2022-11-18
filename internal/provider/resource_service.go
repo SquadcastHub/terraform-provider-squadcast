@@ -128,7 +128,7 @@ func resourceService() *schema.Resource {
 				},
 			},
 			"alert_sources": {
-				Description: "Alert sources.",
+				Description: "List of alert source names (shortNames).",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
