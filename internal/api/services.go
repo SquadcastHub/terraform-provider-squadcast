@@ -21,9 +21,9 @@ type Service struct {
 	OnMaintenance      bool               `json:"on_maintenance" tf:"-"`
 	Owner              OwnerRef           `json:"owner" tf:"-"`
 	Maintainer         *ServiceMaintainer `json:"maintainer" tf:"maintainer"`
-	Tags               []ServiceTag       `json:"tags" tf:"tags`
+	Tags               []ServiceTag       `json:"tags" tf:"tags"`
 	Dependencies       []string           `json:"depends" tf:"dependencies"`
-	AlertSources       map[string]string  `json:"-" tf:"alert_source_endpoints"`
+	AlertSources       []string           `json:"-" tf:"alert_sources"`
 }
 
 func (serviceTag ServiceTag) Encode() (tf.M, error) {

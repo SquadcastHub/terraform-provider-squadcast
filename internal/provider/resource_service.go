@@ -78,14 +78,6 @@ func resourceService() *schema.Resource {
 					ValidateFunc: tf.ValidateObjectID,
 				},
 			},
-			"alert_source_endpoints": {
-				Description: "Alert source endpoints.",
-				Type:        schema.TypeMap,
-				Computed:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			"maintainer": {
 				Description: "Service owner.",
 				Type:        schema.TypeList,
@@ -256,6 +248,21 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 		}
 		return diag.FromErr(err)
 	}
+
+	activeAlertSources, err := client.ListActiveAlertSources(ctx, id)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	alertSources, err := client.ListAlertSources(ctx)
+	var alertSourceNames []string
+	for _, alertSource := range activeAlertSources.AlertSources {
+		for _, malertsource := range alertSources {
+			if alertSource.ID == malertsource.ID {
+				alertSourceNames = append(alertSourceNames, malertsource.Type)
+			}
+		}
+	}
+	service.AlertSources = alertSourceNames
 
 	if err = tf.EncodeAndSet(service, d); err != nil {
 		return diag.FromErr(err)
