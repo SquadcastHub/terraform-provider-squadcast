@@ -257,12 +257,6 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 		return diag.FromErr(err)
 	}
 
-	alertSources, err := client.ListAlertSources(ctx)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
-
 	if err = tf.EncodeAndSet(service, d); err != nil {
 		return diag.FromErr(err)
 	}
