@@ -13,13 +13,13 @@ Use this resource to manage the Team roles and their permissions
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }
 
-resource "squadcast_team_role" "example_team_role_resource" {
+resource "squadcast_team_role" "example_team_role" {
   name      = "test"
-  team_id   = data.squadcast_team.example_team_resource.id
+  team_id   = data.squadcast_team.example_team.id
   abilities = ["create-escalation-policies", "read-escalation-policies", "update-escalation-policies"]
 }
 ```

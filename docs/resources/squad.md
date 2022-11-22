@@ -13,17 +13,17 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_resource_name" {
+data "squadcast_team" "example_team" {
   name = "example test name"
 }
 
-data "squadcast_user" "example_user_resource" {
+data "squadcast_user" "example_user" {
   email = "test@example.com"
 }
-resource "squadcast_squad" "example_squad_resource" {
+resource "squadcast_squad" "example_squad" {
   name       = "example squad name"
-  team_id    = data.squadcast_team.example_team_resource.id
-  member_ids = [data.squadcast_user.example_user_resource.id]
+  team_id    = data.squadcast_team.example_team.id
+  member_ids = [data.squadcast_user.example_user.id]
 }
 ```
 

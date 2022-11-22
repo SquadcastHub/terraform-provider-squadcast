@@ -22,6 +22,18 @@ type AlertSource struct {
 
 type AlertSourcesList []*AlertSource
 
+type ActiveAlertSource struct {
+	ID string `json:"alert_source_id"`
+}
+
+type ActiveAlertSources struct {
+	AlertSources []ActiveAlertSource `json:"alert_sources"`
+}
+
+type AddAlertSourcesReq struct {
+	AlertSources []string `json:"alert_sources"`
+}
+
 func (asl *AlertSourcesList) Available() *AlertSourcesList {
 	var list AlertSourcesList
 
@@ -60,4 +72,14 @@ func (client *Client) ListAlertSources(ctx context.Context) (AlertSourcesList, e
 	url := fmt.Sprintf("%s/public/integrations", client.BaseURLV2)
 
 	return RequestSlice[any, AlertSource](http.MethodGet, url, client, ctx, nil)
+}
+
+func (client *Client) AddAlertSources(ctx context.Context, serviceID string, alertSources *AddAlertSourcesReq) (*any, error) {
+	url := fmt.Sprintf("%s/catalog-services/%s/alert-sources", client.BaseURLV3, serviceID)
+	return Request[AddAlertSourcesReq, any](http.MethodPut, url, client, ctx, alertSources)
+}
+
+func (client *Client) ListActiveAlertSources(ctx context.Context, serviceID string) (*ActiveAlertSources, error) {
+	url := fmt.Sprintf("%s/catalog-services/%s/alert-sources", client.BaseURLV3, serviceID)
+	return Request[any, ActiveAlertSources](http.MethodGet, url, client, ctx, nil)
 }

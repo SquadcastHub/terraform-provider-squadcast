@@ -13,7 +13,7 @@ User resource.
 ## Example Usage
 
 ```terraform
-resource "squadcast_user" "example_user_resource" {
+resource "squadcast_user" "example_user" {
   first_name = "test"
   last_name  = "lastname"
   email      = "test@example.com"

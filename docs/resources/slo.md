@@ -13,24 +13,24 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }
 
-data "squadcast_user" "example_user_resource" {
+data "squadcast_user" "example_user" {
   email = "test@example.com"
 }
 
-data "squadcast_service" "example_service_resource" {
+data "squadcast_service" "example_service" {
   name = "example service name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_slo" "example_slo_resource" {
+resource "squadcast_slo" "example_slo" {
   name               = "checkout-flow"
   description        = "Slo for checkout flow"
   target_slo         = 99.99
-  service_ids        = [data.squadcast_service.example_service_resource.id]
+  service_ids        = [data.squadcast_service.example_service.id]
   slis               = ["latency", "high-err-rate"]
   time_interval_type = "rolling"
   duration_in_days   = 7
@@ -50,10 +50,10 @@ resource "squadcast_slo" "example_slo_resource" {
   }
 
   notify {
-    user_ids = [data.squadcast_user.example_user_resource.id]
+    user_ids = [data.squadcast_user.example_user.id]
   }
 
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 }
 ```
 

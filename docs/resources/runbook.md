@@ -13,13 +13,13 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "squadcast_team" "example_team_resource" {
+data "squadcast_team" "example_team" {
   name = "example team name"
 }
 
-resource "squadcast_runbook" "example_runbook_resource" {
+resource "squadcast_runbook" "example_runbook" {
   name    = "example runbook name"
-  team_id = data.squadcast_team.example_team_resource.id
+  team_id = data.squadcast_team.example_team.id
 
   steps {
     content = "some text here"
