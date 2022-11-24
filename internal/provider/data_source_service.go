@@ -114,6 +114,14 @@ func dataSourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"alert_source_endpoints": {
+				Description: "alert sources.",
+				Type:        schema.TypeMap,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -143,7 +151,12 @@ func dataSourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	alertSources, err := client.ListAlertSources(ctx)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	var alertSourceNames []string
 	for _, alertSource := range activeAlertSources.AlertSources {
 		for _, malertsource := range alertSources {
@@ -152,7 +165,10 @@ func dataSourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any
 			}
 		}
 	}
-	service.AlertSources = alertSourceNames
+
+	service.ActiveAlertSources = alertSourceNames
+
+	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
 
 	if err = tf.EncodeAndSet(service, d); err != nil {
 		return diag.FromErr(err)

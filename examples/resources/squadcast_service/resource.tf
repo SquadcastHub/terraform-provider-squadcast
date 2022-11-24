@@ -15,7 +15,7 @@ resource "squadcast_service" "example_service" {
   team_id              = data.squadcast_team.example_team.id
   escalation_policy_id = data.squadcast_escalation_policy.example_escalaion_policy.id
   email_prefix          = "example-service-email"
-  maintainer = {
+  maintainer {
     id = data.squadcast_user.example_user.id
     type = "user"
   }
