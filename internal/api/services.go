@@ -23,7 +23,8 @@ type Service struct {
 	Maintainer         *ServiceMaintainer `json:"maintainer" tf:"maintainer"`
 	Tags               []ServiceTag       `json:"tags" tf:"tags"`
 	Dependencies       []string           `json:"depends" tf:"dependencies"`
-	AlertSources       []string           `json:"-" tf:"alert_sources"`
+	ActiveAlertSources []string           `json:"-" tf:"alert_sources"`
+	AlertSources       map[string]string  `json:"-" tf:"alert_source_endpoints"`
 }
 
 func (serviceTag ServiceTag) Encode() (tf.M, error) {
