@@ -96,12 +96,12 @@ func dataSourceService() *schema.Resource {
 						"key": {
 							Description: "key",
 							Type:        schema.TypeString,
-							Required:    true,
+							Computed:    true,
 						},
 						"value": {
 							Description: "value",
 							Type:        schema.TypeString,
-							Required:    true,
+							Computed:    true,
 						},
 					},
 				},

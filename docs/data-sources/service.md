@@ -28,9 +28,13 @@ data "squadcast_service" "test" {
 - `name` (String) Name of the Service.
 - `team_id` (String) Team id.
 
+### Optional
+
+- `alert_sources` (List of String) List of alert source names.
+
 ### Read-Only
 
-- `alert_source_endpoints` (Map of String) Alert sources.
+- `alert_source_endpoints` (Map of String) alert sources.
 - `api_key` (String) Unique API key of the service
 - `dependencies` (List of String) dependencies.
 - `description` (String) Detailed description about the service.
