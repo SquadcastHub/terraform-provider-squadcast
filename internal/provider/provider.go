@@ -39,6 +39,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_user":      dataSourceUser(),
 				"squadcast_schedule":  dataSourceSchedule(),
 				"squadcast_runbook":   dataSourceRunbook(),
+				"squadcast_webform":   dataSourceWebform(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
 				"squadcast_deduplication_rules": resourceDeduplicationRules(),
