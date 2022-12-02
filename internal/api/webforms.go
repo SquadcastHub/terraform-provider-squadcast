@@ -10,34 +10,31 @@ import (
 )
 
 type WebformReq struct {
-	OwnerType     string            `json:"owner_type" tf:"owner_type"`
-	OwnerID       string            `json:"owner_id" tf:"owner_id"`
-	TeamID        string            `json:"org_id" tf:"org_id"`
-	Name          string            `json:"name" tf:"name"`
-	IsCname       bool              `json:"is_cname" tf:"is_cname"`
-	PublicUrl     string            `json:"public_url" tf:"public_url"`
-	HostName      string            `json:"host_name" tf:"host_name"`
-	Tags          map[string]string `json:"tags" tf:"tags"`
-	IsAllServices bool              `json:"is_all_services" tf:"is_all_services"`
-	FormOwnerType string            `json:"form_owner_type" tf:"form_owner_type"`
-	FormOwnerID   string            `json:"form_owner_id" tf:"form_owner_id"`
-	FormOwnerName string            `json:"form_owner_name" tf:"form_owner_name"`
-	Services      []WFService       `json:"services" tf:"services"`
-	Severity      []WFSeverity      `json:"severity" tf:"severity"`
-	Header        string            `json:"header" tf:"header"`
-	Title         string            `json:"title" tf:"title"`
-	LogoUrl       string            `json:"logo_url" tf:"logo_url"`
-	FooterText    string            `json:"footer_text" tf:"footer_text"`
-	FooterLink    string            `json:"footer_link" tf:"footer_link"`
-	EmailOn       []string          `json:"email_on" tf:"email_on"`
-	Description   string            `json:"description" tf:"description"`
+	OwnerType     string            `json:"owner_type"`
+	TeamID        string            `json:"owner_id"`
+	Name          string            `json:"name"`
+	IsCname       bool              `json:"is_cname"`
+	PublicUrl     string            `json:"public_url"`
+	HostName      string            `json:"host_name"`
+	Tags          map[string]string `json:"tags"`
+	IsAllServices bool              `json:"is_all_services"`
+	FormOwnerType string            `json:"form_owner_type"`
+	FormOwnerID   string            `json:"form_owner_id"`
+	FormOwnerName string            `json:"form_owner_name"`
+	Services      []WFService       `json:"services"`
+	Severity      []WFSeverity      `json:"severity"`
+	Header        string            `json:"header"`
+	Title         string            `json:"title"`
+	FooterText    string            `json:"footer_text"`
+	FooterLink    string            `json:"footer_link"`
+	EmailOn       []string          `json:"email_on"`
+	Description   string            `json:"description"`
 }
 
 type Webform struct {
 	ID            uint              `json:"id" tf:"id"`
-	OrgID         string            `json:"org_id" tf:"org_id"`
 	OwnerType     string            `json:"owner_type" tf:"owner_type"`
-	OwnerID       string            `json:"owner_id" tf:"owner_id"`
+	TeamID        string            `json:"owner_id" tf:"team_id"`
 	Name          string            `json:"name" tf:"name"`
 	IsCname       bool              `json:"is_cname" tf:"is_cname"`
 	PublicUrl     string            `json:"public_url" tf:"public_url"`
@@ -51,7 +48,6 @@ type Webform struct {
 	Severity      []WFSeverity      `json:"severity" tf:"severity"`
 	Header        string            `json:"header" tf:"header"`
 	Title         string            `json:"title" tf:"title"`
-	LogoUrl       string            `json:"logo_url" tf:"logo_url"`
 	FooterText    string            `json:"footer_text" tf:"footer_text"`
 	FooterLink    string            `json:"footer_link" tf:"footer_link"`
 	EmailOn       []string          `json:"email_on" tf:"email_on"`
@@ -99,7 +95,7 @@ func (t *Webform) Encode() (tf.M, error) {
 		return nil, err
 	}
 
-	m["team_id"] = m["owner_id"]
+	m["team_id"] = t.TeamID
 
 	tags, err := tf.Encode(t.Tags)
 	if err != nil {

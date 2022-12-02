@@ -45,11 +45,12 @@ resource "squadcast_webform" "example_webform" {
     name       = data.squadcast_service.example_service_2.name
     service_id = data.squadcast_service.example_service_2.id
   }
+  host_name   = "example.com"
+  is_cname    = true
   header      = "formHeader"
   description = "formDescription"
   title       = "formTitle"
   footer_text = "footerText"
-  logo_url    = "logoUrl"
   footer_link = "footerLink"
   email_on    = ["acknowledged", "resolved", "triggered"]
   severity {
@@ -77,26 +78,23 @@ resource "squadcast_webform" "example_webform" {
 - `name` (String) Name of the Webform.
 - `services` (Block List, Min: 1) Services added to Webform. (see [below for nested schema](#nestedblock--services))
 - `severity` (Block List, Min: 1) Severity of the Incident. (see [below for nested schema](#nestedblock--severity))
-- `team_id` (String) Organization id.
+- `team_id` (String) Team id.
 - `title` (String) Webform title (public).
 
 ### Optional
 
 - `description` (String) Description of the Webform.
 - `email_on` (List of String) Defines when to send email to the reporter (triggered, acknowledged, resolved).
-- `logo_url` (String) Company logo url.
+- `host_name` (String) Custom hostname (URL).
+- `is_cname` (Boolean) cname should be set to true if you want to use a custom domain name for your webform.
 - `tags` (Map of String) Webform Tags.
 
 ### Read-Only
 
-- `host_name` (String) Description of the Webform.
 - `id` (String) Webform id.
 - `incident_count` (Number) Incident count.
 - `is_all_services` (Boolean) Is all services.
-- `is_cname` (Boolean) Is cname.
 - `mttr` (Number) Mean time to repair.
-- `org_id` (String) Organization id.
-- `owner_id` (String) Owner id.
 - `owner_type` (String) Owner type.
 - `public_url` (String) Public url.
 

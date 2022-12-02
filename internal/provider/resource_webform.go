@@ -35,37 +35,28 @@ func resourceWebform() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"host_name": {
-				Description: "Description of the Webform.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
 			"team_id": {
-				Description:  "Organization id.",
+				Description:  "Team id.",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
-			},
-			"org_id": {
-				Description: "Organization id.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"owner_id": {
-				Description: "Owner id.",
-				Type:        schema.TypeString,
-				Computed:    true,
 			},
 			"owner_type": {
 				Description: "Owner type.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"host_name": {
+				Description: "Custom hostname (URL).",
+				Type:        schema.TypeString,
+				Optional:    true,
+			},
 			"is_cname": {
-				Description: "Is cname.",
+				Description: "cname should be set to true if you want to use a custom domain name for your webform.",
 				Type:        schema.TypeBool,
-				Computed:    true,
+				Optional:    true,
+				Default:     false,
 			},
 			"public_url": {
 				Description: "Public url.",
@@ -104,11 +95,6 @@ func resourceWebform() *schema.Resource {
 			},
 			"description": {
 				Description: "Description of the Webform.",
-				Type:        schema.TypeString,
-				Optional:    true,
-			},
-			"logo_url": {
-				Description: "Company logo url.",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -223,16 +209,17 @@ func resourceWebformCreate(ctx context.Context, d *schema.ResourceData, meta any
 	})
 	webformCreateReq := api.WebformReq{
 		Name:          d.Get("name").(string),
-		OwnerID:       d.Get("team_id").(string),
+		TeamID:        d.Get("team_id").(string),
 		FormOwnerType: d.Get("form_owner_type").(string),
 		FormOwnerID:   d.Get("form_owner_id").(string),
 		FormOwnerName: d.Get("form_owner_name").(string),
+		HostName:      d.Get("host_name").(string),
+		IsCname:       d.Get("is_cname").(bool),
 		Header:        d.Get("header").(string),
-		Title:         d.Get("title").(string),
 		Description:   d.Get("description").(string),
+		Title:         d.Get("title").(string),
 		FooterText:    d.Get("footer_text").(string),
 		FooterLink:    d.Get("footer_link").(string),
-		LogoUrl:       d.Get("logo_url").(string),
 	}
 
 	memailon := d.Get("email_on").([]interface{})
@@ -286,7 +273,7 @@ func resourceWebformRead(ctx context.Context, d *schema.ResourceData, meta any) 
 
 	teamID, ok := d.GetOk("team_id")
 	if !ok {
-		return diag.Errorf("invalid team id provided")
+		return diag.Errorf("invalid team id provided !")
 	}
 
 	tflog.Info(ctx, "Reading webform", tf.M{
@@ -318,16 +305,17 @@ func resourceWebformUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	})
 	webformUpdateReq := api.WebformReq{
 		Name:          d.Get("name").(string),
-		OwnerID:       d.Get("team_id").(string),
+		TeamID:        d.Get("team_id").(string),
 		FormOwnerType: d.Get("form_owner_type").(string),
 		FormOwnerID:   d.Get("form_owner_id").(string),
 		FormOwnerName: d.Get("form_owner_name").(string),
+		HostName:      d.Get("host_name").(string),
+		IsCname:       d.Get("is_cname").(bool),
 		Header:        d.Get("header").(string),
-		Title:         d.Get("title").(string),
 		Description:   d.Get("description").(string),
+		Title:         d.Get("title").(string),
 		FooterText:    d.Get("footer_text").(string),
 		FooterLink:    d.Get("footer_link").(string),
-		LogoUrl:       d.Get("logo_url").(string),
 	}
 
 	memailon := d.Get("email_on").([]interface{})

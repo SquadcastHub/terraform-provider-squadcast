@@ -30,11 +30,12 @@ resource "squadcast_webform" "example_webform" {
     name       = data.squadcast_service.example_service_2.name
     service_id = data.squadcast_service.example_service_2.id
   }
+  host_name   = "example.com"
+  is_cname    = true
   header      = "formHeader"
   description = "formDescription"
   title       = "formTitle"
   footer_text = "footerText"
-  logo_url    = "logoUrl"
   footer_link = "footerLink"
   email_on    = ["acknowledged", "resolved", "triggered"]
   severity {

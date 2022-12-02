@@ -26,34 +26,24 @@ func dataSourceWebform() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"host_name": {
-				Description: "Description of the Webform.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
 			"team_id": {
-				Description:  "Organization id.",
+				Description:  "Team id.",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
-			},
-			"org_id": {
-				Description: "Organization id.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"owner_id": {
-				Description: "Owner id.",
-				Type:        schema.TypeString,
-				Computed:    true,
 			},
 			"owner_type": {
 				Description: "Owner type.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"host_name": {
+				Description: "Custom hostname (URL).",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"is_cname": {
-				Description: "Is cname.",
+				Description: "cname should be set to true if you want to use a custom domain name for your webform.",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
