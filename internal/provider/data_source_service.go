@@ -107,9 +107,9 @@ func dataSourceService() *schema.Resource {
 				},
 			},
 			"alert_sources": {
-				Description: "List of alert source names.",
+				Description: "List of active alert source names.",
 				Type:        schema.TypeList,
-				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
