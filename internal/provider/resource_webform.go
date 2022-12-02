@@ -48,12 +48,12 @@ func resourceWebform() *schema.Resource {
 				ForceNew:     true,
 			},
 			"org_id": {
-				Description: "Owner id.",
+				Description: "Organization id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"owner_id": {
-				Description: "Organization id.",
+				Description: "Owner id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},

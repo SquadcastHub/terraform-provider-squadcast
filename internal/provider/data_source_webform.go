@@ -24,7 +24,7 @@ func dataSourceWebform() *schema.Resource {
 			"name": {
 				Description: "Name of the Webform.",
 				Type:        schema.TypeString,
-				Required:     true,
+				Required:    true,
 			},
 			"host_name": {
 				Description: "Description of the Webform.",
@@ -37,12 +37,12 @@ func dataSourceWebform() *schema.Resource {
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
-			"owner_id": {
+			"org_id": {
 				Description: "Organization id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"org_id": {
+			"owner_id": {
 				Description: "Owner id.",
 				Type:        schema.TypeString,
 				Computed:    true,

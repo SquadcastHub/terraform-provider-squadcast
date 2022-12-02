@@ -149,5 +149,5 @@ func (client *Client) UpdateWebform(ctx context.Context, teamID string, id strin
 func (client *Client) DeleteWebform(ctx context.Context, teamID string, id string) (*any, error) {
 	url := fmt.Sprintf("%s/webform/%s?owner_id=%s", client.BaseURLV3, id, teamID)
 
-		return Request[any, any](http.MethodDelete, url, client, ctx, nil)
-	}
+	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
+}
