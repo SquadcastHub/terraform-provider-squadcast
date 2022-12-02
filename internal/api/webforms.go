@@ -12,6 +12,7 @@ import (
 type WebformReq struct {
 	OwnerType     string            `json:"owner_type" tf:"owner_type"`
 	OwnerID       string            `json:"owner_id" tf:"owner_id"`
+	TeamID        string            `json:"org_id" tf:"org_id"`
 	Name          string            `json:"name" tf:"name"`
 	IsCname       bool              `json:"is_cname" tf:"is_cname"`
 	PublicUrl     string            `json:"public_url" tf:"public_url"`
@@ -59,6 +60,10 @@ type Webform struct {
 	Mttr          int               `json:"mttr" tf:"mttr"`
 }
 
+type CreateWebformRes struct {
+	WebFormRes *Webform `json:"webform"`
+}
+
 type WFService struct {
 	ServiceId string `json:"service_id" tf:"service_id"`
 	WebformID int    `json:"webform_id" tf:"webform_id"`
@@ -76,9 +81,9 @@ type WFSeverity struct {
 	Description string `json:"description" tf:"description"`
 }
 
-// func (webformTag WFTag) Encode() (tf.M, error) {
-// 	return tf.Encode(webformTag)
-// }
+func (webformTag WFTag) Encode() (tf.M, error) {
+	return tf.Encode(webformTag)
+}
 
 func (webformService WFService) Encode() (tf.M, error) {
 	return tf.Encode(webformService)
@@ -124,7 +129,25 @@ func (client *Client) GetWebformById(ctx context.Context, teamID string, id stri
 }
 
 func (client *Client) GetWebformByName(ctx context.Context, teamID string, name string) (*Webform, error) {
-	url := fmt.Sprintf("%s/webform/by-name=%s?owner_id=%s", client.BaseURLV3, url.QueryEscape(name), teamID)
+	url := fmt.Sprintf("%s/webform/by-name?name=%s&owner_id=%s", client.BaseURLV3, url.QueryEscape(name), teamID)
 
 	return Request[any, Webform](http.MethodGet, url, client, ctx, nil)
 }
+
+func (client *Client) CreateWebform(ctx context.Context, teamID string, req *WebformReq) (*CreateWebformRes, error) {
+	url := fmt.Sprintf("%s/webform?owner_id=%s", client.BaseURLV3, teamID)
+
+	return Request[WebformReq, CreateWebformRes](http.MethodPost, url, client, ctx, req)
+}
+
+func (client *Client) UpdateWebform(ctx context.Context, teamID string, id string, req *WebformReq) (*Webform, error) {
+	url := fmt.Sprintf("%s/webform/%s?owner_id=%s", client.BaseURLV3, id, teamID)
+
+	return Request[WebformReq, Webform](http.MethodPut, url, client, ctx, req)
+}
+
+func (client *Client) DeleteWebform(ctx context.Context, teamID string, id string) (*any, error) {
+	url := fmt.Sprintf("%s/webform/%s?owner_id=%s", client.BaseURLV3, id, teamID)
+
+		return Request[any, any](http.MethodDelete, url, client, ctx, nil)
+	}

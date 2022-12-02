@@ -19,13 +19,12 @@ func dataSourceWebform() *schema.Resource {
 			"id": {
 				Description: "Webform id.",
 				Type:        schema.TypeString,
-				Required:    true,
+				Computed:    true,
 			},
 			"name": {
 				Description: "Name of the Webform.",
 				Type:        schema.TypeString,
-				// Required:     true,
-				Computed: true,
+				Required:     true,
 			},
 			"host_name": {
 				Description: "Description of the Webform.",
@@ -194,7 +193,6 @@ func dataSourceWebform() *schema.Resource {
 func dataSourceWebformRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	// TODO: Get Webform details using name (GetWebformByName method)
 	name := d.Get("name").(string)
 
 	teamID, ok := d.GetOk("team_id")
@@ -206,7 +204,7 @@ func dataSourceWebformRead(ctx context.Context, d *schema.ResourceData, meta any
 		"name": name,
 	})
 
-	webform, err := client.GetWebformById(ctx, teamID.(string), d.Get("id").(string))
+	webform, err := client.GetWebformByName(ctx, teamID.(string), name)
 	if err != nil {
 		return diag.FromErr(err)
 	}
