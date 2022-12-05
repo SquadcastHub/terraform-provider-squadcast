@@ -59,19 +59,20 @@ func resourceWebform() *schema.Resource {
 				Default:     false,
 			},
 			"public_url": {
-				Description: "Public url.",
+				Description: "Public URL of the Webform.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"is_all_services": {
-				Description: "Is all services.",
+				Description: "If true, the Webform will be available for all services.",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
 			"form_owner_type": {
-				Description: "Form owner type.",
+				Description: "Form owner type (user, team, squad).",
 				Type:        schema.TypeString,
 				Required:    true,
+				ValidateFunc: validation.StringInSlice([]string{"user","team","squad"}, false),
 			},
 			"form_owner_id": {
 				Description: "Form owner id.",
@@ -118,7 +119,7 @@ func resourceWebform() *schema.Resource {
 				},
 			},
 			"incident_count": {
-				Description: "Incident count.",
+				Description: "Number of incidents created from this webform.",
 				Type:        schema.TypeInt,
 				Computed:    true,
 			},

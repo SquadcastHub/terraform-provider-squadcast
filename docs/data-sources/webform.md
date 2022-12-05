@@ -36,18 +36,18 @@ data "squadcast_webform" "webform" {
 - `footer_text` (String) Footer text.
 - `form_owner_id` (String) Form owner id.
 - `form_owner_name` (String) Form owner name.
-- `form_owner_type` (String) Form owner type.
+- `form_owner_type` (String) Form owner type (user, team, squad).
 - `header` (String) Webform header.
 - `host_name` (String) Custom hostname (URL).
 - `id` (String) Webform id.
-- `incident_count` (Number) Incident count.
-- `is_all_services` (Boolean) Is all services.
+- `incident_count` (Number) Number of incidents created from this webform.
+- `is_all_services` (Boolean) If true, the Webform will be available for all services.
 - `is_cname` (Boolean) cname should be set to true if you want to use a custom domain name for your webform.
 - `logo_url` (String) Company logo url.
 - `mttr` (Number) Mean time to repair.
 - `team_id` (String) Team id.
 - `owner_type` (String) Owner type.
-- `public_url` (String) Public url.
+- `public_url` (String) Public URL of the Webform.
 - `services` (List of Object) Services added to Webform. (see [below for nested schema](#nestedatt--services))
 - `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `tags` (Map of String) Webform Tags.
