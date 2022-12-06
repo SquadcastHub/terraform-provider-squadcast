@@ -106,16 +106,16 @@ func dataSourceService() *schema.Resource {
 					},
 				},
 			},
-			"alert_sources": {
-				Description: "List of active alert source names.",
-				Type:        schema.TypeList,
+			"active_alert_source_endpoints": {
+				Description: "Active alert source endpoints.",
+				Type:        schema.TypeMap,
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"alert_source_endpoints": {
-				Description: "alert sources.",
+				Description: "All available alert source endpoints.",
 				Type:        schema.TypeMap,
 				Computed:    true,
 				Elem: &schema.Schema{
@@ -157,16 +157,16 @@ func dataSourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 
-	var alertSourceNames []string
+	var activeAlertSourcesMap = make(map[string]string, len(activeAlertSources.AlertSources))
 	for _, alertSource := range activeAlertSources.AlertSources {
 		for _, malertsource := range alertSources {
 			if alertSource.ID == malertsource.ID {
-				alertSourceNames = append(alertSourceNames, malertsource.Type)
+				activeAlertSourcesMap[malertsource.ShortName] = malertsource.Endpoint(client.IngestionBaseURL, service)
 			}
 		}
 	}
 
-	service.ActiveAlertSources = alertSourceNames
+	service.ActiveAlertSources = activeAlertSourcesMap
 
 	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
 

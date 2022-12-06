@@ -119,16 +119,24 @@ func resourceService() *schema.Resource {
 					},
 				},
 			},
-			"alert_sources": {
-				Description: "List of alert source names.",
+			"active_alert_sources": {
+				Description: "List of active alert source names.",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
+			"active_alert_source_endpoints": {
+				Description: "Active alert source endpoints.",
+				Type:        schema.TypeMap,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"alert_source_endpoints": {
-				Description: "Alert source endpoints.",
+				Description: "All alert source endpoints.",
 				Type:        schema.TypeMap,
 				Computed:    true,
 				Elem: &schema.Schema{
@@ -198,7 +206,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 
 	d.SetId(service.ID)
 
-	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
+	malertsources := tf.ListToSlice[string](d.Get("active_alert_sources"))
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)
@@ -267,15 +275,16 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 		return diag.FromErr(err)
 	}
 
-	var alertSourceNames []string
+	var activeAlertSourcesMap = make(map[string]string, len(activeAlertSources.AlertSources))
 	for _, alertSource := range activeAlertSources.AlertSources {
 		for _, malertsource := range alertSources {
 			if alertSource.ID == malertsource.ID {
-				alertSourceNames = append(alertSourceNames, malertsource.Type)
+				activeAlertSourcesMap[malertsource.ShortName] = malertsource.Endpoint(client.IngestionBaseURL, service)
 			}
 		}
 	}
-	service.ActiveAlertSources = alertSourceNames
+
+	service.ActiveAlertSources = activeAlertSourcesMap
 
 	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
 
@@ -327,7 +336,7 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 
-	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
+	malertsources := tf.ListToSlice[string](d.Get("active_alert_sources"))
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)

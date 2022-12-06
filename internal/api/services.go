@@ -23,7 +23,7 @@ type Service struct {
 	Maintainer         *ServiceMaintainer `json:"maintainer" tf:"maintainer"`
 	Tags               []ServiceTag       `json:"tags" tf:"tags"`
 	Dependencies       []string           `json:"depends" tf:"dependencies"`
-	ActiveAlertSources []string           `json:"-" tf:"alert_sources"`
+	ActiveAlertSources map[string]string  `json:"-" tf:"active_alert_source_endpoints"`
 	AlertSources       map[string]string  `json:"-" tf:"alert_source_endpoints"`
 }
 

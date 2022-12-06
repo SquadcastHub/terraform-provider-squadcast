@@ -15,7 +15,7 @@ Team roles are a way to define abilities/permissions for a user in the team. Eac
 ```terraform
 data "squadcast_team_role" "test" {
   name    = "testRole"
-  team_id = "teamObjectId"
+  team_id = "team id"
 }
 ```
 

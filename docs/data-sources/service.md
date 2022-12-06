@@ -15,7 +15,7 @@ description: |-
 ```terraform
 data "squadcast_service" "test" {
   name    = squadcast_service.test.name
-  team_id = "teamObjectId"
+  team_id = "team id"
 }
 ```
 
@@ -30,8 +30,8 @@ data "squadcast_service" "test" {
 
 ### Read-Only
 
-- `alert_sources` (List of String) List of active alert source names.
-- `alert_source_endpoints` (Map of String) Alert sources.
+- `active_alert_source_endpoints` (Map of String) Active alert source endpoints.
+- `alert_source_endpoints` (Map of String) All available alert source endpoints.
 - `api_key` (String) Unique API key of the service
 - `dependencies` (List of String) dependencies.
 - `description` (String) Detailed description about the service.

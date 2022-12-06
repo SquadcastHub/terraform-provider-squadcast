@@ -40,6 +40,5 @@ data "squadcast_team" "example_team" {
 Import is supported using the following syntax:
 
 ```shell
-# teamName
-terraform import squadcast_team.test teamName
+terraform import squadcast_team.test "My Team Name"
 ```
