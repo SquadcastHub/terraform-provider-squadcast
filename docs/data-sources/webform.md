@@ -3,19 +3,19 @@
 page_title: "squadcast_webform Data Source - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation.Use this data source to get information about a specific webform.
+  Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. Use this data source to get information about a specific webform.
 ---
 
 # squadcast_webform (Data Source)
 
-[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation.Use this data source to get information about a specific webform.
+[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. Use this data source to get information about a specific webform.
 
 ## Example Usage
 
 ```terraform
 data "squadcast_webform" "webform" {
   name    = "webformName"
-  team_id = "teamObjectId"
+  team_id = "team id"
 }
 ```
 
@@ -26,32 +26,33 @@ data "squadcast_webform" "webform" {
 ### Required
 
 - `name` (String) Name of the Webform.
-- `team_id` (String) Organization id.
+- `team_id` (String) Team id.
 
 ### Read-Only
 
+- `custom_domain_name` (String) Custom domain name (URL).
 - `description` (String) Description of the Webform.
 - `email_on` (List of String) Defines when to send email to the reporter (triggered, acknowledged, resolved).
 - `footer_link` (String) Footer link.
 - `footer_text` (String) Footer text.
-- `form_owner_id` (String) Form owner id.
-- `form_owner_name` (String) Form owner name.
-- `form_owner_type` (String) Form owner type (user, team, squad).
 - `header` (String) Webform header.
-- `host_name` (String) Custom hostname (URL).
-- `id` (String) Webform id.
-- `incident_count` (Number) Number of incidents created from this webform.
-- `is_all_services` (Boolean) If true, the Webform will be available for all services.
-- `is_cname` (Boolean) cname should be set to true if you want to use a custom domain name for your webform.
-- `logo_url` (String) Company logo url.
-- `mttr` (Number) Mean time to repair.
-- `team_id` (String) Team id.
-- `owner_type` (String) Owner type.
+- `id` (Number) Webform id.
+- `owner` (List of Object) Form owner. (see [below for nested schema](#nestedatt--owner))
 - `public_url` (String) Public URL of the Webform.
 - `services` (List of Object) Services added to Webform. (see [below for nested schema](#nestedatt--services))
 - `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `tags` (Map of String) Webform Tags.
 - `title` (String) Webform title (public).
+
+<a id="nestedatt--owner"></a>
+
+### Nested Schema for `owner`
+
+Read-Only:
+
+- `id` (String) Form owner id.
+- `name` (String) Form owner name.
+- `type` (String) Form owner type (user, team, squad).
 
 <a id="nestedatt--services"></a>
 
@@ -62,7 +63,6 @@ Read-Only:
 - `alias` (String) Service alias.
 - `name` (String) Service name.
 - `service_id` (String) Service id.
-- `webform_id` (Number) Webform id.
 
 <a id="nestedatt--severity"></a>
 

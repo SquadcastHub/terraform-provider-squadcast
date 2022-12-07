@@ -12,13 +12,13 @@ import (
 
 func dataSourceWebform() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation." +
+		Description: "[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. " +
 			"Use this data source to get information about a specific webform.",
 		ReadContext: dataSourceWebformRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "Webform id.",
-				Type:        schema.TypeString,
+				Type:        schema.TypeInt,
 				Computed:    true,
 			},
 			"name": {
@@ -32,19 +32,9 @@ func dataSourceWebform() *schema.Resource {
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
-			"owner_type": {
-				Description: "Owner type.",
+			"custom_domain_name": {
+				Description: "Custom domain name (URL).",
 				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"host_name": {
-				Description: "Custom hostname (URL).",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"is_cname": {
-				Description: "cname should be set to true if you want to use a custom domain name for your webform.",
-				Type:        schema.TypeBool,
 				Computed:    true,
 			},
 			"public_url": {
@@ -52,25 +42,29 @@ func dataSourceWebform() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"is_all_services": {
-				Description: "If true, the Webform will be available for all services.",
-				Type:        schema.TypeBool,
+			"owner": {
+				Description: "Form owner.",
+				Type:        schema.TypeList,
 				Computed:    true,
-			},
-			"form_owner_type": {
-				Description: "Form owner type (user, team, squad).",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"form_owner_id": {
-				Description: "Form owner id.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"form_owner_name": {
-				Description: "Form owner name.",
-				Type:        schema.TypeString,
-				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Description: "Form owner type (user, team, squad).",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"id": {
+							Description: "Form owner id.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"name": {
+							Description: "Form owner name.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
 			},
 			"header": {
 				Description: "Webform header.",
@@ -84,11 +78,6 @@ func dataSourceWebform() *schema.Resource {
 			},
 			"description": {
 				Description: "Description of the Webform.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
-			"logo_url": {
-				Description: "Company logo url.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
@@ -110,16 +99,6 @@ func dataSourceWebform() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"incident_count": {
-				Description: "Number of incidents created from this webform.",
-				Type:        schema.TypeInt,
-				Computed:    true,
-			},
-			"mttr": {
-				Description: "Mean time to repair.",
-				Type:        schema.TypeInt,
-				Computed:    true,
-			},
 			"tags": {
 				Description: "Webform Tags.",
 				Type:        schema.TypeMap,
@@ -137,11 +116,6 @@ func dataSourceWebform() *schema.Resource {
 						"service_id": {
 							Description: "Service ID.",
 							Type:        schema.TypeString,
-							Computed:    true,
-						},
-						"webform_id": {
-							Description: "Webform ID.",
-							Type:        schema.TypeInt,
 							Computed:    true,
 						},
 						"name": {

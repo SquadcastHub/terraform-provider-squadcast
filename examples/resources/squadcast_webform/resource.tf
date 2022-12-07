@@ -17,11 +17,13 @@ data "squadcast_service" "example_service_2" {
 }
 
 resource "squadcast_webform" "example_webform" {
-  name            = "example webform name"
-  team_id         = data.squadcast_team.example_team.id
-  form_owner_type = "user"
-  form_owner_id   = data.squadcast_user.example_user.id
-  form_owner_name = data.squadcast_user.example_user.name
+  name    = "example webform name"
+  team_id = data.squadcast_team.example_team.id
+  owner {
+    type = "user"
+    id   = data.squadcast_user.example_user.id
+    name = data.squadcast_user.example_user.name
+  }
   services {
     name       = data.squadcast_service.example_service.name
     service_id = data.squadcast_service.example_service.id
@@ -30,14 +32,13 @@ resource "squadcast_webform" "example_webform" {
     name       = data.squadcast_service.example_service_2.name
     service_id = data.squadcast_service.example_service_2.id
   }
-  host_name   = "example.com"
-  is_cname    = true
-  header      = "formHeader"
-  description = "formDescription"
-  title       = "formTitle"
-  footer_text = "footerText"
-  footer_link = "footerLink"
-  email_on    = ["acknowledged", "resolved", "triggered"]
+  custom_domain_name = "example.com"
+  header             = "formHeader"
+  description        = "formDescription"
+  title              = "formTitle"
+  footer_text        = "footerText"
+  footer_link        = "footerLink"
+  email_on           = ["acknowledged", "resolved", "triggered"]
   severity {
     type        = "severityType"
     description = "severityDescription"
