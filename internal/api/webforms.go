@@ -10,44 +10,44 @@ import (
 )
 
 type WebformReq struct {
-	TeamID         string            `json:"owner_id"`
-	Name           string            `json:"name"`
-	IsCname        bool              `json:"is_cname"`
-	PublicUrl      string            `json:"public_url"`
-	HostName       string            `json:"host_name"`
-	Tags           map[string]string `json:"tags"`
-	FormOwnerType  string            `json:"form_owner_type"`
-	FormOwnerID    string            `json:"form_owner_id"`
-	FormOwnerName  string            `json:"form_owner_name"`
-	Services       []WFService       `json:"services"`
-	Severity       []WFSeverity      `json:"severity"`
-	Header         string            `json:"header"`
-	Title          string            `json:"title"`
-	FooterText     string            `json:"footer_text"`
-	FooterLink     string            `json:"footer_link"`
-	EmailOn        []string          `json:"email_on"`
-	Description    string            `json:"description"`
+	TeamID        string            `json:"owner_id"`
+	Name          string            `json:"name"`
+	IsCname       bool              `json:"is_cname"`
+	PublicUrl     string            `json:"public_url"`
+	HostName      string            `json:"host_name"`
+	Tags          map[string]string `json:"tags"`
+	FormOwnerType string            `json:"form_owner_type"`
+	FormOwnerID   string            `json:"form_owner_id"`
+	FormOwnerName string            `json:"form_owner_name"`
+	Services      []WFService       `json:"services"`
+	Severity      []WFSeverity      `json:"severity"`
+	Header        string            `json:"header"`
+	Title         string            `json:"title"`
+	FooterText    string            `json:"footer_text"`
+	FooterLink    string            `json:"footer_link"`
+	EmailOn       []string          `json:"email_on"`
+	Description   string            `json:"description"`
 }
 
 type Webform struct {
-	ID     uint   `json:"id" tf:"id"`
-	TeamID string `json:"owner_id" tf:"team_id"`
-	Name   string `json:"name" tf:"name"`
-	PublicUrl      string            `json:"public_url" tf:"public_url"`
-	HostName       string            `json:"host_name" tf:"custom_domain_name"`
-	Tags           map[string]string `json:"tags" tf:"tags"`
-	FormOwnerType  string            `json:"form_owner_type"`
-	FormOwnerID    string            `json:"form_owner_id"`
-	FormOwnerName  string            `json:"form_owner_name"`
-	WebformOwner   *WebformOwner     `tf:"owner"`
-	Services       []WFService       `json:"services" tf:"services"`
-	Severity       []WFSeverity      `json:"severity" tf:"severity"`
-	Header         string            `json:"header" tf:"header"`
-	Title          string            `json:"title" tf:"title"`
-	FooterText     string            `json:"footer_text" tf:"footer_text"`
-	FooterLink     string            `json:"footer_link" tf:"footer_link"`
-	EmailOn        []string          `json:"email_on" tf:"email_on"`
-	Description    string            `json:"description" tf:"description"`
+	ID            uint              `json:"id" tf:"id"`
+	TeamID        string            `json:"owner_id" tf:"team_id"`
+	Name          string            `json:"name" tf:"name"`
+	PublicUrl     string            `json:"public_url" tf:"public_url"`
+	HostName      string            `json:"host_name" tf:"custom_domain_name"`
+	Tags          map[string]string `json:"tags" tf:"tags"`
+	FormOwnerType string            `json:"form_owner_type"`
+	FormOwnerID   string            `json:"form_owner_id"`
+	FormOwnerName string            `json:"form_owner_name"`
+	WebformOwner  *WebformOwner     `tf:"owner"`
+	Services      []WFService       `json:"services" tf:"services"`
+	Severity      []WFSeverity      `json:"severity" tf:"severity"`
+	Header        string            `json:"header" tf:"header"`
+	Title         string            `json:"title" tf:"title"`
+	FooterText    string            `json:"footer_text" tf:"footer_text"`
+	FooterLink    string            `json:"footer_link" tf:"footer_link"`
+	EmailOn       []string          `json:"email_on" tf:"email_on"`
+	Description   string            `json:"description" tf:"description"`
 }
 
 type CreateWebformRes struct {

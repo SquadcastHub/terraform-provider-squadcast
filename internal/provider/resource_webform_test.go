@@ -84,9 +84,9 @@ func TestAccResourceWebform(t *testing.T) {
 				),
 			},
 			{
-				ResourceName:        resourceName,
-				ImportState:         true,
-				ImportStateVerify:   true,
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					teamID, err := tf.StateAttr(s, "squadcast_webform", "team_id")
 					if err != nil {
@@ -121,8 +121,7 @@ func testAccCheckWebformDestroy(s *terraform.State) error {
 	return nil
 }
 
-
-func testAccResourceWebformConfig( webformName string) string {
+func testAccResourceWebformConfig(webformName string) string {
 	return fmt.Sprintf(`
 		resource "squadcast_webform" "test" {
 			name = "%s"
@@ -149,7 +148,7 @@ func testAccResourceWebformConfig( webformName string) string {
 	`, webformName)
 }
 
-func testAccResourceWebformConfig_update( webformName string) string {
+func testAccResourceWebformConfig_update(webformName string) string {
 	return fmt.Sprintf(`
 		resource "squadcast_webform" "test" {
 			name = "%s"
@@ -177,7 +176,7 @@ func testAccResourceWebformConfig_update( webformName string) string {
 	`, webformName)
 }
 
-func testAccResourceWebformConfig_tags( webformName string) string {
+func testAccResourceWebformConfig_tags(webformName string) string {
 	return fmt.Sprintf(`
 		resource "squadcast_webform" "test" {
 			name = "%s"

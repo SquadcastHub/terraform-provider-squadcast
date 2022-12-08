@@ -56,7 +56,7 @@ func resourceWebform() *schema.Resource {
 				Description: "Form owner.",
 				Type:        schema.TypeList,
 				Required:    true,
-				MaxItems: 	1,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
