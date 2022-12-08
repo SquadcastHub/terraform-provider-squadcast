@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -72,7 +73,7 @@ func New(version string) func() *schema.Provider {
 					Description: "The refresh token, This can be created from user profile",
 					Type:        schema.TypeString,
 					Sensitive:   true,
-					Required:    true,
+					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("SQUADCAST_REFRESH_TOKEN", nil),
 				},
 			},
@@ -91,6 +92,13 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 
 		region := rd.Get("region").(string)
 		refreshToken := rd.Get("refresh_token").(string)
+
+		if refreshToken == "" {
+			refreshToken = os.Getenv("SQUADCAST_REFRESH_TOKEN")
+		}
+		if refreshToken == "" {
+			return nil, diag.Errorf("refresh_token is required")
+		}
 
 		client.RefreshToken = refreshToken
 
