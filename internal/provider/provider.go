@@ -93,9 +93,9 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 
 		if refreshToken == "" {
 			refreshToken = os.Getenv("SQUADCAST_REFRESH_TOKEN")
-			if refreshToken == "" {
-				return nil, diag.Errorf("refresh_token is required")
-			}
+		}
+		if refreshToken == "" {
+			return nil, diag.Errorf("refresh_token is required")
 		}
 
 		client.RefreshToken = refreshToken
