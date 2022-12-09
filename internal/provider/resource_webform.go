@@ -72,7 +72,7 @@ func resourceWebform() *schema.Resource {
 						"name": {
 							Description: "Form owner name.",
 							Type:        schema.TypeString,
-							Required:    true,
+							Computed:    true,
 						},
 					},
 				},
@@ -134,7 +134,7 @@ func resourceWebform() *schema.Resource {
 						"name": {
 							Description: "Service name.",
 							Type:        schema.TypeString,
-							Required:    true,
+							Computed:    true,
 						},
 						"alias": {
 							Description: "Service alias.",
@@ -208,7 +208,6 @@ func resourceWebformCreate(ctx context.Context, d *schema.ResourceData, meta any
 		TeamID:        d.Get("team_id").(string),
 		FormOwnerType: webformOwner["type"].(string),
 		FormOwnerID:   webformOwner["id"].(string),
-		FormOwnerName: webformOwner["name"].(string),
 		HostName:      d.Get("custom_domain_name").(string),
 		Header:        d.Get("header").(string),
 		Description:   d.Get("description").(string),
@@ -309,7 +308,6 @@ func resourceWebformUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		TeamID:        d.Get("team_id").(string),
 		FormOwnerType: webformOwner["type"].(string),
 		FormOwnerID:   webformOwner["id"].(string),
-		FormOwnerName: webformOwner["name"].(string),
 		HostName:      d.Get("custom_domain_name").(string),
 		Header:        d.Get("header").(string),
 		Description:   d.Get("description").(string),

@@ -18,7 +18,6 @@ type WebformReq struct {
 	Tags          map[string]string `json:"tags"`
 	FormOwnerType string            `json:"form_owner_type"`
 	FormOwnerID   string            `json:"form_owner_id"`
-	FormOwnerName string            `json:"form_owner_name"`
 	Services      []WFService       `json:"services"`
 	Severity      []WFSeverity      `json:"severity"`
 	Header        string            `json:"header"`

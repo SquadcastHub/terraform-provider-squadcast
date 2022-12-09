@@ -22,14 +22,12 @@ resource "squadcast_webform" "example_webform" {
   owner {
     type = "user"
     id   = data.squadcast_user.example_user.id
-    name = data.squadcast_user.example_user.name
   }
   services {
-    name       = data.squadcast_service.example_service.name
     service_id = data.squadcast_service.example_service.id
+    alias      = "example service alias"
   }
   services {
-    name       = data.squadcast_service.example_service_2.name
     service_id = data.squadcast_service.example_service_2.id
   }
   custom_domain_name = "example.com"
