@@ -27,5 +27,5 @@ resource "squadcast_service" "example_service" {
     key   = "testkey2"
     value = "testval2"
   }
-  active_alert_sources = ["example-alert-source"]
+  alert_sources = ["example-alert-source"]
 }

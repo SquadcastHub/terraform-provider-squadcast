@@ -119,7 +119,7 @@ func resourceService() *schema.Resource {
 					},
 				},
 			},
-			"active_alert_sources": {
+			"alert_sources": {
 				Description: "List of active alert source names.",
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -136,7 +136,7 @@ func resourceService() *schema.Resource {
 				},
 			},
 			"alert_source_endpoints": {
-				Description: "All alert source endpoints.",
+				Description: "All available alert source endpoints.",
 				Type:        schema.TypeMap,
 				Computed:    true,
 				Elem: &schema.Schema{
@@ -206,7 +206,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 
 	d.SetId(service.ID)
 
-	malertsources := tf.ListToSlice[string](d.Get("active_alert_sources"))
+	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)
@@ -336,14 +336,27 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 
-	malertsources := tf.ListToSlice[string](d.Get("active_alert_sources"))
+	malertsources := tf.ListToSlice[string](d.Get("alert_sources"))
+	if len(malertsources) == 0 && d.HasChange("alert_sources") {
+		alertSourcesReq := api.AddAlertSourcesReq{
+			AlertSources: []string{},
+		}
+		_, err = client.AddAlertSources(ctx, d.Id(), &alertSourcesReq)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)
-		for _, alertSource := range alertSources {
-			for _, malertsource := range malertsources {
+		for _, malertsource := range malertsources {
+			for _, alertSource := range alertSources {
 				if alertSource.Type == malertsource {
 					alertSourceIDs = append(alertSourceIDs, alertSource.ID)
+					break
+				}
+				if alertSource.Type != malertsource && alertSource.Type == alertSources[len(alertSources)-1].Type {
+					return diag.Errorf("%s is not a valid alert source. Please check the Add Alert Source Page on the Squadcast UI for a list of valid alert sources", malertsource)
 				}
 			}
 		}
