@@ -59,7 +59,7 @@ resource "squadcast_service" "example_service" {
 
 ### Optional
 
-- `alert_sources` (List of String) List of alert source names.
+- `alert_sources` (List of String) List of active alert source names.
 - `dependencies` (List of String) Dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
 - `maintainer` (Block List, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
@@ -67,7 +67,8 @@ resource "squadcast_service" "example_service" {
 
 ### Read-Only
 
-- `alert_source_endpoints` (Map of String) Alert source endpoints.
+- `active_alert_source_endpoints` (Map of String) Active alert source endpoints.
+- `alert_source_endpoints` (Map of String) All available alert source endpoints.
 - `api_key` (String) Unique API key of this service.
 - `email` (String) Email.
 - `id` (String) Service id.
