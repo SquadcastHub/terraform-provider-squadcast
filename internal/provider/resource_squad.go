@@ -58,7 +58,6 @@ func resourceSquad() *schema.Resource {
 }
 
 func parse2PartImportID(id string) (string, string, error) {
-	id = strings.Trim(id, "\"")
 	parts := strings.SplitN(id, ":", 2)
 
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
