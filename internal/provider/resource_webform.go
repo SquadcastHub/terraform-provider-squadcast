@@ -95,12 +95,12 @@ func resourceWebform() *schema.Resource {
 			"footer_text": {
 				Description: "Footer text.",
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 			},
 			"footer_link": {
 				Description: "Footer link.",
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 			},
 			"email_on": {
 				Description: "Defines when to send email to the reporter (triggered, acknowledged, resolved).",
@@ -144,22 +144,26 @@ func resourceWebform() *schema.Resource {
 					},
 				},
 			},
-			"severity": {
-				Description: "Severity of the Incident.",
+			"input_field": {
+				Description: "Input Fields added to Webforms. Added as tags to incident based on selection.",
 				Type:        schema.TypeList,
-				Required:    true,
-				MinItems:    1,
+				Optional:    true,
+				MaxItems:    10,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"type": {
-							Description: "Severity type.",
+						"label": {
+							Description: "Input field Label.",
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 						},
-						"description": {
-							Description: "Severity description.",
-							Type:        schema.TypeString,
-							Required:    true,
+						"options": {
+							Description: "Input field options.",
+							Type:        schema.TypeList,
+							Optional:    true,
+							MaxItems:    10,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 					},
 				},
@@ -236,13 +240,13 @@ func resourceWebformCreate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 	webformCreateReq.Services = services
 
-	mseverity := d.Get("severity").([]interface{})
-	var severity []api.WFSeverity
-	err = Decode(mseverity, &severity)
+	minputField := d.Get("input_field").([]interface{})
+	var inputField []api.WFInputField
+	err = Decode(minputField, &inputField)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	webformCreateReq.Severity = severity
+	webformCreateReq.InputField = inputField
 
 	mtags := d.Get("tags").(map[string]interface{})
 	tags := make(map[string]string, len(*&mtags))
@@ -336,13 +340,13 @@ func resourceWebformUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 	webformUpdateReq.Services = services
 
-	mseverity := d.Get("severity").([]interface{})
-	var severity []api.WFSeverity
-	err = Decode(mseverity, &severity)
+	minputField := d.Get("input_field").([]interface{})
+	var inputField []api.WFInputField
+	err = Decode(minputField, &inputField)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	webformUpdateReq.Severity = severity
+	webformUpdateReq.InputField = inputField
 
 	mtags := d.Get("tags").(map[string]interface{})
 	tags := make(map[string]string, len(*&mtags))
