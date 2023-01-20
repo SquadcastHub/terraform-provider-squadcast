@@ -83,8 +83,8 @@ func (webformService WFService) Encode() (tf.M, error) {
 	return tf.Encode(webformService)
 }
 
-func (webformSeverity WFInputField) Encode() (tf.M, error) {
-	return tf.Encode(webformSeverity)
+func (webformInputField WFInputField) Encode() (tf.M, error) {
+	return tf.Encode(webformInputField)
 }
 
 func (t *Webform) Encode() (tf.M, error) {
