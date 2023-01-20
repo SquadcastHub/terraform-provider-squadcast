@@ -65,8 +65,8 @@ type WFTag struct {
 }
 
 type WFInputField struct {
-	Label   string   `json:"label"`
-	Options []string `json:"options"`
+	Label   string   `json:"label" tf:"label"`
+	Options []string `json:"options" tf:"options"`
 }
 
 type WebformOwner struct {

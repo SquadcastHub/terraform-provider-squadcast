@@ -34,8 +34,8 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", ""),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 				),
@@ -54,8 +54,8 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 					resource.TestCheckResourceAttr(resourceName, "email_on.0", "triggered"),
@@ -75,8 +75,8 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 					resource.TestCheckResourceAttr(resourceName, "email_on.0", "triggered"),
@@ -136,9 +136,9 @@ func testAccResourceWebformConfig(webformName string) string {
 			description = ""
 			footer_text = "test footer"
 			footer_link = "https://www.squadcast.com"
-			severity {
-				type = "critical"
-				description = "critical"
+			input_field {
+				label = "severity"
+				options = ["critical"]
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"
@@ -163,9 +163,9 @@ func testAccResourceWebformConfig_update(webformName string) string {
 			description = "test description"
 			footer_text = "test footer"
 			footer_link = "https://www.squadcast.com"
-			severity {
-				type = "critical"
-				description = "critical"
+			input_field {
+				label = "severity"
+				options = ["critical"]
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"
@@ -191,9 +191,9 @@ func testAccResourceWebformConfig_tags(webformName string) string {
 			description = "test description"
 			footer_text = "test footer"
 			footer_link = "https://www.squadcast.com"
-			severity {
-				type = "critical"
-				description = "critical"
+			input_field {
+				label = "severity"
+				options = ["critical"]
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"

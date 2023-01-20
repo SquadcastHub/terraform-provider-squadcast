@@ -37,9 +37,18 @@ resource "squadcast_webform" "example_webform" {
   footer_text        = "footerText"
   footer_link        = "footerLink"
   email_on           = ["acknowledged", "resolved", "triggered"]
-  severity {
-    type        = "severityType"
-    description = "severityDescription"
+  input_field {
+    label = "test_label"
+    options = [
+      "test1",
+      "test2",
+    ]
+  }
+  input_field {
+    label = "test_label2"
+    options = [
+      "test1",
+    ]
   }
   tags = {
     tagKey  = "tagValue"

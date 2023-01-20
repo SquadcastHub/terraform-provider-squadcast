@@ -52,9 +52,18 @@ resource "squadcast_webform" "example_webform" {
   footer_text        = "footerText"
   footer_link        = "footerLink"
   email_on           = ["acknowledged", "resolved", "triggered"]
-  severity {
-    type        = "severityType"
-    description = "severityDescription"
+  input_field {
+    label = "test_label"
+    options = [
+      "test1",
+      "test2",
+    ]
+  }
+  input_field {
+    label = "test_label2"
+    options = [
+      "test1",
+    ]
   }
   tags = {
     tagKey  = "tagValue"
@@ -68,13 +77,10 @@ resource "squadcast_webform" "example_webform" {
 
 ### Required
 
-- `footer_link` (String) Footer link.
-- `footer_text` (String) Footer text.
 - `header` (String) Webform header.
 - `name` (String) Name of the Webform.
 - `owner` (Block List, Min: 1, Max: 1) Form owner. (see [below for nested schema](#nestedblock--owner))
 - `services` (Block List, Min: 1) Services added to Webform. (see [below for nested schema](#nestedblock--services))
-- `severity` (Block List, Min: 1) Severity of the Incident. (see [below for nested schema](#nestedblock--severity))
 - `team_id` (String) Team id.
 - `title` (String) Webform title (public).
 
@@ -83,6 +89,9 @@ resource "squadcast_webform" "example_webform" {
 - `custom_domain_name` (String) Custom domain name (URL).
 - `description` (String) Description of the Webform.
 - `email_on` (List of String) Defines when to send email to the reporter (triggered, acknowledged, resolved).
+- `footer_link` (String) Footer link.
+- `footer_text` (String) Footer text.
+- `input_field` (Block List, Max: 10) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedblock--input_field))
 - `tags` (Map of String) Webform Tags.
 
 ### Read-Only
@@ -119,13 +128,13 @@ Read-Only:
 - `name` (String) Service name.
 
 
-<a id="nestedblock--severity"></a>
-### Nested Schema for `severity`
+<a id="nestedblock--input_field"></a>
+### Nested Schema for `input_field`
 
-Required:
+Optional:
 
-- `description` (String) Severity description.
-- `type` (String) Severity type.
+- `label` (String) Input field Label.
+- `options` (List of String) Input field options.
 
 ## Import
 
