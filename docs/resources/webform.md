@@ -96,14 +96,23 @@ resource "squadcast_webform" "example_webform" {
 - `email_on` (List of String) Defines when to send email to the reporter (triggered, acknowledged, resolved).
 - `footer_link` (String) Footer link.
 - `footer_text` (String) Footer text.
-- `severity` (Block List) Severity of the Incident. (see [below for nested schema](#nestedblock--severity))
 - `input_field` (Block List, Max: 10) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedblock--input_field))
+- `severity` (Block List) Severity of the Incident. (see [below for nested schema](#nestedblock--severity))
 - `tags` (Map of String) Webform Tags.
 
 ### Read-Only
 
 - `id` (String) Webform id.
 - `public_url` (String) Public URL of the Webform.
+
+<a id="nestedblock--input_field"></a>
+
+### Nested Schema for `input_field`
+
+Optional:
+
+- `label` (String) Input field Label.
+- `options` (List of String) Input field options.
 
 <a id="nestedblock--owner"></a>
 
@@ -145,15 +154,6 @@ Required:
 Optional:
 
 - `description` (String) Severity description.
-
-<a id="nestedblock--input_field"></a>
-
-### Nested Schema for `input_field`
-
-Optional:
-
-- `label` (String) Input field Label.
-- `options` (List of String) Input field options.
 
 ## Import
 

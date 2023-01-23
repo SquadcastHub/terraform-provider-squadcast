@@ -37,22 +37,13 @@ data "squadcast_webform" "webform" {
 - `footer_text` (String) Footer text.
 - `header` (String) Webform header.
 - `id` (Number) Webform id.
-- `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `input_field` (List of Object) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedatt--input_field))
 - `owner` (List of Object) Form owner. (see [below for nested schema](#nestedatt--owner))
 - `public_url` (String) Public URL of the Webform.
 - `services` (List of Object) Services added to Webform. (see [below for nested schema](#nestedatt--services))
+- `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `tags` (Map of String) Webform Tags.
 - `title` (String) Webform title (public).
-
-<a id="nestedatt--severity"></a>
-
-### Nested Schema for `severity`
-
-Read-Only:
-
-- `description` (String) Severity description.
-- `type` (String) Severity type.
 
 <a id="nestedatt--input_field"></a>
 
@@ -82,3 +73,12 @@ Read-Only:
 - `alias` (String) Service alias.
 - `name` (String) Service name.
 - `service_id` (String) Service id.
+
+<a id="nestedatt--severity"></a>
+
+### Nested Schema for `severity`
+
+Read-Only:
+
+- `description` (String) Severity description.
+- `type` (String) Severity type.
