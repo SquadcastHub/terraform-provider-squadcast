@@ -19,6 +19,7 @@ type WebformReq struct {
 	FormOwnerType string            `json:"form_owner_type"`
 	FormOwnerID   string            `json:"form_owner_id"`
 	Services      []WFService       `json:"services"`
+	Severity      []WFSeverity      `json:"severity"`
 	InputField    []WFInputField    `json:"input_field"`
 	Header        string            `json:"header"`
 	Title         string            `json:"title"`
@@ -40,6 +41,7 @@ type Webform struct {
 	FormOwnerName string            `json:"form_owner_name"`
 	WebformOwner  *WebformOwner     `tf:"owner"`
 	Services      []WFService       `json:"services" tf:"services"`
+	Severity      []WFSeverity      `json:"severity"`
 	InputField    []WFInputField    `json:"input_field" tf:"input_field"`
 	Header        string            `json:"header" tf:"header"`
 	Title         string            `json:"title" tf:"title"`
@@ -64,6 +66,11 @@ type WFTag struct {
 	Value string `json:"value" tf:"value"`
 }
 
+type WFSeverity struct {
+	Type        string `json:"type" tf:"type"`
+	Description string `json:"description" tf:"description"`
+}
+
 type WFInputField struct {
 	Label   string   `json:"label" tf:"label"`
 	Options []string `json:"options" tf:"options"`
@@ -81,6 +88,10 @@ func (webformTag WFTag) Encode() (tf.M, error) {
 
 func (webformService WFService) Encode() (tf.M, error) {
 	return tf.Encode(webformService)
+}
+
+func (webformSeverity WFSeverity) Encode() (tf.M, error) {
+	return tf.Encode(webformSeverity)
 }
 
 func (webformInputField WFInputField) Encode() (tf.M, error) {
@@ -113,6 +124,9 @@ func (t *Webform) Encode() (tf.M, error) {
 		return nil, err
 	}
 	m["services"] = services
+
+	severityEncoded, err := tf.EncodeSlice(t.Severity)
+	m["severity"] = severityEncoded
 
 	inputFieldEncoded, err := tf.EncodeSlice(t.InputField)
 	if err != nil {

@@ -144,6 +144,25 @@ func resourceWebform() *schema.Resource {
 					},
 				},
 			},
+			"severity": {
+				Description: "Severity of the incident.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Description: "Severity type.",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"description": {
+							Description: "Severity description.",
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+					},
+				},
+			},
 			"input_field": {
 				Description: "Input Fields added to Webforms. Added as tags to incident based on selection.",
 				Type:        schema.TypeList,
@@ -239,6 +258,14 @@ func resourceWebformCreate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 	webformCreateReq.Services = services
+
+	mseverity := d.Get("severity").([]interface{})
+	var severity []api.WFSeverity
+	err = Decode(mseverity, &severity)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	webformCreateReq.Severity = severity
 
 	minputField := d.Get("input_field").([]interface{})
 	var inputField []api.WFInputField
@@ -339,6 +366,14 @@ func resourceWebformUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 	webformUpdateReq.Services = services
+
+	mseverity := d.Get("severity").([]interface{})
+	var severity []api.WFSeverity
+	err = Decode(mseverity, &severity)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	webformUpdateReq.Severity = severity
 
 	minputField := d.Get("input_field").([]interface{})
 	var inputField []api.WFInputField
