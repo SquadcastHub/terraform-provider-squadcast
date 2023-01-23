@@ -41,7 +41,7 @@ type Webform struct {
 	FormOwnerName string            `json:"form_owner_name"`
 	WebformOwner  *WebformOwner     `tf:"owner"`
 	Services      []WFService       `json:"services" tf:"services"`
-	Severity      []WFSeverity      `json:"severity"`
+	Severity      []WFSeverity      `json:"severity" tf:"severity"`
 	InputField    []WFInputField    `json:"input_field" tf:"input_field"`
 	Header        string            `json:"header" tf:"header"`
 	Title         string            `json:"title" tf:"title"`
