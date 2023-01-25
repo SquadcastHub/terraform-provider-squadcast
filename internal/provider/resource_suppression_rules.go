@@ -2,10 +2,12 @@ package provider
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/mitchellh/mapstructure"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
@@ -78,6 +80,18 @@ func resourceSuppressionRules() *schema.Resource {
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"time_zone": {
+										Description: "time zone",
+										Type:        schema.TypeString,
+										Required:    true,
+										ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+											_, err := time.LoadLocation(val.(string))
+											if err != nil {
+												errs = append(errs, err)
+											}
+											return
+										},
+									},
 									"start_time": {
 										Description: "start time",
 										Type:        schema.TypeString,
@@ -94,27 +108,23 @@ func resourceSuppressionRules() *schema.Resource {
 										Required:    true,
 									},
 									"repetition": {
-										Description: "repetition",
-										Type:        schema.TypeString,
-										Required:    true,
-									},
-									"time_zone": {
-										Description: "time zone",
-										Type:        schema.TypeString,
-										Required:    true,
+										Description:  "repetition",
+										Type:         schema.TypeString,
+										Required:     true,
+										ValidateFunc: validation.StringInSlice([]string{"none", "daily", "weekly", "monthly", "custom"}, false),
 									},
 									"is_allday": {
 										Description: "is_allday",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
-									"is_custom": {
-										Description: "is custom",
+									"ends_never": {
+										Description: "ends never",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
-									"ends_never": {
-										Description: "ends never",
+									"is_custom": {
+										Description: "is custom",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
@@ -125,9 +135,10 @@ func resourceSuppressionRules() *schema.Resource {
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"repeats": {
-													Description: "repeats",
-													Type:        schema.TypeString,
-													Optional:    true,
+													Description:  "repeats",
+													Type:         schema.TypeString,
+													Optional:     true,
+													ValidateFunc: validation.StringInSlice([]string{"day", "week", "month"}, false),
 												},
 												"repeats_count": {
 													Description: "repeats count",
@@ -143,8 +154,10 @@ func resourceSuppressionRules() *schema.Resource {
 													Description: "repeats on weekdays",
 													Type:        schema.TypeList,
 													Optional:    true,
+													MaxItems:    7,
 													Elem: &schema.Schema{
-														Type: schema.TypeInt,
+														Type:         schema.TypeInt,
+														ValidateFunc: validation.IntInSlice([]int{0, 1, 2, 3, 4, 5, 6}),
 													},
 												},
 											},
@@ -222,7 +235,7 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 
 	var rules []api.SuppressionRule
 	mrules := d.Get("rules").([]interface{})
-	// convert custom in each rulestime_slots from list to map
+	// convert custom in each rules.time_slots from list to map
 	for i, rule := range mrules {
 		mrule := rule.(map[string]interface{})
 
