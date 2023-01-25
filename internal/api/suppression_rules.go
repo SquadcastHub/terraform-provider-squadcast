@@ -23,6 +23,31 @@ type SuppressionRule struct {
 	Description     string                      `json:"description" tf:"description"`
 	Expression      string                      `json:"expression" tf:"expression"`
 	BasicExpression []*SuppressionRuleCondition `json:"basic_expression" tf:"basic_expressions"`
+	IsTimeBased     bool                        `json:"is_timebased" tf:"is_timebased"`
+	TimeSlots       []*TimeSlot                 `json:"timeslots" tf:"timeslots"`
+}
+
+type TimeSlot struct {
+	TimeZone   string      `json:"time_zone" tf:"time_zone"`
+	StartTime  string      `json:"start_time" tf:"start_time"`
+	EndTime    string      `json:"end_time" tf:"end_time"`
+	IsAllDay   bool        `json:"is_allday" tf:"is_allday"`
+	Repetition string      `json:"repetition" tf:"repetition"`
+	IsCustom   bool        `json:"is_custom" tf:"is_custom"`
+	Custom     *CustomTime `json:"custom" tf:"custom"`
+	EndsNever  bool        `json:"ends_never" tf:"ends_never"`
+	EndsOn     string      `json:"ends_on" tf:"ends_on"`
+}
+
+func (c *TimeSlot) Encode() (tf.M, error) {
+	return tf.Encode(c)
+}
+
+type CustomTime struct {
+	RepeatsCount      int    `json:"repeats_count" tf:"repeats_count"`
+	Repeats           string `json:"repeats" tf:"repeats"`
+	RepeatsOnWeekdays []int  `json:"repeats_on_weekdays" tf:"repeats_on_weekdays"`
+	RepeatsOnMonth    string `json:"repeats_on_month" tf:"repeats_on_month"`
 }
 
 func (r *SuppressionRule) Encode() (tf.M, error) {
@@ -36,6 +61,28 @@ func (r *SuppressionRule) Encode() (tf.M, error) {
 		return nil, err
 	}
 	m["basic_expressions"] = basicExpression
+
+	rtimeSlots := r.TimeSlots
+
+	timeSlots, err := tf.EncodeSlice(r.TimeSlots)
+	if err != nil {
+		return nil, err
+	}
+	m["timeslots"] = timeSlots
+
+	if rtimeSlots == nil {
+		rtimeSlots = []*TimeSlot{}
+	} else {
+		for _, t := range rtimeSlots {
+			mNewCustomField := tf.List(tf.M{
+				"repeats_count":       t.Custom.RepeatsCount,
+				"repeats":             t.Custom.Repeats,
+				"repeats_on_weekdays": t.Custom.RepeatsOnWeekdays,
+				"repeats_on_month":    t.Custom.RepeatsOnMonth,
+			})
+			m["timeslots"].([]interface{})[0].(map[string]interface{})["custom"] = mNewCustomField
+		}
+	}
 
 	return m, nil
 }

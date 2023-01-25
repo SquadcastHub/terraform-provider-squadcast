@@ -57,6 +57,11 @@ func resourceSuppressionRules() *schema.Resource {
 							Type:        schema.TypeBool,
 							Required:    true,
 						},
+						"is_timebased": {
+							Description: "is_basic will be true when users use the drop down selectors which will have lhs, op & rhs value, whereas it will be false when they use the advanced mode and it would have the expression for it's value",
+							Type:        schema.TypeBool,
+							Optional:    true,
+						},
 						"description": {
 							Description: "description.",
 							Type:        schema.TypeString,
@@ -66,6 +71,87 @@ func resourceSuppressionRules() *schema.Resource {
 							Description: "The expression which needs to be evaluated to be true for this rule to apply.",
 							Type:        schema.TypeString,
 							Optional:    true,
+						},
+						"timeslots": {
+							Description: "The timeslots for which this rule should be applied.",
+							Type:        schema.TypeList,
+							Optional:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"start_time": {
+										Description: "start time",
+										Type:        schema.TypeString,
+										Required:    true,
+									},
+									"end_time": {
+										Description: "end time",
+										Type:        schema.TypeString,
+										Required:    true,
+									},
+									"ends_on": {
+										Description: "ends on",
+										Type:        schema.TypeString,
+										Required:    true,
+									},
+									"repetition": {
+										Description: "repetition",
+										Type:        schema.TypeString,
+										Required:    true,
+									},
+									"time_zone": {
+										Description: "time zone",
+										Type:        schema.TypeString,
+										Required:    true,
+									},
+									"is_allday": {
+										Description: "is_allday",
+										Type:        schema.TypeBool,
+										Optional:    true,
+									},
+									"is_custom": {
+										Description: "is custom",
+										Type:        schema.TypeBool,
+										Optional:    true,
+									},
+									"ends_never": {
+										Description: "ends never",
+										Type:        schema.TypeBool,
+										Optional:    true,
+									},
+									"custom": {
+										Description: "custom",
+										Type:        schema.TypeList,
+										Optional:    true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"repeats": {
+													Description: "repeats",
+													Type:        schema.TypeString,
+													Optional:    true,
+												},
+												"repeats_count": {
+													Description: "repeats count",
+													Type:        schema.TypeInt,
+													Optional:    true,
+												},
+												"repeats_on_month": {
+													Description: "repeats on month",
+													Type:        schema.TypeString,
+													Optional:    true,
+												},
+												"repeats_on_weekdays": {
+													Description: "repeats on weekdays",
+													Type:        schema.TypeList,
+													Optional:    true,
+													Elem: &schema.Schema{
+														Type: schema.TypeInt,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 						"basic_expressions": {
 							Description: "The basic expression which needs to be evaluated to be true for this rule to apply.",
@@ -135,11 +221,43 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 	client := meta.(*api.Client)
 
 	var rules []api.SuppressionRule
-	err := Decode(d.Get("rules"), &rules)
+	mrules := d.Get("rules").([]interface{})
+	// convert custom in each rulestime_slots from list to map
+	for i, rule := range mrules {
+		mrule := rule.(map[string]interface{})
+
+		mtimeSlots := mrule["timeslots"].([]interface{})
+		for _, mtimeSlot := range mtimeSlots {
+			mtimeSlot := mtimeSlot.(map[string]interface{})
+			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
+
+			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
+			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
+			for i, v := range mrepeatOnWeekdays {
+				repeatOnWeekdays[i] = v.(int)
+			}
+
+			mtimeSlot["custom"] = api.CustomTime{
+				RepeatsOnMonth:    mcustom["repeats_on_month"].(string),
+				RepeatsOnWeekdays: repeatOnWeekdays,
+				RepeatsCount:      mcustom["repeats_count"].(int),
+				Repeats:           mcustom["repeats"].(string),
+			}
+		}
+		// convert mtimeslots to api.TimeSlot
+		var timeslots []*api.TimeSlot
+		err := Decode(mtimeSlots, &timeslots)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		mrules[i].(map[string]interface{})["timeslots"] = timeslots
+	}
+
+	err := Decode(mrules, &rules)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
 	tflog.Info(ctx, "Creating suppression_rules", tf.M{
 		"team_id":    d.Get("team_id").(string),
 		"service_id": d.Get("service_id").(string),
@@ -189,11 +307,44 @@ func resourceSuppressionRulesUpdate(ctx context.Context, d *schema.ResourceData,
 	client := meta.(*api.Client)
 
 	var rules []api.SuppressionRule
-	err := Decode(d.Get("rules"), &rules)
+	mrules := d.Get("rules").([]interface{})
+
+	// convert custom in time_slots from list to map
+	for i, rule := range mrules {
+		mrule := rule.(map[string]interface{})
+
+		mtimeSlots := mrule["timeslots"].([]interface{})
+		for _, mtimeSlot := range mtimeSlots {
+			mtimeSlot := mtimeSlot.(map[string]interface{})
+			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
+
+			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
+			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
+			for i, v := range mrepeatOnWeekdays {
+				repeatOnWeekdays[i] = v.(int)
+			}
+
+			mtimeSlot["custom"] = api.CustomTime{
+				RepeatsOnMonth:    mcustom["repeats_on_month"].(string),
+				RepeatsOnWeekdays: repeatOnWeekdays,
+				RepeatsCount:      mcustom["repeats_count"].(int),
+				Repeats:           mcustom["repeats"].(string),
+			}
+		}
+		// convert mtimeslots to api.TimeSlot
+		var timeslots []*api.TimeSlot
+		err := Decode(mtimeSlots, &timeslots)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		mrules[i].(map[string]interface{})["timeslots"] = timeslots
+	}
+
+	err := Decode(mrules, &rules)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
 	_, err = client.UpdateSuppressionRules(ctx, d.Get("service_id").(string), d.Get("team_id").(string), &api.UpdateSuppressionRulesReq{Rules: rules})
 	if err != nil {
 		return diag.FromErr(err)
