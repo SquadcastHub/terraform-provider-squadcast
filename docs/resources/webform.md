@@ -52,10 +52,6 @@ resource "squadcast_webform" "example_webform" {
   footer_text        = "footerText"
   footer_link        = "footerLink"
   email_on           = ["acknowledged", "resolved", "triggered"]
-  severity {
-    type        = "severityType"
-    description = "severityDescription"
-  }
   input_field {
     label = "test_label"
     options = [
@@ -68,6 +64,37 @@ resource "squadcast_webform" "example_webform" {
     options = [
       "test1",
     ]
+  }
+  tags = {
+    tagKey  = "tagValue"
+    tagKey2 = "tagValue2"
+  }
+}
+
+resource "squadcast_webform" "example_webform" {
+  name    = "example webform name"
+  team_id = data.squadcast_team.example_team.id
+  owner {
+    type = "user"
+    id   = data.squadcast_user.example_user.id
+  }
+  services {
+    service_id = data.squadcast_service.example_service.id
+    alias      = "example service alias"
+  }
+  services {
+    service_id = data.squadcast_service.example_service_2.id
+  }
+  custom_domain_name = "example.com"
+  header             = "formHeader"
+  description        = "formDescription"
+  title              = "formTitle"
+  footer_text        = "footerText"
+  footer_link        = "footerLink"
+  email_on           = ["acknowledged", "resolved", "triggered"]
+  severity { # deprecated - use input_field instead
+    type = "critical"
+    label = "critical"
   }
   tags = {
     tagKey  = "tagValue"
@@ -97,22 +124,13 @@ resource "squadcast_webform" "example_webform" {
 - `footer_link` (String) Footer link.
 - `footer_text` (String) Footer text.
 - `input_field` (Block List, Max: 10) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedblock--input_field))
-- `severity` (Block List) Severity of the Incident. (see [below for nested schema](#nestedblock--severity))
+- `severity` (Block List, Deprecated) Severity of the incident. (see [below for nested schema](#nestedblock--severity))
 - `tags` (Map of String) Webform Tags.
 
 ### Read-Only
 
 - `id` (String) Webform id.
 - `public_url` (String) Public URL of the Webform.
-
-<a id="nestedblock--input_field"></a>
-
-### Nested Schema for `input_field`
-
-Optional:
-
-- `label` (String) Input field Label.
-- `options` (List of String) Input field options.
 
 <a id="nestedblock--owner"></a>
 
@@ -142,6 +160,15 @@ Optional:
 Read-Only:
 
 - `name` (String) Service name.
+
+<a id="nestedblock--input_field"></a>
+
+### Nested Schema for `input_field`
+
+Optional:
+
+- `label` (String) Input field Label.
+- `options` (List of String) Input field options.
 
 <a id="nestedblock--severity"></a>
 

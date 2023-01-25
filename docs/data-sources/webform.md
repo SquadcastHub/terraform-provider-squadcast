@@ -41,7 +41,7 @@ data "squadcast_webform" "webform" {
 - `owner` (List of Object) Form owner. (see [below for nested schema](#nestedatt--owner))
 - `public_url` (String) Public URL of the Webform.
 - `services` (List of Object) Services added to Webform. (see [below for nested schema](#nestedatt--services))
-- `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
+- `severity` (List of Object, Deprecated) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `tags` (Map of String) Webform Tags.
 - `title` (String) Webform title (public).
 

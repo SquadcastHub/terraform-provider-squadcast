@@ -135,6 +135,7 @@ func dataSourceWebform() *schema.Resource {
 				Description: "Severity of the Incident.",
 				Type:        schema.TypeList,
 				Computed:    true,
+				Deprecated:  "Use `input_field` instead of `severity`.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {

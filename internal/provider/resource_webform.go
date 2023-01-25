@@ -148,6 +148,7 @@ func resourceWebform() *schema.Resource {
 				Description: "Severity of the incident.",
 				Type:        schema.TypeList,
 				Optional:    true,
+				Deprecated:  "Use `input_field` instead of `severity`.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
@@ -164,10 +165,11 @@ func resourceWebform() *schema.Resource {
 				},
 			},
 			"input_field": {
-				Description: "Input Fields added to Webforms. Added as tags to incident based on selection.",
-				Type:        schema.TypeList,
-				Optional:    true,
-				MaxItems:    10,
+				Description:   "Input Fields added to Webforms. Added as tags to incident based on selection.",
+				Type:          schema.TypeList,
+				Optional:      true,
+				MaxItems:      10,
+				ConflictsWith: []string{"severity"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"label": {
