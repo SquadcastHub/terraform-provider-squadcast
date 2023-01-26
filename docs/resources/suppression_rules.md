@@ -59,6 +59,8 @@ Optional:
 - `basic_expressions` (Block List) The basic expression which needs to be evaluated to be true for this rule to apply. (see [below for nested schema](#nestedblock--rules--basic_expressions))
 - `description` (String) description.
 - `expression` (String) The expression which needs to be evaluated to be true for this rule to apply.
+- `is_timebased` (Boolean) is_timebased will be true when users use the time based suppression rule
+- `timeslots` (Block List) The timeslots for which this rule should be applied. (see [below for nested schema](#nestedblock--rules--timeslots))
 
 <a id="nestedblock--rules--basic_expressions"></a>
 ### Nested Schema for `rules.basic_expressions`
@@ -68,6 +70,38 @@ Required:
 - `lhs` (String) left hand side dropdown value
 - `op` (String) operator
 - `rhs` (String) right hand side value
+
+
+<a id="nestedblock--rules--timeslots"></a>
+### Nested Schema for `rules.timeslots`
+
+Required:
+
+- `end_time` (String) Defines the end date of the time slot
+- `ends_on` (String) Defines the end date of the repetition
+- `repetition` (String) Defines the repetition of the time slot
+- `start_time` (String) Defines the start date of the time slot
+- `time_zone` (String) Time zone for the time slot
+
+Optional:
+
+- `custom` (Block List) Use this field to specify the custom time slots for which this rule should be applied. This field is only applicable when the repetition field is set to custom. (see [below for nested schema](#nestedblock--rules--timeslots--custom))
+- `ends_never` (Boolean) Defines whether the time slot ends or not
+- `is_allday` (Boolean) Defines if the time slot is an all day slot
+- `is_custom` (Boolean) Defines whether repetition is custom or not
+
+<a id="nestedblock--rules--timeslots--custom"></a>
+### Nested Schema for `rules.timeslots.custom`
+
+Optional:
+
+- `repeats` (String) Determines how often the rule repeats. Valid values are day, week, month.
+- `repeats_count` (Number) Number of times to repeat.
+- `repeats_on_weekdays` (List of Number) List of weekdays to repeat on.
+
+Read-Only:
+
+- `repeats_on_month` (String) Repeats on month.
 
 ## Import
 

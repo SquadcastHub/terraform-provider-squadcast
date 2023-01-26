@@ -60,7 +60,7 @@ func resourceSuppressionRules() *schema.Resource {
 							Required:    true,
 						},
 						"is_timebased": {
-							Description: "is_basic will be true when users use the drop down selectors which will have lhs, op & rhs value, whereas it will be false when they use the advanced mode and it would have the expression for it's value",
+							Description: "is_timebased will be true when users use the time based suppression rule",
 							Type:        schema.TypeBool,
 							Optional:    true,
 						},
@@ -81,7 +81,7 @@ func resourceSuppressionRules() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"time_zone": {
-										Description: "time zone",
+										Description: "Time zone for the time slot",
 										Type:        schema.TypeString,
 										Required:    true,
 										ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
@@ -93,65 +93,65 @@ func resourceSuppressionRules() *schema.Resource {
 										},
 									},
 									"start_time": {
-										Description: "start time",
+										Description: "Defines the start date of the time slot",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"end_time": {
-										Description: "end time",
+										Description: "Defines the end date of the time slot",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"ends_on": {
-										Description: "ends on",
+										Description: "Defines the end date of the repetition",
 										Type:        schema.TypeString,
 										Required:    true,
 									},
 									"repetition": {
-										Description:  "repetition",
+										Description:  "Defines the repetition of the time slot",
 										Type:         schema.TypeString,
 										Required:     true,
 										ValidateFunc: validation.StringInSlice([]string{"none", "daily", "weekly", "monthly", "custom"}, false),
 									},
 									"is_allday": {
-										Description: "is_allday",
+										Description: "Defines if the time slot is an all day slot",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
 									"ends_never": {
-										Description: "ends never",
+										Description: "Defines whether the time slot ends or not",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
 									"is_custom": {
-										Description: "is custom",
+										Description: "Defines whether repetition is custom or not",
 										Type:        schema.TypeBool,
 										Optional:    true,
 									},
 									"custom": {
-										Description: "custom",
+										Description: "Use this field to specify the custom time slots for which this rule should be applied. This field is only applicable when the repetition field is set to custom.",
 										Type:        schema.TypeList,
 										Optional:    true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"repeats": {
-													Description:  "repeats",
+													Description:  "Determines how often the rule repeats. Valid values are day, week, month.",
 													Type:         schema.TypeString,
 													Optional:     true,
 													ValidateFunc: validation.StringInSlice([]string{"day", "week", "month"}, false),
 												},
 												"repeats_count": {
-													Description: "repeats count",
+													Description: "Number of times to repeat.",
 													Type:        schema.TypeInt,
 													Optional:    true,
 												},
 												"repeats_on_month": {
-													Description: "repeats on month",
+													Description: "Repeats on month.",
 													Type:        schema.TypeString,
-													Optional:    true,
+													Computed:    true,
 												},
 												"repeats_on_weekdays": {
-													Description: "repeats on weekdays",
+													Description: "List of weekdays to repeat on.",
 													Type:        schema.TypeList,
 													Optional:    true,
 													MaxItems:    7,
@@ -243,18 +243,26 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 		for _, mtimeSlot := range mtimeSlots {
 			mtimeSlot := mtimeSlot.(map[string]interface{})
 			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-
+			mrepeats := mcustom["repeats"].(string)
 			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
 			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-			for i, v := range mrepeatOnWeekdays {
-				repeatOnWeekdays[i] = v.(int)
+
+			if mrepeats == "week" {
+				for i, v := range mrepeatOnWeekdays {
+					repeatOnWeekdays[i] = v.(int)
+				}
+			}
+
+			repeatsOnMonth := ""
+			if mrepeats == "month" {
+				repeatsOnMonth = "date-occurrence"
 			}
 
 			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    mcustom["repeats_on_month"].(string),
+				RepeatsOnMonth:    repeatsOnMonth,
 				RepeatsOnWeekdays: repeatOnWeekdays,
 				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mcustom["repeats"].(string),
+				Repeats:           mrepeats,
 			}
 		}
 		// convert mtimeslots to api.TimeSlot
@@ -330,18 +338,26 @@ func resourceSuppressionRulesUpdate(ctx context.Context, d *schema.ResourceData,
 		for _, mtimeSlot := range mtimeSlots {
 			mtimeSlot := mtimeSlot.(map[string]interface{})
 			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-
+			mrepeats := mcustom["repeats"].(string)
 			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
 			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-			for i, v := range mrepeatOnWeekdays {
-				repeatOnWeekdays[i] = v.(int)
+
+			if mrepeats == "week" {
+				for i, v := range mrepeatOnWeekdays {
+					repeatOnWeekdays[i] = v.(int)
+				}
+			}
+
+			repeatsOnMonth := ""
+			if mrepeats == "month" {
+				repeatsOnMonth = "date-occurrence"
 			}
 
 			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    mcustom["repeats_on_month"].(string),
+				RepeatsOnMonth:    repeatsOnMonth,
 				RepeatsOnWeekdays: repeatOnWeekdays,
 				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mcustom["repeats"].(string),
+				Repeats:           mrepeats,
 			}
 		}
 		// convert mtimeslots to api.TimeSlot
