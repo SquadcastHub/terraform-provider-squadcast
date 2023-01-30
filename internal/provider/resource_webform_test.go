@@ -21,7 +21,27 @@ func TestAccResourceWebform(t *testing.T) {
 		CheckDestroy:      testAccCheckWebformDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceWebformConfig(webformName),
+				Config: testAccResourceWebformConfigWithInputFields(webformName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					resource.TestCheckResourceAttr(resourceName, "team_id", "61305a9e127c63c6d2c8f76d"),
+					resource.TestCheckResourceAttr(resourceName, "name", webformName),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "61305a9e127c63c6d2c8f76d"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.name", "Default Team"),
+					resource.TestCheckResourceAttr(resourceName, "header", "test header"),
+					resource.TestCheckResourceAttr(resourceName, "title", "test title"),
+					resource.TestCheckResourceAttr(resourceName, "description", ""),
+					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
+					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
+					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
+				),
+			},
+			{
+				Config: testAccResourceWebformConfigWithSeverity(webformName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "61305a9e127c63c6d2c8f76d"),
@@ -35,7 +55,7 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
 					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 				),
@@ -54,8 +74,8 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 					resource.TestCheckResourceAttr(resourceName, "email_on.0", "triggered"),
@@ -75,8 +95,8 @@ func TestAccResourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "critical"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.label", "severity"),
+					resource.TestCheckResourceAttr(resourceName, "input_field.0.options.0", "critical"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 					resource.TestCheckResourceAttr(resourceName, "email_on.0", "triggered"),
@@ -121,7 +141,34 @@ func testAccCheckWebformDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccResourceWebformConfig(webformName string) string {
+func testAccResourceWebformConfigWithInputFields(webformName string) string {
+	return fmt.Sprintf(`
+		resource "squadcast_webform" "test" {
+			name = "%s"
+			team_id = "61305a9e127c63c6d2c8f76d"
+			owner {
+				id = "61305a9e127c63c6d2c8f76d"
+				type = "team"
+				name = "Default Team"
+			}
+			header = "test header"
+			title = "test title"
+			description = ""
+			footer_text = "test footer"
+			footer_link = "https://www.squadcast.com"
+			input_field {
+				label = "severity"
+				options = ["critical"]
+			}
+			services {
+				service_id = "6389ba2ec31b7df1caecd579"
+				name = "Test"
+			}
+		}
+	`, webformName)
+}
+
+func testAccResourceWebformConfigWithSeverity(webformName string) string {
 	return fmt.Sprintf(`
 		resource "squadcast_webform" "test" {
 			name = "%s"
@@ -138,7 +185,7 @@ func testAccResourceWebformConfig(webformName string) string {
 			footer_link = "https://www.squadcast.com"
 			severity {
 				type = "critical"
-				description = "critical"
+				description = "test description"
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"
@@ -163,9 +210,9 @@ func testAccResourceWebformConfig_update(webformName string) string {
 			description = "test description"
 			footer_text = "test footer"
 			footer_link = "https://www.squadcast.com"
-			severity {
-				type = "critical"
-				description = "critical"
+			input_field {
+				label = "severity"
+				options = ["critical"]
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"
@@ -191,9 +238,9 @@ func testAccResourceWebformConfig_tags(webformName string) string {
 			description = "test description"
 			footer_text = "test footer"
 			footer_link = "https://www.squadcast.com"
-			severity {
-				type = "critical"
-				description = "critical"
+			input_field {
+				label = "severity"
+				options = ["critical"]
 			}
 			services {
 				service_id = "6389ba2ec31b7df1caecd579"

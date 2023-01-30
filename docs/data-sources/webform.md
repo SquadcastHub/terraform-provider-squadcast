@@ -3,7 +3,7 @@
 page_title: "squadcast_webform Data Source - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. Use this data source to get information about a specific webform.
+ Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. Use this data source to get information about a specific webform.
 ---
 
 # squadcast_webform (Data Source)
@@ -37,12 +37,22 @@ data "squadcast_webform" "webform" {
 - `footer_text` (String) Footer text.
 - `header` (String) Webform header.
 - `id` (Number) Webform id.
+- `input_field` (List of Object) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedatt--input_field))
 - `owner` (List of Object) Form owner. (see [below for nested schema](#nestedatt--owner))
 - `public_url` (String) Public URL of the Webform.
 - `services` (List of Object) Services added to Webform. (see [below for nested schema](#nestedatt--services))
-- `severity` (List of Object) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
+- `severity` (List of Object, Deprecated) Severity of the Incident. (see [below for nested schema](#nestedatt--severity))
 - `tags` (Map of String) Webform Tags.
 - `title` (String) Webform title (public).
+
+<a id="nestedatt--input_field"></a>
+
+### Nested Schema for `input_field`
+
+Read-Only:
+
+- `label` (String) Input field Label.
+- `options` (List of String) Input field options.
 
 <a id="nestedatt--owner"></a>
 
