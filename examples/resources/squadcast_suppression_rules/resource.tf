@@ -23,10 +23,31 @@ resource "squadcast_suppression_rules" "example_time_based_suppression_rules" {
   service_id = data.squadcast_service.example_service.id
 
   rules {
-    is_basic     = false
-    description  = "not basic"
-    expression   = "payload[\"event_id\"] == 40"
-    is_timebased = true
+    is_basic    = false
+    description = "not basic"
+    expression  = "payload[\"event_id\"] == 40"
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "none" # none, daily, weekly, monthly, custom
+      is_allday  = false
+      ends_never = true
+    }
+  }
+}
+
+
+resource "squadcast_suppression_rules" "example_time_based_suppression_rules_custom_repetition" {
+  team_id    = data.squadcast_team.example_team.id
+  service_id = data.squadcast_service.example_service.id
+
+  rules {
+    is_basic    = false
+    description = "not basic"
+    expression  = "payload[\"event_id\"] == 40"
+    # custom repetition - daily
     timeslots {
       time_zone  = "Asia/Calcutta"
       start_time = "2022-04-08T06:22:14.975Z"
@@ -35,11 +56,38 @@ resource "squadcast_suppression_rules" "example_time_based_suppression_rules" {
       repetition = "custom"
       is_allday  = false
       ends_never = true
-      is_custom  = true
       custom {
-        repeats             = "day"
-        repeats_count       = 2
-        repeats_on_weekdays = [0, 1] # 0 - Sunday, 1 - Monday ...
+        repeats       = "day"
+        repeats_count = 2
+      }
+    }
+    # custom repetition - weekly
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "custom"
+      is_allday  = false
+      ends_never = true
+      custom {
+        repeats             = "week"
+        repeats_count       = 4
+        repeats_on_weekdays = [0, 1, 2, 3] # 0 - Sunday, 1 - Monday ....
+      }
+    }
+    # custom repetition - monthly
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "custom"
+      is_allday  = false
+      ends_never = true
+      custom {
+        repeats       = "month"
+        repeats_count = 6
       }
     }
   }

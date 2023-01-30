@@ -73,14 +73,17 @@ func (r *SuppressionRule) Encode() (tf.M, error) {
 	if rtimeSlots == nil {
 		rtimeSlots = []*TimeSlot{}
 	} else {
-		for _, t := range rtimeSlots {
-			mNewCustomField := tf.List(tf.M{
-				"repeats_count":       t.Custom.RepeatsCount,
-				"repeats":             t.Custom.Repeats,
-				"repeats_on_weekdays": t.Custom.RepeatsOnWeekdays,
-				"repeats_on_month":    t.Custom.RepeatsOnMonth,
-			})
-			m["timeslots"].([]interface{})[0].(map[string]interface{})["custom"] = mNewCustomField
+		for idx, t := range rtimeSlots {
+			mNewCustomField := tf.List(tf.M{})
+			if t.Repetition == "custom" {
+				mNewCustomField = tf.List(tf.M{
+					"repeats_count":       t.Custom.RepeatsCount,
+					"repeats":             t.Custom.Repeats,
+					"repeats_on_weekdays": t.Custom.RepeatsOnWeekdays,
+					"repeats_on_month":    t.Custom.RepeatsOnMonth,
+				})
+			}
+			m["timeslots"].([]interface{})[idx].(map[string]interface{})["custom"] = mNewCustomField
 		}
 	}
 

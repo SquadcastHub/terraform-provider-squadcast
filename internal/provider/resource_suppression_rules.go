@@ -62,7 +62,7 @@ func resourceSuppressionRules() *schema.Resource {
 						"is_timebased": {
 							Description: "is_timebased will be true when users use the time based suppression rule",
 							Type:        schema.TypeBool,
-							Optional:    true,
+							Computed:    true,
 						},
 						"description": {
 							Description: "description.",
@@ -126,7 +126,7 @@ func resourceSuppressionRules() *schema.Resource {
 									"is_custom": {
 										Description: "Defines whether repetition is custom or not",
 										Type:        schema.TypeBool,
-										Optional:    true,
+										Computed:    true,
 									},
 									"custom": {
 										Description: "Use this field to specify the custom time slots for which this rule should be applied. This field is only applicable when the repetition field is set to custom.",
@@ -137,7 +137,7 @@ func resourceSuppressionRules() *schema.Resource {
 												"repeats": {
 													Description:  "Determines how often the rule repeats. Valid values are day, week, month.",
 													Type:         schema.TypeString,
-													Optional:     true,
+													Required:     true,
 													ValidateFunc: validation.StringInSlice([]string{"day", "week", "month"}, false),
 												},
 												"repeats_count": {
@@ -235,44 +235,74 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 
 	var rules []api.SuppressionRule
 	mrules := d.Get("rules").([]interface{})
-	// convert custom in each rules.time_slots from list to map
+	// if repetition is custom, convert timeslots.custom in each rule from list to map
 	for i, rule := range mrules {
 		mrule := rule.(map[string]interface{})
-
 		mtimeSlots := mrule["timeslots"].([]interface{})
-		for _, mtimeSlot := range mtimeSlots {
-			mtimeSlot := mtimeSlot.(map[string]interface{})
-			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-			mrepeats := mcustom["repeats"].(string)
-			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
-			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-
-			if mrepeats == "week" {
-				for i, v := range mrepeatOnWeekdays {
-					repeatOnWeekdays[i] = v.(int)
+		if len(mtimeSlots) != 0 {
+			for _, mtimeSlot := range mtimeSlots {
+				mtimeSlot := mtimeSlot.(map[string]interface{})
+				if mtimeSlot["repetition"] != "custom" { // if repetition is not custom, skip
+					mtimeSlot["custom"] = nil
+					continue
 				}
-			}
 
-			repeatsOnMonth := ""
-			if mrepeats == "month" {
-				repeatsOnMonth = "date-occurrence"
-			}
+				// else, get custom property and convert it to api.CustomTime
+				/****************************************************
+					tfstate format:
+						"timeslots": [
+							{
+								....,
+								"custom": [
+									{
+										...
+									}
+								]
+							}
+						]
+				****************************************************/
+				if len(mtimeSlot["custom"].([]interface{})) == 0 {
+					return diag.Errorf("timeslot.custom is empty")
+				}
+				mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
+				mrepeats := mcustom["repeats"].(string)
+				mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
+				repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
+				repeatsOnMonth := ""
 
-			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    repeatsOnMonth,
-				RepeatsOnWeekdays: repeatOnWeekdays,
-				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mrepeats,
+				// ? VALIDATION:
+				// if repeats is week, set repeats_on_weekdays to the value from tfstate
+				// if repeats is not week, set repeats_on_weekdays to nil
+				// if repeats is month, set repeats_on_month to date-occurrence
+
+				switch mrepeats {
+				case "week":
+					for i, v := range mrepeatOnWeekdays {
+						repeatOnWeekdays[i] = v.(int)
+					}
+				case "month":
+					repeatsOnMonth = "date-occurrence"
+				default:
+					repeatOnWeekdays = nil
+				}
+				// set custom property to api.CustomTime
+				mtimeSlot["custom"] = api.CustomTime{
+					RepeatsOnMonth:    repeatsOnMonth,
+					RepeatsOnWeekdays: repeatOnWeekdays,
+					RepeatsCount:      mcustom["repeats_count"].(int),
+					Repeats:           mrepeats,
+				}
+				mtimeSlot["is_custom"] = true
 			}
+			// convert mtimeslots to api.TimeSlot
+			var timeslots []*api.TimeSlot
+			err := Decode(mtimeSlots, &timeslots)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			mrules[i].(map[string]interface{})["is_timebased"] = true
+			mrules[i].(map[string]interface{})["timeslots"] = timeslots
 		}
-		// convert mtimeslots to api.TimeSlot
-		var timeslots []*api.TimeSlot
-		err := Decode(mtimeSlots, &timeslots)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		mrules[i].(map[string]interface{})["timeslots"] = timeslots
 	}
 
 	err := Decode(mrules, &rules)
@@ -329,51 +359,66 @@ func resourceSuppressionRulesUpdate(ctx context.Context, d *schema.ResourceData,
 
 	var rules []api.SuppressionRule
 	mrules := d.Get("rules").([]interface{})
-
-	// convert custom in time_slots from list to map
 	for i, rule := range mrules {
 		mrule := rule.(map[string]interface{})
-
 		mtimeSlots := mrule["timeslots"].([]interface{})
-		for _, mtimeSlot := range mtimeSlots {
-			mtimeSlot := mtimeSlot.(map[string]interface{})
-			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-			mrepeats := mcustom["repeats"].(string)
-			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
-			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-
-			if mrepeats == "week" {
-				for i, v := range mrepeatOnWeekdays {
-					repeatOnWeekdays[i] = v.(int)
+		if len(mtimeSlots) != 0 {
+			for _, mtimeSlot := range mtimeSlots {
+				mtimeSlot := mtimeSlot.(map[string]interface{})
+				if mtimeSlot["repetition"] != "custom" {
+					mtimeSlot["custom"] = nil
+					continue
 				}
-			}
+				if len(mtimeSlot["custom"].([]interface{})) == 0 {
+					return diag.Errorf("timeslots.custom cannot be empty when timeslots.repetition is set to 'custom'")
+				}
+				mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
+				mrepeats := mcustom["repeats"].(string)
+				mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
+				repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
+				repeatsOnMonth := ""
 
-			repeatsOnMonth := ""
-			if mrepeats == "month" {
-				repeatsOnMonth = "date-occurrence"
-			}
+				switch mrepeats {
+				case "week":
+					for i, v := range mrepeatOnWeekdays {
+						repeatOnWeekdays[i] = v.(int)
+					}
+				case "month":
+					repeatsOnMonth = "date-occurrence"
+				default:
+					if len(mrepeatOnWeekdays) != 0 {
+						return diag.Errorf("timeslots.custom.repeats_on_weekdays cannot be set when timeslots.custom.repeats is not set to 'week'")
+					}
+					repeatOnWeekdays = nil
+				}
 
-			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    repeatsOnMonth,
-				RepeatsOnWeekdays: repeatOnWeekdays,
-				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mrepeats,
+				mtimeSlot["custom"] = api.CustomTime{
+					RepeatsOnMonth:    repeatsOnMonth,
+					RepeatsOnWeekdays: repeatOnWeekdays,
+					RepeatsCount:      mcustom["repeats_count"].(int),
+					Repeats:           mrepeats,
+				}
+				mtimeSlot["is_custom"] = true
 			}
+			var timeslots []*api.TimeSlot
+			err := Decode(mtimeSlots, &timeslots)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			mrules[i].(map[string]interface{})["is_timebased"] = true
+			mrules[i].(map[string]interface{})["timeslots"] = timeslots
 		}
-		// convert mtimeslots to api.TimeSlot
-		var timeslots []*api.TimeSlot
-		err := Decode(mtimeSlots, &timeslots)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		mrules[i].(map[string]interface{})["timeslots"] = timeslots
 	}
 
 	err := Decode(mrules, &rules)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	tflog.Info(ctx, "Creating suppression_rules", tf.M{
+		"team_id":    d.Get("team_id").(string),
+		"service_id": d.Get("service_id").(string),
+	})
+
 	_, err = client.UpdateSuppressionRules(ctx, d.Get("service_id").(string), d.Get("team_id").(string), &api.UpdateSuppressionRulesReq{Rules: rules})
 	if err != nil {
 		return diag.FromErr(err)
