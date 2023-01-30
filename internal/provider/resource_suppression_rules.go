@@ -262,7 +262,7 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 						]
 				****************************************************/
 				if len(mtimeSlot["custom"].([]interface{})) == 0 {
-					return diag.Errorf("timeslot.custom is empty")
+					return diag.Errorf("timeslots.custom cannot be empty when timeslots.repetition is set to 'custom'")
 				}
 				mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
 				mrepeats := mcustom["repeats"].(string)
@@ -283,6 +283,9 @@ func resourceSuppressionRulesCreate(ctx context.Context, d *schema.ResourceData,
 				case "month":
 					repeatsOnMonth = "date-occurrence"
 				default:
+					if len(mrepeatOnWeekdays) != 0 {
+						return diag.Errorf("timeslots.custom.repeats_on_weekdays cannot be set when timeslots.custom.repeats is not set to 'week'")
+					}
 					repeatOnWeekdays = nil
 				}
 				// set custom property to api.CustomTime
