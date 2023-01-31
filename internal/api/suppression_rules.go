@@ -112,7 +112,7 @@ func (s *SuppressionRules) Encode() (tf.M, error) {
 }
 
 func (client *Client) GetSuppressionRules(ctx context.Context, serviceID, teamID string) (*SuppressionRules, error) {
-	url := fmt.Sprintf("%s/services/%s/suppression-rules", client.BaseURLV3, serviceID)
+	url := fmt.Sprintf("%s/services/%s/suppression-rules?owner_id=%s", client.BaseURLV3, serviceID, teamID)
 
 	return Request[any, SuppressionRules](http.MethodGet, url, client, ctx, nil)
 }

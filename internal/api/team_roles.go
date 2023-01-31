@@ -10,7 +10,7 @@ import (
 )
 
 func (client *Client) ListTeamRoles(ctx context.Context, teamID string) ([]*TeamRole, error) {
-	url := fmt.Sprintf("%s/teams/%s/roles", client.BaseURLV3, teamID)
+	url := fmt.Sprintf("%s/teams/%s/roles?owner_id=%s", client.BaseURLV3, teamID, teamID)
 
 	return RequestSlice[any, TeamRole](http.MethodGet, url, client, ctx, nil)
 }

@@ -66,7 +66,7 @@ func (s *RoutingRules) Encode() (tf.M, error) {
 }
 
 func (client *Client) GetRoutingRules(ctx context.Context, serviceID, teamID string) (*RoutingRules, error) {
-	url := fmt.Sprintf("%s/services/%s/routing-rules", client.BaseURLV3, serviceID)
+	url := fmt.Sprintf("%s/services/%s/routing-rules?owner_id=%s", client.BaseURLV3, serviceID, teamID)
 
 	return Request[any, RoutingRules](http.MethodGet, url, client, ctx, nil)
 }

@@ -65,7 +65,7 @@ func (s *DeduplicationRules) Encode() (tf.M, error) {
 }
 
 func (client *Client) GetDeduplicationRules(ctx context.Context, serviceID, teamID string) (*DeduplicationRules, error) {
-	url := fmt.Sprintf("%s/services/%s/deduplication-rules", client.BaseURLV3, serviceID)
+	url := fmt.Sprintf("%s/services/%s/deduplication-rules?owner_id=%s", client.BaseURLV3, serviceID, teamID)
 
 	return Request[any, DeduplicationRules](http.MethodGet, url, client, ctx, nil)
 }
