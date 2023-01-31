@@ -18,7 +18,7 @@ data "squadcast_team" "example_team" {
 }
 
 data "squadcast_service" "example_service" {
-  name = "example service name"
+  name    = "example service name"
   team_id = data.squadcast_team.example_team.id
 }
 
@@ -30,6 +30,81 @@ resource "squadcast_suppression_rules" "example_suppression_rules" {
     is_basic    = false
     description = "not basic"
     expression  = "payload[\"event_id\"] == 40"
+  }
+}
+
+resource "squadcast_suppression_rules" "example_time_based_suppression_rules" {
+  team_id    = data.squadcast_team.example_team.id
+  service_id = data.squadcast_service.example_service.id
+
+  rules {
+    is_basic    = false
+    description = "not basic"
+    expression  = "payload[\"event_id\"] == 40"
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "none" # none, daily, weekly, monthly, custom
+      is_allday  = false
+      ends_never = true
+    }
+  }
+}
+
+
+resource "squadcast_suppression_rules" "example_time_based_suppression_rules_custom_repetition" {
+  team_id    = data.squadcast_team.example_team.id
+  service_id = data.squadcast_service.example_service.id
+
+  rules {
+    is_basic    = false
+    description = "not basic"
+    expression  = "payload[\"event_id\"] == 40"
+    # custom repetition - daily
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "custom"
+      is_allday  = false
+      ends_never = true
+      custom {
+        repeats       = "day"
+        repeats_count = 2
+      }
+    }
+    # custom repetition - weekly
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "custom"
+      is_allday  = false
+      ends_never = true
+      custom {
+        repeats             = "week"
+        repeats_count       = 4
+        repeats_on_weekdays = [0, 1, 2, 3] # 0 - Sunday, 1 - Monday ....
+      }
+    }
+    # custom repetition - monthly
+    timeslots {
+      time_zone  = "Asia/Calcutta"
+      start_time = "2022-04-08T06:22:14.975Z"
+      end_time   = "2022-04-28T06:22:14.975Z"
+      ends_on    = "2022-04-28T06:22:14.975Z"
+      repetition = "custom"
+      is_allday  = false
+      ends_never = true
+      custom {
+        repeats       = "month"
+        repeats_count = 6
+      }
+    }
   }
 }
 ```
@@ -59,6 +134,11 @@ Optional:
 - `basic_expressions` (Block List) The basic expression which needs to be evaluated to be true for this rule to apply. (see [below for nested schema](#nestedblock--rules--basic_expressions))
 - `description` (String) description.
 - `expression` (String) The expression which needs to be evaluated to be true for this rule to apply.
+- `timeslots` (Block List) The timeslots for which this rule should be applied. (see [below for nested schema](#nestedblock--rules--timeslots))
+
+Read-Only:
+
+- `is_timebased` (Boolean) is_timebased will be true when users use the time based suppression rule
 
 <a id="nestedblock--rules--basic_expressions"></a>
 ### Nested Schema for `rules.basic_expressions`
@@ -68,6 +148,44 @@ Required:
 - `lhs` (String) left hand side dropdown value
 - `op` (String) operator
 - `rhs` (String) right hand side value
+
+
+<a id="nestedblock--rules--timeslots"></a>
+### Nested Schema for `rules.timeslots`
+
+Required:
+
+- `end_time` (String) Defines the end date of the time slot
+- `ends_on` (String) Defines the end date of the repetition
+- `repetition` (String) Defines the repetition of the time slot
+- `start_time` (String) Defines the start date of the time slot
+- `time_zone` (String) Time zone for the time slot
+
+Optional:
+
+- `custom` (Block List) Use this field to specify the custom time slots for which this rule should be applied. This field is only applicable when the repetition field is set to custom. (see [below for nested schema](#nestedblock--rules--timeslots--custom))
+- `ends_never` (Boolean) Defines whether the time slot ends or not
+- `is_allday` (Boolean) Defines if the time slot is an all day slot
+
+Read-Only:
+
+- `is_custom` (Boolean) Defines whether repetition is custom or not
+
+<a id="nestedblock--rules--timeslots--custom"></a>
+### Nested Schema for `rules.timeslots.custom`
+
+Required:
+
+- `repeats` (String) Determines how often the rule repeats. Valid values are day, week, month.
+
+Optional:
+
+- `repeats_count` (Number) Number of times to repeat.
+- `repeats_on_weekdays` (List of Number) List of weekdays to repeat on.
+
+Read-Only:
+
+- `repeats_on_month` (String) Repeats on month.
 
 ## Import
 

@@ -91,7 +91,7 @@ func (s *TaggingRules) Encode() (tf.M, error) {
 }
 
 func (client *Client) GetTaggingRules(ctx context.Context, serviceID, teamID string) (*TaggingRules, error) {
-	url := fmt.Sprintf("%s/services/%s/tagging-rules", client.BaseURLV3, serviceID)
+	url := fmt.Sprintf("%s/services/%s/tagging-rules?owner_id=%s", client.BaseURLV3, serviceID, teamID)
 
 	return Request[any, TaggingRules](http.MethodGet, url, client, ctx, nil)
 }
