@@ -1,0 +1,36 @@
+version: 2.1
+
+tag-filters: &tag-filters
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      only:
+        - master
+
+jobs:
+  code-analysis:
+    docker:
+      - image: sonarqube:8.9.1-community
+    steps:
+      - checkout
+      - run:
+          name: Run Sonar Scanner
+          command: |
+            export SONAR_SCANNER_VERSION=4.7.0.2747
+            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+            apk add --no-cache zip unzip
+            unzip -o sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+            export SONAR_SCANNER_OPTS="-server"
+            eval ./sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/sonar-scanner \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=$SONAR_SERVER
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - code-analysis:
+          context: sonarqube
+          <<: *tag-filters
