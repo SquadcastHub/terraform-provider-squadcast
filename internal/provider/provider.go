@@ -3,13 +3,25 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/hasura/go-graphql-client"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 )
+
+// initGraphQLClient initializes the graphql client.
+func initGraphQLClient(client api.Client) {
+	graphQLURL := fmt.Sprintf("api.%s/v3/graphql", client.Host)
+	bearerToken := fmt.Sprintf("Bearer %s", client.AccessToken)
+	api.GraphQLClient = graphql.NewClient(graphQLURL, nil)
+	api.GraphQLClient = api.GraphQLClient.WithRequestModifier(func(req *http.Request) {
+		req.Header.Set("Authorization", bearerToken)
+	})
+}
 
 func init() {
 	// Set descriptions to support markdown syntax, this will be used in document generation
@@ -146,6 +158,8 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 			})
 		}
 		client.OrganizationID = org.ID
+
+		initGraphQLClient(*client)
 
 		return client, nil
 	}
