@@ -334,20 +334,6 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		maintainer.Type = maintainerMap["type"].(string)
 
 		updateReq.Maintainer = &maintainer
-	} else {
-		// var maintainer api.ServiceMaintainer
-		// maintainer.ID = d.Get("team_id").(string)
-		// maintainer.Type = "team"
-
-		// updateReq.Maintainer = &maintainer
-
-		// if no maintainer is passed, update d to have the team as the maintainer
-		d.Set("maintainer", []any{
-			map[string]interface{}{
-				"id":   d.Get("team_id").(string),
-				"type": "team",
-			},
-		})
 	}
 
 	_, err := client.UpdateService(ctx, d.Id(), &updateReq)
