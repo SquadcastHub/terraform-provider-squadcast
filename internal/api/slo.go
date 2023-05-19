@@ -27,6 +27,8 @@ type Slo struct {
 	SloMonitoringChecks []*SloMonitoringCheck `json:"slo_monitoring_checks" tf:"rules"`
 	SloActions          []*SloAction          `json:"slo_actions" tf:"notify"`
 	OwnerID             string                `json:"owner_id" tf:"team_id"`
+	SloOwnerType        string                `json:"slo_owner_type" tf:"slo_owner_type"`
+	SloOwnerID          string                `json:"slo_owner_id" tf:"slo_owner_id"`
 }
 
 type SloMonitoringCheck struct {

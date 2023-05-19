@@ -83,6 +83,7 @@ type EscalationPolicy struct {
 	Rules              []*EscalationPolicyRule `json:"rules"`
 	Slug               string                  `json:"slug"`
 	Owner              OwnerRef                `json:"owner"`
+	EntityOwner        EntityOwner             `json:"entity_owner" tf:"entity_owner"`
 }
 
 func (ep *EscalationPolicy) Encode() (tf.M, error) {
@@ -105,6 +106,7 @@ func (ep *EscalationPolicy) Encode() (tf.M, error) {
 		return nil, err
 	}
 	m["rules"] = rules
+	m["entity_owner"] = ep.EntityOwner
 
 	return m, nil
 }
@@ -144,6 +146,7 @@ type CreateUpdateEscalationPolicyReq struct {
 	RepeatAfterMinutes int                    `json:"repeat_after"`
 	Rules              []EscalationPolicyRule `json:"rules"`
 	IsUsingNewFields   bool                   `json:"is_using_new_fields"`
+	EntityOwner        EntityOwner            `json:"entity_owner" `
 }
 
 func (client *Client) CreateEscalationPolicy(ctx context.Context, req *CreateUpdateEscalationPolicyReq) (*EscalationPolicy, error) {

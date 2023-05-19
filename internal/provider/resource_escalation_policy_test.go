@@ -27,6 +27,8 @@ func TestAccResourceEscalationPolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "team_id", "613611c1eb22db455cfa789f"),
 					resource.TestCheckResourceAttr(resourceName, "name", escalationPolicyName),
 					resource.TestCheckResourceAttr(resourceName, "description", "It's an amazing policy"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "613611c1eb22db455cfa789f"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "team"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.times", "2"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.delay_minutes", "10"),
@@ -47,6 +49,8 @@ func TestAccResourceEscalationPolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "team_id", "613611c1eb22db455cfa789f"),
 					resource.TestCheckResourceAttr(resourceName, "name", escalationPolicyName),
 					resource.TestCheckResourceAttr(resourceName, "description", "It's an amazing policy"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "613611c1eb22db455cfa789f"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "team"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.times", "2"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.delay_minutes", "10"),
@@ -78,6 +82,8 @@ func TestAccResourceEscalationPolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "team_id", "613611c1eb22db455cfa789f"),
 					resource.TestCheckResourceAttr(resourceName, "name", escalationPolicyName),
 					resource.TestCheckResourceAttr(resourceName, "description", "It's an amazing policy"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "613611c1eb22db455cfa789f"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "team"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.times", "2"),
 					resource.TestCheckResourceAttr(resourceName, "repeat.0.delay_minutes", "10"),
@@ -153,6 +159,11 @@ resource "squadcast_escalation_policy" "test" {
 	description = "It's an amazing policy"
 
 	team_id = "613611c1eb22db455cfa789f"
+
+	entity_owner{
+			id = "613611c1eb22db455cfa789f"
+			type = "team"
+	}
 
 	rules {
 		delay_minutes = 0

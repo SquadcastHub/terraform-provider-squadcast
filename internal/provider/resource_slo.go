@@ -179,6 +179,18 @@ func resourceSlo() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
+			"slo_owner_id": {
+				Description:  "The id of the entity owner.",
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: tf.ValidateObjectID,
+			},
+			"slo_owner_type": {
+				Description:  "The type of the entity owner. (user or squad or team)",
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+			},
 		},
 	}
 }
@@ -249,6 +261,8 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 		SloMonitoringChecks: rules,
 		SloActions:          sloActions,
 		OwnerID:             ownerID,
+		SloOwnerType:        d.Get("slo_owner_type").(string),
+		SloOwnerID:          d.Get("slo_owner_id").(string),
 	})
 	if err != nil {
 		return diag.FromErr(err)
@@ -337,6 +351,8 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 		SloMonitoringChecks: rules,
 		SloActions:          sloActions,
 		OwnerID:             ownerID,
+		SloOwnerType:        d.Get("slo_owner_type").(string),
+		SloOwnerID:          d.Get("slo_owner_id").(string),
 	})
 	if err != nil {
 		return diag.FromErr(err)

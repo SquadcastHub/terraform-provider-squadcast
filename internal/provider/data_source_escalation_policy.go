@@ -41,6 +41,25 @@ func dataSourceEscalationPolicy() *schema.Resource {
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
+			"entity_owner": {
+				Description: "Escalation policy owner",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description: "The id of the entity owner.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"type": {
+							Description: "The type of the entity owner. (user or squad or team)",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"repeat": {
 				Description: "You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once",
 				Type:        schema.TypeList,

@@ -49,6 +49,28 @@ func resourceEscalationPolicy() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
+			"entity_owner": {
+				Description: "Escalation policy owner.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description:  "The id of the entity owner.",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: tf.ValidateObjectID,
+						},
+						"type": {
+							Description:  "The type of the entity owner. (user or squad or team)",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+						},
+					},
+				},
+			},
 			"repeat": {
 				Description: "You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once",
 				Type:        schema.TypeList,
@@ -242,6 +264,18 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		return nil, fmt.Errorf("escalation policy `%s` is invalid: %s", d.Get("name").(string), err.Error())
 	}
 
+	var entityOwner = api.EntityOwner{}
+	entityOwnerField := d.Get("entity_owner").([]interface{})
+	if len(entityOwnerField) > 0 {
+		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("entity_owner is invalid")
+		}
+
+		entityOwner.ID = entityOwnerMap["id"].(string)
+		entityOwner.Type = entityOwnerMap["type"].(string)
+	}
+
 	req := &api.CreateUpdateEscalationPolicyReq{
 		TeamID:             d.Get("team_id").(string),
 		Name:               d.Get("name").(string),
@@ -250,6 +284,7 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		RepeatAfterMinutes: d.Get("repeat.0.delay_minutes").(int),
 		Rules:              rules,
 		IsUsingNewFields:   true,
+		EntityOwner:        entityOwner,
 	}
 
 	return req, nil
