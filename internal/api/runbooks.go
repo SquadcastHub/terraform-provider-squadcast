@@ -21,7 +21,7 @@ type Runbook struct {
 	Name        string         `json:"name" tf:"name"`
 	Steps       []*RunbookStep `json:"steps" tf:"-"`
 	Owner       OwnerRef       `json:"owner" tf:"-"`
-	EntityOwner EntityOwner    `json:"entity_owner" tf:"entity_owner"`
+	EntityOwner EntityOwner    `json:"entity_owner"`
 }
 
 type EntityOwner struct {
@@ -43,7 +43,10 @@ func (r *Runbook) Encode() (tf.M, error) {
 
 	m["team_id"] = r.Owner.ID
 
-	m["entity_owner"] = r.EntityOwner
+	m["entity_owner"] = tf.List(tf.M{
+		"id":   r.EntityOwner.ID,
+		"type": r.EntityOwner.Type,
+	})
 
 	return m, nil
 }

@@ -255,14 +255,13 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 	}
 
 	ownerID := d.Get("team_id").(string)
-
 	sloActions = formatRulesAndNotify(rules, notify, 0)
 
 	tflog.Info(ctx, "Creating Slos", map[string]interface{}{
 		"name": d.Get("name").(string),
 	})
 
-	slo, err := client.CreateSlo(ctx, client.OrganizationID, ownerID, &api.Slo{
+	createSloReq := &api.Slo{
 		Name:                d.Get("name").(string),
 		Description:         d.Get("description").(string),
 		TargetSlo:           d.Get("target_slo").(float64),
@@ -275,16 +274,18 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 		SloMonitoringChecks: rules,
 		SloActions:          sloActions,
 		OwnerID:             ownerID,
-	})
-	if err != nil {
-		return diag.FromErr(err)
 	}
 
 	msloOwner := d.Get("slo_owner").([]interface{})
 	if len(msloOwner) > 0 {
 		sloOwner := msloOwner[0].(map[string]interface{})
-		slo.SloOwnerID = sloOwner["id"].(string)
-		slo.SloOwnerType = sloOwner["type"].(string)
+		createSloReq.SloOwnerID = sloOwner["id"].(string)
+		createSloReq.SloOwnerType = sloOwner["type"].(string)
+	}
+
+	slo, err := client.CreateSlo(ctx, client.OrganizationID, ownerID, createSloReq)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	idStr := strconv.FormatUint(uint64(slo.ID), 10)

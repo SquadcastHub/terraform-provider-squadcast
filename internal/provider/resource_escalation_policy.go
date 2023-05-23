@@ -53,7 +53,7 @@ func resourceEscalationPolicy() *schema.Resource {
 				Description: "Escalation policy owner.",
 				Type:        schema.TypeList,
 				Optional:    true,
-				Computed :   true,
+				Computed:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -274,9 +274,9 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		IsUsingNewFields:   true,
 	}
 
-	entityOwnerField := d.Get("entity_owner").([]interface{})
-	if len(entityOwnerField) > 0 {
-		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
+	mentityOwner := d.Get("entity_owner").([]interface{})
+	if len(mentityOwner) > 0 {
+		entityOwnerMap, ok := mentityOwner[0].(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("entity_owner is invalid")
 		}
@@ -285,7 +285,7 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 			Type: entityOwnerMap["type"].(string),
 		}
 	}
-	
+
 	return req, nil
 }
 

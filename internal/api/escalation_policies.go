@@ -106,7 +106,7 @@ func (ep *EscalationPolicy) Encode() (tf.M, error) {
 		return nil, err
 	}
 	m["rules"] = rules
-	
+
 	m["entity_owner"] = tf.List(tf.M{
 		"id":   ep.EntityOwner.ID,
 		"type": ep.EntityOwner.Type,
