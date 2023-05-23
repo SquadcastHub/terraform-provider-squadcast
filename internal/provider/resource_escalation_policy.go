@@ -280,7 +280,7 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		if !ok {
 			return nil, fmt.Errorf("entity_owner is invalid")
 		}
-		req.EntityOwner = api.EntityOwner{
+		req.EntityOwner = &api.EntityOwner{
 			ID:   entityOwnerMap["id"].(string),
 			Type: entityOwnerMap["type"].(string),
 		}

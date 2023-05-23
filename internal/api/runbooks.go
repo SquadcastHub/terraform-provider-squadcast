@@ -21,7 +21,7 @@ type Runbook struct {
 	Name        string         `json:"name" tf:"name"`
 	Steps       []*RunbookStep `json:"steps" tf:"-"`
 	Owner       OwnerRef       `json:"owner" tf:"-"`
-	EntityOwner EntityOwner    `json:"entity_owner"`
+	EntityOwner *EntityOwner   `json:"entity_owner" tf:"entity_owner"`
 }
 
 type EntityOwner struct {
@@ -43,10 +43,12 @@ func (r *Runbook) Encode() (tf.M, error) {
 
 	m["team_id"] = r.Owner.ID
 
-	m["entity_owner"] = tf.List(tf.M{
-		"id":   r.EntityOwner.ID,
-		"type": r.EntityOwner.Type,
-	})
+	if r.EntityOwner != nil {
+		m["entity_owner"] = tf.List(tf.M{
+			"id":   r.EntityOwner.ID,
+			"type": r.EntityOwner.Type,
+		})
+	}
 
 	return m, nil
 }
@@ -82,7 +84,7 @@ type CreateUpdateRunbookReq struct {
 	Name        string         `json:"name"`
 	TeamID      string         `json:"owner_id"`
 	Steps       []*RunbookStep `json:"steps"`
-	EntityOwner EntityOwner    `json:"entity_owner"`
+	EntityOwner *EntityOwner   `json:"entity_owner"`
 }
 
 func (client *Client) CreateRunbook(ctx context.Context, req *CreateUpdateRunbookReq) (*Runbook, error) {

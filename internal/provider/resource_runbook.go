@@ -115,9 +115,9 @@ func resourceRunbookCreate(ctx context.Context, d *schema.ResourceData, meta any
 		"name": d.Get("name").(string),
 	})
 	createRunbookReq := &api.CreateUpdateRunbookReq{
-		Name:        d.Get("name").(string),
-		TeamID:      d.Get("team_id").(string),
-		Steps:       steps,
+		Name:   d.Get("name").(string),
+		TeamID: d.Get("team_id").(string),
+		Steps:  steps,
 	}
 
 	mentityOwner := d.Get("entity_owner").([]interface{})
@@ -126,7 +126,7 @@ func resourceRunbookCreate(ctx context.Context, d *schema.ResourceData, meta any
 		if !ok {
 			return diag.Errorf("entity_owner is invalid")
 		}
-		createRunbookReq.EntityOwner = api.EntityOwner{
+		createRunbookReq.EntityOwner = &api.EntityOwner{
 			ID:   entityOwnerMap["id"].(string),
 			Type: entityOwnerMap["type"].(string),
 		}
@@ -196,7 +196,7 @@ func resourceRunbookUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	_, err = client.UpdateRunbook(ctx, d.Id(), &api.CreateUpdateRunbookReq{
 		Name:        d.Get("name").(string),
 		TeamID:      d.Get("team_id").(string),
-		EntityOwner: entityOwner,
+		EntityOwner: &entityOwner,
 		Steps:       steps,
 	})
 	if err != nil {
