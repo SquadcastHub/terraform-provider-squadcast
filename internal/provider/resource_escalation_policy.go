@@ -53,6 +53,7 @@ func resourceEscalationPolicy() *schema.Resource {
 				Description: "Escalation policy owner.",
 				Type:        schema.TypeList,
 				Optional:    true,
+				Computed :   true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -263,19 +264,6 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 	if err != nil {
 		return nil, fmt.Errorf("escalation policy `%s` is invalid: %s", d.Get("name").(string), err.Error())
 	}
-
-	var entityOwner = api.EntityOwner{}
-	entityOwnerField := d.Get("entity_owner").([]interface{})
-	if len(entityOwnerField) > 0 {
-		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("entity_owner is invalid")
-		}
-
-		entityOwner.ID = entityOwnerMap["id"].(string)
-		entityOwner.Type = entityOwnerMap["type"].(string)
-	}
-
 	req := &api.CreateUpdateEscalationPolicyReq{
 		TeamID:             d.Get("team_id").(string),
 		Name:               d.Get("name").(string),
@@ -284,9 +272,20 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		RepeatAfterMinutes: d.Get("repeat.0.delay_minutes").(int),
 		Rules:              rules,
 		IsUsingNewFields:   true,
-		EntityOwner:        entityOwner,
 	}
 
+	entityOwnerField := d.Get("entity_owner").([]interface{})
+	if len(entityOwnerField) > 0 {
+		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("entity_owner is invalid")
+		}
+		req.EntityOwner = api.EntityOwner{
+			ID:   entityOwnerMap["id"].(string),
+			Type: entityOwnerMap["type"].(string),
+		}
+	}
+	
 	return req, nil
 }
 
