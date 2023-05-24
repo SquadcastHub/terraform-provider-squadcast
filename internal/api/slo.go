@@ -27,9 +27,9 @@ type Slo struct {
 	SloMonitoringChecks []*SloMonitoringCheck `json:"slo_monitoring_checks" tf:"rules"`
 	SloActions          []*SloAction          `json:"slo_actions" tf:"notify"`
 	OwnerID             string                `json:"owner_id" tf:"team_id"`
-	SLOOwner            *SLOOwner             `tf:"slo_owner"`
-	SloOwnerType        string                `json:"slo_owner_type"`
-	SloOwnerID          string                `json:"slo_owner_id"`
+	SLOOwner            *SLOOwner             `tf:"entity_owner"`
+	SloOwnerType        string                `json:"entity_owner_type"`
+	SloOwnerID          string                `json:"entity_owner_id"`
 }
 
 type SLOOwner struct {
@@ -110,7 +110,7 @@ func (r *Slo) Encode() (map[string]interface{}, error) {
 	}
 	m["notify"] = notifyObj
 
-	m["slo_owner"] = tf.List(tf.M{
+	m["entity_owner"] = tf.List(tf.M{
 		"id":   r.SloOwnerID,
 		"type": r.SloOwnerType,
 	})

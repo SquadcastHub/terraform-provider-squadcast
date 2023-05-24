@@ -179,7 +179,7 @@ func resourceSlo() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
-			"slo_owner": {
+			"entity_owner": {
 				Description: "SLO owner.",
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -276,7 +276,7 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 		OwnerID:             ownerID,
 	}
 
-	msloOwner := d.Get("slo_owner").([]interface{})
+	msloOwner := d.Get("entity_owner").([]interface{})
 	if len(msloOwner) > 0 {
 		sloOwner := msloOwner[0].(map[string]interface{})
 		createSloReq.SloOwnerID = sloOwner["id"].(string)
@@ -358,7 +358,7 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 		"name": d.Get("name").(string),
 	})
 
-	sloOwner := d.Get("slo_owner").([]interface{})[0].(map[string]interface{})
+	sloOwner := d.Get("entity_owner").([]interface{})[0].(map[string]interface{})
 
 	_, err = client.UpdateSlo(ctx, client.OrganizationID, ownerID, id, &api.Slo{
 		Name:                d.Get("name").(string),
