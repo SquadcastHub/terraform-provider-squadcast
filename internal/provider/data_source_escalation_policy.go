@@ -48,12 +48,12 @@ func dataSourceEscalationPolicy() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
-							Description: "The id of the entity owner.",
+							Description: "Escalation policy owner id.",
 							Type:        schema.TypeString,
 							Computed:    true,
 						},
 						"type": {
-							Description: "The type of the entity owner. (user or squad or team)",
+							Description: "Escalation policy owner type. (user or squad or team)",
 							Type:        schema.TypeString,
 							Computed:    true,
 						},

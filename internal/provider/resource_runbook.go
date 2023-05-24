@@ -51,13 +51,13 @@ func resourceRunbook() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
-							Description:  "The id of the entity owner.",
+							Description:  "Runbook owner id.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "The type of the entity owner. (user or squad or team)",
+							Description:  "Runbook owner type. (user or squad or team)",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
