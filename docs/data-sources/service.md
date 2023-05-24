@@ -49,7 +49,7 @@ data "squadcast_service" "test" {
 Read-Only:
 
 - `id` (String) The id of the maintainer.
-- `type` (String) The type of the maintainer. (user or squad)
+- `type` (String) The type of the maintainer. (user, team or squad)
 
 <a id="nestedatt--tags"></a>
 

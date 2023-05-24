@@ -28,8 +28,8 @@ type Slo struct {
 	SloActions          []*SloAction          `json:"slo_actions" tf:"notify"`
 	OwnerID             string                `json:"owner_id" tf:"team_id"`
 	SLOOwner            *SLOOwner             `tf:"entity_owner"`
-	SloOwnerType        string                `json:"entity_owner_type"`
-	SloOwnerID          string                `json:"entity_owner_id"`
+	SloOwnerType        string                `json:"slo_owner_type"`
+	SloOwnerID          string                `json:"slo_owner_id"`
 }
 
 type SLOOwner struct {
