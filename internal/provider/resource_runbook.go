@@ -181,7 +181,12 @@ func resourceRunbookUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 
-	var entityOwner = api.EntityOwner{}
+	updateRunbookReq := &api.CreateUpdateRunbookReq{
+		Name:        d.Get("name").(string),
+		TeamID:      d.Get("team_id").(string),
+		Steps:       steps,
+	}
+
 	entityOwnerField := d.Get("entity_owner").([]interface{})
 	if len(entityOwnerField) > 0 {
 		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
@@ -189,16 +194,13 @@ func resourceRunbookUpdate(ctx context.Context, d *schema.ResourceData, meta any
 			return diag.Errorf("entity_owner is invalid")
 		}
 
-		entityOwner.ID = entityOwnerMap["id"].(string)
-		entityOwner.Type = entityOwnerMap["type"].(string)
+		updateRunbookReq.EntityOwner = &api.EntityOwner{
+			ID:   entityOwnerMap["id"].(string),
+			Type: entityOwnerMap["type"].(string),
+		}
 	}
 
-	_, err = client.UpdateRunbook(ctx, d.Id(), &api.CreateUpdateRunbookReq{
-		Name:        d.Get("name").(string),
-		TeamID:      d.Get("team_id").(string),
-		EntityOwner: &entityOwner,
-		Steps:       steps,
-	})
+	_, err = client.UpdateRunbook(ctx, d.Id(), updateRunbookReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}

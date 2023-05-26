@@ -84,4 +84,9 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
     times         = 2
     delay_minutes = 10
   }
+
+  entity_owner {
+    id  = data.squadcast_user.example_user.id
+    type = "user"
+  }
 }
