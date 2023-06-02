@@ -42,6 +42,29 @@ func resourceRunbook() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
+			"entity_owner": {
+				Description: "Runbooks owner.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description:  "Runbook owner id.",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: tf.ValidateObjectID,
+						},
+						"type": {
+							Description:  "Runbook owner type. (user or squad or team)",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+						},
+					},
+				},
+			},
 			"steps": {
 				Description: "Step by Step instructions, you can add as many steps as you want, supports markdown formatting.",
 				Type:        schema.TypeList,
@@ -91,11 +114,25 @@ func resourceRunbookCreate(ctx context.Context, d *schema.ResourceData, meta any
 	tflog.Info(ctx, "Creating runbook", tf.M{
 		"name": d.Get("name").(string),
 	})
-	runbook, err := client.CreateRunbook(ctx, &api.CreateUpdateRunbookReq{
+	createRunbookReq := &api.CreateUpdateRunbookReq{
 		Name:   d.Get("name").(string),
 		TeamID: d.Get("team_id").(string),
 		Steps:  steps,
-	})
+	}
+
+	mentityOwner := d.Get("entity_owner").([]interface{})
+	if len(mentityOwner) > 0 {
+		entityOwnerMap, ok := mentityOwner[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("entity_owner is invalid")
+		}
+		createRunbookReq.EntityOwner = &api.EntityOwner{
+			ID:   entityOwnerMap["id"].(string),
+			Type: entityOwnerMap["type"].(string),
+		}
+	}
+
+	runbook, err := client.CreateRunbook(ctx, createRunbookReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -144,11 +181,26 @@ func resourceRunbookUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		return diag.FromErr(err)
 	}
 
-	_, err = client.UpdateRunbook(ctx, d.Id(), &api.CreateUpdateRunbookReq{
-		Name:   d.Get("name").(string),
-		TeamID: d.Get("team_id").(string),
-		Steps:  steps,
-	})
+	updateRunbookReq := &api.CreateUpdateRunbookReq{
+		Name:        d.Get("name").(string),
+		TeamID:      d.Get("team_id").(string),
+		Steps:       steps,
+	}
+
+	entityOwnerField := d.Get("entity_owner").([]interface{})
+	if len(entityOwnerField) > 0 {
+		entityOwnerMap, ok := entityOwnerField[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("entity_owner is invalid")
+		}
+
+		updateRunbookReq.EntityOwner = &api.EntityOwner{
+			ID:   entityOwnerMap["id"].(string),
+			Type: entityOwnerMap["type"].(string),
+		}
+	}
+
+	_, err = client.UpdateRunbook(ctx, d.Id(), updateRunbookReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}

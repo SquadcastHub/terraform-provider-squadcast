@@ -93,10 +93,10 @@ func resourceService() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "The type of the maintainer. (user or squad)",
+							Description:  "The type of the maintainer. (user, team or squad)",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
 						},
 					},
 				},
