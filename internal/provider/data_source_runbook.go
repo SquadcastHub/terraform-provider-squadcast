@@ -35,6 +35,25 @@ func dataSourceRunbook() *schema.Resource {
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
+			"entity_owner": {
+				Description: "Runbooks owner",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description: "Runbook owner id.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"type": {
+							Description: "Runbook owner type. (user or squad or team)",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 			"steps": {
 				Description: "Step by Step instructions, you can add as many steps as you want, supports markdown formatting.",
 				Type:        schema.TypeList,

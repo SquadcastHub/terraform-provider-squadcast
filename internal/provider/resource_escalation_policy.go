@@ -49,6 +49,29 @@ func resourceEscalationPolicy() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
+			"entity_owner": {
+				Description: "Escalation policy owner.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Description:  "Escalation policy owner id.",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: tf.ValidateObjectID,
+						},
+						"type": {
+							Description:  "Escalation policy owner type. (user or squad or team)",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+						},
+					},
+				},
+			},
 			"repeat": {
 				Description: "You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once",
 				Type:        schema.TypeList,
@@ -241,7 +264,6 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 	if err != nil {
 		return nil, fmt.Errorf("escalation policy `%s` is invalid: %s", d.Get("name").(string), err.Error())
 	}
-
 	req := &api.CreateUpdateEscalationPolicyReq{
 		TeamID:             d.Get("team_id").(string),
 		Name:               d.Get("name").(string),
@@ -250,6 +272,18 @@ func decodeEscalationPolicy(d *schema.ResourceData) (*api.CreateUpdateEscalation
 		RepeatAfterMinutes: d.Get("repeat.0.delay_minutes").(int),
 		Rules:              rules,
 		IsUsingNewFields:   true,
+	}
+
+	mentityOwner := d.Get("entity_owner").([]interface{})
+	if len(mentityOwner) > 0 {
+		entityOwnerMap, ok := mentityOwner[0].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("entity_owner is invalid")
+		}
+		req.EntityOwner = &api.EntityOwner{
+			ID:   entityOwnerMap["id"].(string),
+			Type: entityOwnerMap["type"].(string),
+		}
 	}
 
 	return req, nil

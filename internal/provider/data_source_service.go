@@ -80,7 +80,7 @@ func dataSourceService() *schema.Resource {
 							Computed:    true,
 						},
 						"type": {
-							Description: "The type of the maintainer. (user or squad)",
+							Description: "The type of the maintainer. (user, team or squad)",
 							Type:        schema.TypeString,
 							Computed:    true,
 						},

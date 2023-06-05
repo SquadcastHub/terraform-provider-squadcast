@@ -99,6 +99,11 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
     times         = 2
     delay_minutes = 10
   }
+
+  entity_owner {
+    id  = data.squadcast_user.example_user.id
+    type = "user"
+  }
 }
 ```
 
@@ -115,6 +120,7 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
 ### Optional
 
 - `description` (String) Detailed description about the Escalation Policy.
+- `entity_owner` (Block List, Max: 1) Escalation policy owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `repeat` (Block List, Max: 1) You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once (see [below for nested schema](#nestedblock--repeat))
 
 ### Read-Only
@@ -178,6 +184,15 @@ Optional:
 - `delay_minutes` (Number) repeat after minutes
 - `enabled` (Boolean) enable rotation within
 
+<a id="nestedblock--entity_owner"></a>
+
+### Nested Schema for `entity_owner`
+
+Required:
+
+- `id` (String) The id of the entity owner.
+- `type` (String) The type of the entity owner. (user or squad or team)
+
 <a id="nestedblock--repeat"></a>
 
 ### Nested Schema for `repeat`
@@ -193,6 +208,6 @@ Import is supported using the following syntax:
 
 ```shell
 # teamID:escalationPolicyID
-# Use 'Get All Teams' API to get the id of the team
+# Use 'Get All Teams' and 'Get All Escalation Policies' APIs to get the id of the team and escalation policy name respectively
 terraform import squadcast_escalation_policy.test "62d2fe23a57381088224d726:Example Escalation Policy"
 ```

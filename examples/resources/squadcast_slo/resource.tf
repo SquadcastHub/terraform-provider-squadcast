@@ -13,6 +13,7 @@ data "squadcast_service" "example_service" {
 
 resource "squadcast_slo" "example_slo" {
   name               = "checkout-flow"
+  team_id            = data.squadcast_team.example_team.id
   description        = "Slo for checkout flow"
   target_slo         = 99.99
   service_ids        = [data.squadcast_service.example_service.id]
@@ -38,5 +39,8 @@ resource "squadcast_slo" "example_slo" {
     user_ids = [data.squadcast_user.example_user.id]
   }
 
-  team_id = data.squadcast_team.example_team.id
+  entity_owner {
+    id  = data.squadcast_user.example_user.id
+    type = "user"
+  }
 }

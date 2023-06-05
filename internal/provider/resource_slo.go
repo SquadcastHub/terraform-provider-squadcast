@@ -179,6 +179,29 @@ func resourceSlo() *schema.Resource {
 				ValidateFunc: tf.ValidateObjectID,
 				ForceNew:     true,
 			},
+			"entity_owner": {
+				Description: "SLO owner.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Description:  "SLO owner type (user, team, squad).",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+						},
+						"id": {
+							Description:  "SLO owner id.",
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: tf.ValidateObjectID,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -205,7 +228,10 @@ func resourceSloImport(ctx context.Context, d *schema.ResourceData, meta any) ([
 	if err != nil {
 		return nil, err
 	}
-
+	slo.SLOOwner = &api.SLOOwner{
+		Type: slo.SloOwnerType,
+		ID:   slo.SloOwnerID,
+	}
 	idStr := strconv.FormatUint(uint64(slo.ID), 10)
 	d.SetId(idStr)
 
@@ -229,14 +255,13 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 	}
 
 	ownerID := d.Get("team_id").(string)
-
 	sloActions = formatRulesAndNotify(rules, notify, 0)
 
 	tflog.Info(ctx, "Creating Slos", map[string]interface{}{
 		"name": d.Get("name").(string),
 	})
 
-	slo, err := client.CreateSlo(ctx, client.OrganizationID, ownerID, &api.Slo{
+	createSloReq := &api.Slo{
 		Name:                d.Get("name").(string),
 		Description:         d.Get("description").(string),
 		TargetSlo:           d.Get("target_slo").(float64),
@@ -249,7 +274,16 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 		SloMonitoringChecks: rules,
 		SloActions:          sloActions,
 		OwnerID:             ownerID,
-	})
+	}
+
+	msloOwner := d.Get("entity_owner").([]interface{})
+	if len(msloOwner) > 0 {
+		sloOwner := msloOwner[0].(map[string]interface{})
+		createSloReq.SloOwnerID = sloOwner["id"].(string)
+		createSloReq.SloOwnerType = sloOwner["type"].(string)
+	}
+
+	slo, err := client.CreateSlo(ctx, client.OrganizationID, ownerID, createSloReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -324,6 +358,8 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 		"name": d.Get("name").(string),
 	})
 
+	sloOwner := d.Get("entity_owner").([]interface{})[0].(map[string]interface{})
+
 	_, err = client.UpdateSlo(ctx, client.OrganizationID, ownerID, id, &api.Slo{
 		Name:                d.Get("name").(string),
 		Description:         d.Get("description").(string),
@@ -337,6 +373,8 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 		SloMonitoringChecks: rules,
 		SloActions:          sloActions,
 		OwnerID:             ownerID,
+		SloOwnerType:        sloOwner["type"].(string),
+		SloOwnerID:          sloOwner["id"].(string),
 	})
 	if err != nil {
 		return diag.FromErr(err)
