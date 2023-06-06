@@ -49,6 +49,10 @@ type ScheduleMutateStruct struct {
 	NewSchedule `graphql:"createSchedule(input: $input)"`
 }
 
+type ScheduleMutateDeleteStruct struct {
+	Schedule NewSchedule `graphql:"deleteSchedule(ID: $ID)"`
+}
+
 func (s *Schedule) Encode() (tf.M, error) {
 	m, err := tf.Encode(s)
 	if err != nil {
@@ -124,6 +128,21 @@ func (client *Client) DeleteSchedule(ctx context.Context, id string) (*any, erro
 }
 
 // ScheduleV2 APIs
+func (client *Client) DeleteScheduleV2ByID(ctx context.Context, ID string) (*ScheduleMutateDeleteStruct, error) {
+	var m ScheduleMutateDeleteStruct
+
+	id, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		diag.Errorf("unable to convert schedule ID to string")
+	}
+
+	variables := map[string]interface{}{
+		"ID": id,
+	}
+
+	return GraphQLRequest[ScheduleMutateDeleteStruct]("mutate", client, ctx, &m, variables)
+}
+
 func (client *Client) GetScheduleV2ById(ctx context.Context, ID string) (*ScheduleQueryStruct, error) {
 	var m ScheduleQueryStruct
 

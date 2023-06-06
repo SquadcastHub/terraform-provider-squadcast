@@ -18,7 +18,7 @@ func resourceScheduleV2() *schema.Resource {
 		ReadContext:   resourceScheduleV2Read,
 		CreateContext: resourceScheduleV2Create,
 		UpdateContext: resourceScheduleV2Create,
-		DeleteContext: resourceScheduleV2Create,
+		DeleteContext: resourceScheduleV2Delete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -154,4 +154,23 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 	d.SetId(strconv.Itoa(schedule.NewSchedule.ID))
 
 	return resourceScheduleV2Read(ctx, d, meta)
+}
+
+func resourceScheduleV2Delete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	_, err := client.DeleteScheduleV2ByID(ctx, d.Id())
+	if err != nil {
+		tflog.Info(ctx, "No err while deleting schedule")
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			tflog.Info(ctx, "No resource found while deleting schedule")
+			return nil
+		}
+		tflog.Info(ctx, "random err found while deleting schedule")
+		return diag.FromErr(err)
+	}
+
+	tflog.Info(ctx, "No err while deleting schedule")
+	return nil
 }
