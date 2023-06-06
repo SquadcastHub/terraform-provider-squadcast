@@ -15,10 +15,9 @@ import (
 
 // initGraphQLClient initializes the graphql client.
 func initGraphQLClient(client api.Client) {
-	graphQLURL := fmt.Sprintf("api.%s/v3/graphql", client.Host)
+	graphQLURL := fmt.Sprintf("https://api.%s/v3/graphql", client.Host)
 	bearerToken := fmt.Sprintf("Bearer %s", client.AccessToken)
-	api.GraphQLClient = graphql.NewClient(graphQLURL, nil)
-	api.GraphQLClient = api.GraphQLClient.WithRequestModifier(func(req *http.Request) {
+	api.GraphQLClient = graphql.NewClient(graphQLURL, nil).WithRequestModifier(func(req *http.Request) {
 		req.Header.Set("Authorization", bearerToken)
 	})
 }
@@ -60,6 +59,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_routing_rules":       resourceRoutingRules(),
 				"squadcast_runbook":             resourceRunbook(),
 				"squadcast_schedule":            resourceSchedule(),
+				"squadcast_schedule_v2":         resourceScheduleV2(),
 				"squadcast_service_maintenance": resourceServiceMaintenance(),
 				"squadcast_service":             resourceService(),
 				"squadcast_squad":               resourceSquad(),

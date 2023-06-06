@@ -8,6 +8,7 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
+// legacy schedule
 type Schedule struct {
 	ID          string   `json:"id" tf:"id"`
 	Name        string   `json:"name" tf:"name"`
@@ -17,7 +18,43 @@ type Schedule struct {
 	Owner       OwnerRef `json:"owner" tf:"-"`
 }
 
+type ScheduleV2 struct {
+	ID          string   `graphql:"ID" json:"id" tf:"id"`
+	Name        string   `graphql:"name" json:"name" tf:"name"`
+	Description string   `graphql:"description" json:"description" tf:"description"`
+	TimeZone    string   `graphql:"timeZone" json:"timezone" tf:"timezone"`
+	TeamID      string   `graphql:"teamID" json:"teamID" tf:"team_id"`
+	Tags        Tags     `graphql:"tags" json:"tags"`
+	Owner       OwnerRef `graphql:"owner" json:"owner" tf:"-"`
+}
+
+type Tags struct {
+	ID   string `graphql:"ID" json:"id" tf:"id"`
+	Type string `graphql:"type" json:"type" tf:"type"`
+}
+
+// GraphQL query structs
+type ScheduleQueryStruct struct {
+	ScheduleV2 `graphql:"schedule(ID: $ID)"`
+}
+
+type ScheduleMutateStruct struct {
+	ScheduleV2 `graphql:"createSchedule(input: $input)"`
+}
+
 func (s *Schedule) Encode() (tf.M, error) {
+	m, err := tf.Encode(s)
+	if err != nil {
+		return nil, err
+	}
+
+	m["team_id"] = s.Owner.ID
+
+	return m, nil
+}
+
+// todo: encode tags
+func (s *ScheduleV2) Encode() (tf.M, error) {
 	m, err := tf.Encode(s)
 	if err != nil {
 		return nil, err
@@ -77,4 +114,25 @@ func (client *Client) UpdateSchedule(ctx context.Context, id string, req *Create
 func (client *Client) DeleteSchedule(ctx context.Context, id string) (*any, error) {
 	url := fmt.Sprintf("%s/schedules/%s", client.BaseURLV3, id)
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
+}
+
+// ScheduleV2 APIs
+func (client *Client) GetScheduleV2ById(ctx context.Context, id string) (*ScheduleQueryStruct, error) {
+	var m ScheduleQueryStruct
+
+	variables := map[string]interface{}{
+		"ID": id,
+	}
+
+	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
+}
+
+func (client *Client) CreateScheduleV2(ctx context.Context, payload *ScheduleV2) (*ScheduleMutateStruct, error) {
+	var m ScheduleMutateStruct
+
+	variables := map[string]interface{}{
+		"input": payload,
+	}
+
+	return GraphQLRequest[ScheduleMutateStruct]("mutate", client, ctx, &m, variables)
 }
