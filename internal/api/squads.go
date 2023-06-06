@@ -10,8 +10,8 @@ import (
 )
 
 type OwnerRef struct {
-	ID   string `graphql:"ID" json:"id" tf:"id"`
-	Type string `graphql:"type" json:"type" tf:"type"`
+	ID   string `json:"id" tf:"id"`
+	Type string `json:"type" tf:"type"`
 }
 
 type Squad struct {

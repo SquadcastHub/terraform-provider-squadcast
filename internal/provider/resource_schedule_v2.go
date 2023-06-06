@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -127,7 +128,7 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		"name": d.Get("name").(string),
 	})
 
-	createScheduleReq := &api.NewSchedule{
+	createScheduleReq := api.NewSchedule{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		TimeZone:    d.Get("timezone").(string),
@@ -139,8 +140,10 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		if !ok {
 			return diag.Errorf("entity_owner is invalid")
 		}
-		createScheduleReq.Owner.Type = entityOwnerMap["type"].(string)
-		createScheduleReq.Owner.ID = entityOwnerMap["id"].(string)
+		createScheduleReq.Owner = &api.Owner{
+			Type: entityOwnerMap["type"].(string),
+			ID:   entityOwnerMap["id"].(string),
+		}
 	}
 
 	schedule, err := client.CreateScheduleV2(ctx, createScheduleReq)
@@ -148,7 +151,7 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.FromErr(err)
 	}
 
-	d.SetId(schedule.ID)
+	d.SetId(strconv.Itoa(schedule.NewSchedule.ID))
 
 	return resourceScheduleV2Read(ctx, d, meta)
 }

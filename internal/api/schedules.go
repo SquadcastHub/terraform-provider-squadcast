@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
@@ -19,13 +21,18 @@ type Schedule struct {
 }
 
 type NewSchedule struct {
-	ID          string `graphql:"ID" json:"id,omitempty" tf:"id"`
+	ID          int    `graphql:"ID" json:"id,omitempty" tf:"id"`
 	Name        string `graphql:"name" json:"name" tf:"name"`
 	Description string `graphql:"description" json:"description" tf:"description"`
-	TimeZone    string `graphql:"timeZone" json:"timezone" tf:"timezone"`
+	TimeZone    string `graphql:"timeZone" json:"timeZone" tf:"timezone"`
 	TeamID      string `graphql:"teamID" json:"teamID" tf:"team_id"`
 	// Tags        Tags     `graphql:"tags" json:"tags"`
-	Owner OwnerRef `graphql:"owner" json:"owner" tf:"-"`
+	Owner *Owner `graphql:"owner" json:"owner" tf:"-"`
+}
+
+type Owner struct {
+	ID   string `graphql:"ID" json:"ID" tf:"id"`
+	Type string `graphql:"type" json:"type" tf:"type"`
 }
 
 type Tags struct {
@@ -117,8 +124,13 @@ func (client *Client) DeleteSchedule(ctx context.Context, id string) (*any, erro
 }
 
 // ScheduleV2 APIs
-func (client *Client) GetScheduleV2ById(ctx context.Context, id string) (*ScheduleQueryStruct, error) {
+func (client *Client) GetScheduleV2ById(ctx context.Context, ID string) (*ScheduleQueryStruct, error) {
 	var m ScheduleQueryStruct
+
+	id, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		diag.Errorf("unable to convert schedule ID to string")
+	}
 
 	variables := map[string]interface{}{
 		"ID": id,
@@ -127,7 +139,7 @@ func (client *Client) GetScheduleV2ById(ctx context.Context, id string) (*Schedu
 	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
 }
 
-func (client *Client) CreateScheduleV2(ctx context.Context, payload *NewSchedule) (*ScheduleMutateStruct, error) {
+func (client *Client) CreateScheduleV2(ctx context.Context, payload NewSchedule) (*ScheduleMutateStruct, error) {
 	var m ScheduleMutateStruct
 
 	variables := map[string]interface{}{
