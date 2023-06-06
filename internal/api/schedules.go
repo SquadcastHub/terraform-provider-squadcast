@@ -18,14 +18,14 @@ type Schedule struct {
 	Owner       OwnerRef `json:"owner" tf:"-"`
 }
 
-type ScheduleV2 struct {
-	ID          string   `graphql:"ID" json:"id" tf:"id"`
-	Name        string   `graphql:"name" json:"name" tf:"name"`
-	Description string   `graphql:"description" json:"description" tf:"description"`
-	TimeZone    string   `graphql:"timeZone" json:"timezone" tf:"timezone"`
-	TeamID      string   `graphql:"teamID" json:"teamID" tf:"team_id"`
-	Tags        Tags     `graphql:"tags" json:"tags"`
-	Owner       OwnerRef `graphql:"owner" json:"owner" tf:"-"`
+type NewSchedule struct {
+	ID          string `graphql:"ID" json:"id,omitempty" tf:"id"`
+	Name        string `graphql:"name" json:"name" tf:"name"`
+	Description string `graphql:"description" json:"description" tf:"description"`
+	TimeZone    string `graphql:"timeZone" json:"timezone" tf:"timezone"`
+	TeamID      string `graphql:"teamID" json:"teamID" tf:"team_id"`
+	// Tags        Tags     `graphql:"tags" json:"tags"`
+	Owner OwnerRef `graphql:"owner" json:"owner" tf:"-"`
 }
 
 type Tags struct {
@@ -35,11 +35,11 @@ type Tags struct {
 
 // GraphQL query structs
 type ScheduleQueryStruct struct {
-	ScheduleV2 `graphql:"schedule(ID: $ID)"`
+	NewSchedule `graphql:"schedule(ID: $ID)"`
 }
 
 type ScheduleMutateStruct struct {
-	ScheduleV2 `graphql:"createSchedule(input: $input)"`
+	NewSchedule `graphql:"createSchedule(input: $input)"`
 }
 
 func (s *Schedule) Encode() (tf.M, error) {
@@ -54,7 +54,7 @@ func (s *Schedule) Encode() (tf.M, error) {
 }
 
 // todo: encode tags
-func (s *ScheduleV2) Encode() (tf.M, error) {
+func (s *NewSchedule) Encode() (tf.M, error) {
 	m, err := tf.Encode(s)
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (client *Client) GetScheduleV2ById(ctx context.Context, id string) (*Schedu
 	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
 }
 
-func (client *Client) CreateScheduleV2(ctx context.Context, payload *ScheduleV2) (*ScheduleMutateStruct, error) {
+func (client *Client) CreateScheduleV2(ctx context.Context, payload *NewSchedule) (*ScheduleMutateStruct, error) {
 	var m ScheduleMutateStruct
 
 	variables := map[string]interface{}{

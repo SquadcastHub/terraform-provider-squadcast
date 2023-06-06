@@ -127,7 +127,7 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		"name": d.Get("name").(string),
 	})
 
-	createScheduleReq := &api.ScheduleV2{
+	createScheduleReq := &api.NewSchedule{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		TimeZone:    d.Get("timezone").(string),
