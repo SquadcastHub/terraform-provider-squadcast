@@ -21,13 +21,14 @@ type Schedule struct {
 }
 
 type NewSchedule struct {
-	ID          int    `graphql:"ID" json:"id,omitempty" tf:"id"`
-	Name        string `graphql:"name" json:"name" tf:"name"`
-	Description string `graphql:"description" json:"description" tf:"description"`
-	TimeZone    string `graphql:"timeZone" json:"timeZone" tf:"timezone"`
-	TeamID      string `graphql:"teamID" json:"teamID" tf:"team_id"`
-	// Tags        Tags     `graphql:"tags" json:"tags"`
-	Owner *Owner `graphql:"owner" json:"owner" tf:"-"`
+	ID          int         `graphql:"ID" json:"id,omitempty" tf:"id"`
+	Name        string      `graphql:"name" json:"name" tf:"name"`
+	Description string      `graphql:"description" json:"description" tf:"description"`
+	TimeZone    string      `graphql:"timeZone" json:"timeZone" tf:"timezone"`
+	TeamID      string      `graphql:"teamID" json:"teamID" tf:"team_id"`
+	Tags        []*Tag      `graphql:"tags" json:"tags" tf:"tags"`
+	Owner       *Owner      `graphql:"owner" json:"owner" tf:"-"`
+	// Rotations   []*Rotation `graphql:"rotations" json:"rotations" tf:"rotations"`
 }
 
 type Owner struct {
@@ -35,9 +36,51 @@ type Owner struct {
 	Type string `graphql:"type" json:"type" tf:"type"`
 }
 
-type Tags struct {
-	ID   string `graphql:"ID" json:"id" tf:"id"`
+type Tag struct {
+	Key   string `graphql:"key" json:"key" tf:"key"`
+	Value string `graphql:"value" json:"value" tf:"value"`
+	Color string `graphql:"color" json:"color" tf:"color"`
+}
+
+type Rotation struct {
+	ID                          int                 `graphql:"ID" json:"id" tf:"id"`
+	Name                        string              `graphql:"name" json:"name" tf:"name"`
+	Color                       string              `graphql:"color" json:"color" tf:"color"`
+	ParticipantGroups           []*ParticipantGroup `graphql:"participantGroups" json:"participantGroups" tf:"participant_groups"`
+	StartDate                   string              `graphql:"startDate" json:"startDate" tf:"start_date"`
+	Period                      string              `graphql:"period" json:"period" tf:"period"`
+	ShiftTimeSlots              []*Timeslot         `graphql:"shiftTimeSlots" json:"shiftTimeSlots" tf:"shift_timeslots"`
+	CustomPeriodFrequency       int                 `graphql:"customPeriodFrequency" json:"customPeriodFrequency" tf:"custom_period_frequency"`
+	CustomPeriodUnit            string              `graphql:"customPeriodUnit" json:"customPeriodUnit" tf:"custom_period_unit"`
+	ShiftTimeSlot               TimeSlot            `graphql:"shiftTimeSlot" json:"shiftTimeSlot" tf:"shift_timeslot"`
+	CustomPeriod                `graphql:"customPeriod" json:"customPeriod" tf:"custom_period"`
+	ChangeParticipantsFrequency int    `graphql:"changeParticipantsFrequency" json:"changeParticipantsFrequency" tf:"change_participants_frequency"`
+	ChangeParticipantsUnit      string `graphql:"changeParticipantsUnit" json:"changeParticipantsUnit" tf:"change_participants_unit"`
+	EndDate                     string `graphql:"endDate" json:"endDate" tf:"end_date"`
+	EndsAfterIterations         int    `graphql:"endsAfterIterations" json:"endsAfterIterations" tf:"ends_after_iterations"`
+}
+
+type ParticipantGroup struct {
+	Participants []*Participant `graphql:"participants" json:"participants" tf:"participants"`
+	Everyone     bool           `graphql:"everyone" json:"everyone" tf:"everyone"`
+}
+
+type Participant struct {
+	ID   int    `graphql:"ID" json:"id" tf:"id"`
 	Type string `graphql:"type" json:"type" tf:"type"`
+}
+
+type Timeslot struct {
+	StartHour   int `graphql:"startHour" json:"startHour" tf:"start_hour"`
+	StartMinute int `graphql:"startMinute" json:"startMinute" tf:"start_minute"`
+	Duration    int `graphql:"duration" json:"duration" tf:"duration"`
+	DayOfWeek   int `graphql:"dayOfWeek" json:"dayOfWeek" tf:"day_of_week"`
+}
+
+type CustomPeriod struct {
+	PeriodFrequency int         `graphql:"periodFrequency" json:"periodFrequency" tf:"period_frequency"`
+	PeriodUnit      string      `graphql:"periodUnit" json:"periodUnit" tf:"period_unit"`
+	Timeslots       []*Timeslot `graphql:"timeSlots" json:"timeSlots" tf:"timeslots"`
 }
 
 // GraphQL query structs
@@ -65,6 +108,10 @@ func (s *Schedule) Encode() (tf.M, error) {
 }
 
 // todo: encode tags
+func (tag Tag) Encode() (tf.M, error) {
+	return tf.Encode(tag)
+}
+
 func (s *NewSchedule) Encode() (tf.M, error) {
 	m, err := tf.Encode(s)
 	if err != nil {
@@ -72,6 +119,12 @@ func (s *NewSchedule) Encode() (tf.M, error) {
 	}
 
 	m["team_id"] = s.Owner.ID
+
+	tagsEncoded, terr := tf.EncodeSlice(s.Tags)
+	if terr != nil {
+		return nil, terr
+	}
+	m["tags"] = tagsEncoded
 
 	return m, nil
 }

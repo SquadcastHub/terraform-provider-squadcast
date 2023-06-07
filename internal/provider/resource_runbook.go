@@ -182,9 +182,9 @@ func resourceRunbookUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 
 	updateRunbookReq := &api.CreateUpdateRunbookReq{
-		Name:        d.Get("name").(string),
-		TeamID:      d.Get("team_id").(string),
-		Steps:       steps,
+		Name:   d.Get("name").(string),
+		TeamID: d.Get("team_id").(string),
+		Steps:  steps,
 	}
 
 	entityOwnerField := d.Get("entity_owner").([]interface{})

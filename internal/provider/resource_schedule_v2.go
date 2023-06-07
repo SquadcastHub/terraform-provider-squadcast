@@ -19,12 +19,22 @@ func resourceScheduleV2() *schema.Resource {
 		CreateContext: resourceScheduleV2Create,
 		UpdateContext: resourceScheduleV2Create,
 		DeleteContext: resourceScheduleV2Delete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceScheduleV2Import,
+		},
 
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "Schedule id.",
 				Type:        schema.TypeString,
 				Computed:    true,
+			},
+			"team_id": {
+				Description:  "Team id.",
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: tf.ValidateObjectID,
+				ForceNew:     true,
 			},
 			"name": {
 				Description:  "Name of the schedule.",
@@ -65,35 +75,45 @@ func resourceScheduleV2() *schema.Resource {
 					},
 				},
 			},
-			"team_id": {
-				Description:  "Team id.",
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: tf.ValidateObjectID,
-				ForceNew:     true,
+			"tags": {
+				Description: "Schedule tags.",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Description: "Schedule tag key.",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"value": {
+							Description: "Schedule tag value.",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"color": {
+							Description: "Schedule tag color.",
+							Type:        schema.TypeString,
+							Optional:    true,
+						},
+					},
+				},
 			},
 		},
 	}
 }
 
-// func resourceScheduleV2Import(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
-// 	client := meta.(*api.Client)
+func resourceScheduleV2Import(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	client := meta.(*api.Client)
 
-// 	teamID, name, err := parse2PartImportID(d.Id())
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	schedule, err := client.GetScheduleV2ById(ctx, d.Id())
+	if err != nil {
+		return nil, err
+	}
+	d.SetId(strconv.Itoa(schedule.NewSchedule.ID))
 
-// 	schedule, err := client.GetScheduleById(ctx, teamID, name)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	d.Set("team_id", teamID)
-// 	d.SetId(schedule.ID)
-
-// 	return []*schema.ResourceData{d}, nil
-// }
+	return []*schema.ResourceData{d}, nil
+}
 
 func resourceScheduleV2Read(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 
@@ -134,6 +154,18 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		TimeZone:    d.Get("timezone").(string),
 		TeamID:      d.Get("team_id").(string),
 	}
+
+	tags := d.Get("tags").([]interface{})
+
+	if len(tags) > 0 {
+		var tagsList []*api.Tag
+		err := Decode(tags, &tagsList)
+		if err != nil {
+			return diag.Errorf("tags is invalid")
+		}
+		createScheduleReq.Tags = tagsList
+	}
+
 	entityOwner := d.Get("entity_owner").([]interface{})
 	if len(entityOwner) > 0 {
 		entityOwnerMap, ok := entityOwner[0].(map[string]interface{})
@@ -145,6 +177,10 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 			ID:   entityOwnerMap["id"].(string),
 		}
 	}
+
+	tflog.Debug(ctx, "Create schedule request", tf.M{
+		"request": createScheduleReq,
+	})
 
 	schedule, err := client.CreateScheduleV2(ctx, createScheduleReq)
 	if err != nil {
