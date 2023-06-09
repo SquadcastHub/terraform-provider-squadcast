@@ -116,11 +116,6 @@ func resourceScheduleV2() *schema.Resource {
 							Required:     true,
 							ValidateFunc: validation.StringLenBetween(1, 1000),
 						},
-						"color": {
-							Description: "Schedule rotation name.",
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
 						"participant_groups": {
 							Description: "Schedule rotation participant groups.",
 							Type:        schema.TypeList,
@@ -147,11 +142,6 @@ func resourceScheduleV2() *schema.Resource {
 											},
 										},
 									},
-									"everyone": {
-										Description: "Schedule rotation participant groups.",
-										Type:        schema.TypeBool,
-										Optional:    true,
-									},
 								},
 							},
 						},
@@ -170,22 +160,26 @@ func resourceScheduleV2() *schema.Resource {
 							Description: "Schedule rotation shift timeslots.",
 							Type:        schema.TypeList,
 							Required:    true,
+							MinItems:    1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"start_hour": {
-										Description: "Schedule rotation shift timeslots start hour.",
-										Type:        schema.TypeInt,
-										Required:    true,
+										Description:  "Schedule rotation shift timeslots start hour.",
+										Type:         schema.TypeInt,
+										Required:     true,
+										ValidateFunc: validation.IntBetween(0, 23),
 									},
 									"start_minute": {
-										Description: "Schedule rotation shift timeslots start minute.",
-										Type:        schema.TypeInt,
-										Required:    true,
+										Description:  "Schedule rotation shift timeslots start minute.",
+										Type:         schema.TypeInt,
+										Required:     true,
+										ValidateFunc: validation.IntBetween(0, 59),
 									},
 									"duration": {
-										Description: "Schedule rotation shift timeslots duration.",
-										Type:        schema.TypeInt,
-										Required:    true,
+										Description:  "Schedule rotation shift timeslots duration in minutes.",
+										Type:         schema.TypeInt,
+										Required:     true,
+										ValidateFunc: validation.IntBetween(0, 1441),
 									},
 									"day_of_week": {
 										Description:  "Schedule rotation shift timeslots day of week.",
@@ -205,87 +199,6 @@ func resourceScheduleV2() *schema.Resource {
 							Description: "Schedule rotation custom period unit.",
 							Type:        schema.TypeString,
 							Optional:    true,
-						},
-						"shift_timeslot": {
-							Description: "Schedule rotation shift timeslot.",
-							Type:        schema.TypeList,
-							Optional:    true,
-							MaxItems:    1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Description: "Schedule rotation shift timeslots start hour.",
-										Type:        schema.TypeInt,
-										Required:    true,
-									},
-									"start_minute": {
-										Description: "Schedule rotation shift timeslots start minute.",
-										Type:        schema.TypeInt,
-										Required:    true,
-									},
-									"duration": {
-										Description: "Schedule rotation shift timeslots duration.",
-										Type:        schema.TypeInt,
-										Required:    true,
-									},
-									"day_of_week": {
-										Description:  "Schedule rotation shift timeslots day of week.",
-										Type:         schema.TypeString,
-										Optional:     true,
-										ValidateFunc: validation.StringInSlice([]string{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}, false),
-									},
-								},
-							},
-						},
-						"custom_period": {
-							Description: "Schedule rotation custom period.",
-							Type:        schema.TypeList,
-							Optional:    true,
-							MaxItems:    1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"period_frequency": {
-										Description: "Schedule rotation custom period frequency.",
-										Type:        schema.TypeInt,
-										Required:    true,
-									},
-									"period_unit": {
-										Description: "Schedule rotation custom period unit.",
-										Type:        schema.TypeString,
-										Required:    true,
-									},
-									"timeslots": {
-										Description: "Schedule rotation shift timeslots.",
-										Type:        schema.TypeList,
-										Required:    true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"start_hour": {
-													Description: "Schedule rotation shift timeslots start hour.",
-													Type:        schema.TypeInt,
-													Required:    true,
-												},
-												"start_minute": {
-													Description: "Schedule rotation shift timeslots start minute.",
-													Type:        schema.TypeInt,
-													Required:    true,
-												},
-												"duration": {
-													Description: "Schedule rotation shift timeslots duration.",
-													Type:        schema.TypeInt,
-													Required:    true,
-												},
-												"day_of_week": {
-													Description:  "Schedule rotation shift timeslots day of week.",
-													Type:         schema.TypeString,
-													Optional:     true,
-													ValidateFunc: validation.StringInSlice([]string{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}, false),
-												},
-											},
-										},
-									},
-								},
-							},
 						},
 						"change_participants_frequency": {
 							Description: "Schedule rotation change participants frequency.",
@@ -327,7 +240,6 @@ func resourceScheduleV2Import(ctx context.Context, d *schema.ResourceData, meta 
 }
 
 func resourceScheduleV2Read(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
-
 	client := meta.(*api.Client)
 
 	id := d.Id()
@@ -385,68 +297,44 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 			if !ok {
 				return diag.Errorf("rotation is invalid")
 			}
-			tflog.Debug(ctx, "Create schedule rotation", tf.M{
-				"rotationMap": rotationMap,
-			})	
 			r := &api.Rotation{
-				Name:        rotationMap["name"].(string),
-				Color: 	 rotationMap["color"].(string),
-				Period: 	rotationMap["period"].(string),
+				Name:                        rotationMap["name"].(string),
+				Period:                      rotationMap["period"].(string),
 				ChangeParticipantsFrequency: rotationMap["change_participants_frequency"].(int),
-				ChangeParticipantsUnit: rotationMap["change_participants_unit"].(string),
-				StartDate:    rotationMap["start_date"].(string),
-				EndDate:      rotationMap["end_date"].(string),
-				EndsAfterIterations: rotationMap["ends_after_iterations"].(int),
+				ChangeParticipantsUnit:      rotationMap["change_participants_unit"].(string),
+				StartDate:                   rotationMap["start_date"].(string),
+				EndDate:                     rotationMap["end_date"].(string),
+				EndsAfterIterations:         rotationMap["ends_after_iterations"].(int),
 			}
 			// convert participants to []api.Participant
 			participants := rotationMap["participant_groups"].([]interface{})
 			if len(participants) > 0 {
-				// each participant group has two fields: participants and everyone
 				var participantGroupsList []api.ParticipantGroup
 				for _, participant := range participants {
 					participantMap, ok := participant.(map[string]interface{})
 					if !ok {
-						return diag.Errorf("participant is invalid")
+						return diag.Errorf("participant_groups is invalid")
 					}
 					var participantGroup api.ParticipantGroup
-					// if everyone, ok := participantMap["everyone"].(bool); ok && everyone {
-					// 	participantGroup.Everyone = everyone
-					// } else {
-						var participantsList []api.Participant
-						participants := participantMap["participants"].([]interface{})
-						tflog.Debug(ctx, "Create schedule rotation participant groups", tf.M{
-							"participants": participants,
-						})
-						err := Decode(participants, &participantsList)
-						if err != nil {
-							return diag.Errorf(err.Error())
-						}
-						participantGroup.Everyone = participantMap["everyone"].(bool)
-						participantGroup.Participants = participantsList
-					// }
+					var participantsList []api.Participant
+					participants := participantMap["participants"].([]interface{})
+
+					err := Decode(participants, &participantsList)
+					if err != nil {
+						return diag.Errorf(err.Error())
+					}
+					participantGroup.Participants = participantsList
 					participantGroupsList = append(participantGroupsList, participantGroup)
 				}
-				tflog.Debug(ctx, "Create schedule rotation participant groups", tf.M{
-					"participantGroupsList": participantGroupsList,
-				})
 				r.ParticipantGroups = participantGroupsList
 			}
-			// convert shift_timeslot to api.Timeslot
-			shiftTimeSlot := rotationMap["shift_timeslot"].([]interface{})
-			if len(shiftTimeSlot) > 0 {
-				var shiftTimeSlotMap = shiftTimeSlot[0].(map[string]interface{})
-				r.ShiftTimeSlot = &api.Timeslot{
-					StartHour:   shiftTimeSlotMap["start_hour"].(int),
-					StartMinute: shiftTimeSlotMap["start_minute"].(int),
-					Duration:    shiftTimeSlotMap["duration"].(int),
-					DayOfWeek:   shiftTimeSlotMap["day_of_week"].(string),
-				}
-			} else {
-				r.ShiftTimeSlot = nil
-			}
+
 			// convert shift_timeslots to []api.Timeslot
 			shiftTimeSlots := rotationMap["shift_timeslots"].([]interface{})
 			if len(shiftTimeSlots) > 0 {
+				if r.Period != "custom" && len(shiftTimeSlots) > 1 {
+					return diag.Errorf("shift_timeslots can only have one timeslot when period is not custom")
+				}
 				var shiftTimeSlotsList []api.Timeslot
 				err := Decode(shiftTimeSlots, &shiftTimeSlotsList)
 				if err != nil {
@@ -454,31 +342,22 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 				}
 				r.ShiftTimeSlots = shiftTimeSlotsList
 			}
-			// convert custom_period to api.CustomPeriod
-			customPeriod := rotationMap["custom_period"].([]interface{})
-			if len(customPeriod) > 0 {
-				var customPeriodMap = customPeriod[0].(map[string]interface{})
-				customPeriodTimeSlots := customPeriodMap["timeslots"].([]interface{})
-				var customPeriodTimeSlotsList []api.Timeslot
-				err := Decode(customPeriodTimeSlots, &customPeriodTimeSlotsList)
-				if err != nil {
-					return diag.Errorf("custom_period is invalid")
+
+			if r.Period == "custom" {
+				if val, ok := rotationMap["custom_period_frequency"].(int); ok {
+					r.CustomPeriodFrequency = val
+				} else {
+					return diag.Errorf("custom_period_frequency must be set when period is custom")
 				}
-				r.CustomPeriod = &api.CustomPeriod{
-					PeriodFrequency: customPeriodMap["period_frequency"].(int),
-					PeriodUnit: customPeriodMap["period_unit"].(string),
-					Timeslots: customPeriodTimeSlotsList,
+				if val, ok := rotationMap["custom_period_unit"].(string); ok {
+					r.CustomPeriodUnit = val
+				} else {
+					return diag.Errorf("custom_period_unit must be set when period is custom")
 				}
-				r.CustomPeriodFrequency = customPeriodMap["period_frequency"].(int)
-				r.CustomPeriodUnit = customPeriodMap["period_unit"].(string)
-			} else {
-				r.CustomPeriod = nil
 			}
+
 			rotationsList = append(rotationsList, r)
 		}
-		tflog.Debug(ctx, "Create schedule rotation", tf.M{
-			"rotation": rotationsList,
-		})
 		createScheduleReq.Rotations = rotationsList
 	}
 
@@ -494,10 +373,6 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 
-	tflog.Debug(ctx, "Create schedule request", tf.M{
-		"request": createScheduleReq,
-	})
-
 	schedule, err := client.CreateScheduleV2(ctx, createScheduleReq)
 	if err != nil {
 		return diag.FromErr(err)
@@ -507,8 +382,6 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 
 	return resourceScheduleV2Read(ctx, d, meta)
 }
-
-
 
 func resourceScheduleV2Delete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)

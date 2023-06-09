@@ -43,44 +43,34 @@ type Tag struct {
 }
 
 type Rotation struct {
-	ID                          int                 `graphql:"ID" json:"id,omitempty" tf:"id"`
-	Name                        string              `graphql:"name" json:"name" tf:"name"`
-	Color                       string              `graphql:"color" json:"color,omitempty" tf:"color"`
+	ID                          int                `graphql:"ID" json:"id,omitempty" tf:"id"`
+	Name                        string             `graphql:"name" json:"name" tf:"name"`
 	ParticipantGroups           []ParticipantGroup `graphql:"participantGroups" json:"participantGroups,omitempty" tf:"participant_groups"`
-	StartDate                   string              `graphql:"startDate" json:"startDate" tf:"start_date"`
-	Period                      string              `graphql:"period" json:"period" tf:"period"`
+	StartDate                   string             `graphql:"startDate" json:"startDate" tf:"start_date"`
+	Period                      string             `graphql:"period" json:"period" tf:"period"`
 	ShiftTimeSlots              []Timeslot         `graphql:"shiftTimeSlots" json:"shiftTimeSlots" tf:"shift_timeslots"`
-	ShiftTimeSlot               *Timeslot            `graphql:"shiftTimeSlot" json:"shiftTimeSlot,omitempty" tf:"shift_timeslot"`
-	CustomPeriodFrequency       int                 `graphql:"customPeriodFrequency" json:"customPeriodFrequency,omitempty" tf:"custom_period_frequency"`
-	CustomPeriodUnit            string              `graphql:"customPeriodUnit" json:"customPeriodUnit,omitempty" tf:"custom_period_unit"`
-	CustomPeriod                *CustomPeriod `graphql:"customPeriod" json:"customPeriod,omitempty" tf:"custom_period"`
-	ChangeParticipantsFrequency int    `graphql:"changeParticipantsFrequency" json:"changeParticipantsFrequency" tf:"change_participants_frequency"`
-	ChangeParticipantsUnit      string `graphql:"changeParticipantsUnit" json:"changeParticipantsUnit" tf:"change_participants_unit"`
-	EndDate                     string `graphql:"endDate" json:"endDate,omitempty" tf:"end_date"`
-	EndsAfterIterations         int    `graphql:"endsAfterIterations" json:"endsAfterIterations,omitempty" tf:"ends_after_iterations"`
+	CustomPeriodFrequency       int                `graphql:"customPeriodFrequency" json:"customPeriodFrequency,omitempty" tf:"custom_period_frequency"`
+	CustomPeriodUnit            string             `graphql:"customPeriodUnit" json:"customPeriodUnit,omitempty" tf:"custom_period_unit"`
+	ChangeParticipantsFrequency int                `graphql:"changeParticipantsFrequency" json:"changeParticipantsFrequency" tf:"change_participants_frequency"`
+	ChangeParticipantsUnit      string             `graphql:"changeParticipantsUnit" json:"changeParticipantsUnit" tf:"change_participants_unit"`
+	EndDate                     string             `graphql:"endDate" json:"endDate,omitempty" tf:"end_date"`
+	EndsAfterIterations         int                `graphql:"endsAfterIterations" json:"endsAfterIterations,omitempty" tf:"ends_after_iterations"`
 }
 
 type ParticipantGroup struct {
 	Participants []Participant `graphql:"participants" json:"participants" tf:"participants"`
-	Everyone     bool           `graphql:"everyone" json:"everyone,omitempty" tf:"everyone"`
 }
 
 type Participant struct {
-	ID   string    `graphql:"ID" json:"ID" tf:"id"`
+	ID   string `graphql:"ID" json:"ID" tf:"id"`
 	Type string `graphql:"type" json:"type" tf:"type"`
 }
 
 type Timeslot struct {
-	StartHour   int `graphql:"startHour" json:"startHour" tf:"start_hour"`
-	StartMinute int `graphql:"startMin" json:"startMin" tf:"start_minute"`
-	Duration    int `graphql:"duration" json:"duration" tf:"duration"`
+	StartHour   int    `graphql:"startHour" json:"startHour" tf:"start_hour"`
+	StartMinute int    `graphql:"startMin" json:"startMin" tf:"start_minute"`
+	Duration    int    `graphql:"duration" json:"duration" tf:"duration"`
 	DayOfWeek   string `graphql:"dayOfWeek" json:"dayOfWeek,omitempty" tf:"day_of_week"`
-}
-
-type CustomPeriod struct {
-	PeriodFrequency int         `graphql:"periodFrequency" json:"periodFrequency,omitempty" tf:"period_frequency"`
-	PeriodUnit      string      `graphql:"periodUnit" json:"periodUnit,omitempty" tf:"period_unit"`
-	Timeslots       []Timeslot `graphql:"timeSlots" json:"timeSlots,omitempty" tf:"timeslots"`
 }
 
 // GraphQL query structs
@@ -133,10 +123,6 @@ func (p Participant) Encode() (tf.M, error) {
 	return tf.Encode(p)
 }
 
-func (cp CustomPeriod) Encode() (tf.M, error) {
-	return tf.Encode(cp)
-}
-
 func (rot Rotation) Encode() (tf.M, error) {
 	m, err := tf.Encode(rot)
 	if err != nil {
@@ -157,27 +143,6 @@ func (rot Rotation) Encode() (tf.M, error) {
 		m["participant_groups"] = participantGroupsEncoded
 	}
 
-	// convert customPeriod to []tf.M
-	if rot.CustomPeriod != nil {
-		m["custom_period"] = tf.List(tf.M{
-			"period_frequency": rot.CustomPeriod.PeriodFrequency,
-			"period_unit":      rot.CustomPeriod.PeriodUnit,
-			"timeslots":        rot.CustomPeriod.Timeslots,			
-		})
-	}
-
-	// convert shiftTimeSlot to []tf.M
-	if rot.ShiftTimeSlot != nil {
-		m["shift_timeslot"] = tf.List(
-			tf.M{
-				"start_hour":   rot.ShiftTimeSlot.StartHour,
-				"start_minute": rot.ShiftTimeSlot.StartMinute,
-				"duration":     rot.ShiftTimeSlot.Duration,
-				"day_of_week":  rot.ShiftTimeSlot.DayOfWeek,
-			},
-		)
-	}
-	
 	return m, nil
 }
 
