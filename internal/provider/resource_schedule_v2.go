@@ -179,7 +179,7 @@ func resourceScheduleV2() *schema.Resource {
 										Description:  "Schedule rotation shift timeslots duration in minutes.",
 										Type:         schema.TypeInt,
 										Required:     true,
-										ValidateFunc: validation.IntBetween(0, 1441),
+										ValidateFunc: validation.IntBetween(0, 1440),
 									},
 									"day_of_week": {
 										Description:  "Schedule rotation shift timeslots day of week.",
