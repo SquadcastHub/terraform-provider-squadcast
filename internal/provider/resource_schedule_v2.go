@@ -123,7 +123,7 @@ func resourceScheduleV2() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"participants": {
-										Description: "Schedule rotation participant groups.",
+										Description: "Schedule rotation participants.",
 										Type:        schema.TypeList,
 										Optional:    true,
 										Elem: &schema.Resource{
@@ -132,6 +132,7 @@ func resourceScheduleV2() *schema.Resource {
 													Description: "Schedule rotation participant type (user, team, squad).",
 													Type:        schema.TypeString,
 													Required:    true,
+													ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
 												},
 												"id": {
 													Description:  "Schedule rotation participant id.",
