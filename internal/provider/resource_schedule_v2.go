@@ -14,7 +14,8 @@ import (
 
 func resourceScheduleV2() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Squadcast v2 schedules", //todo: update this
+		Description: "[Squadcast schedules v2](https://support.squadcast.com/docs/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.",
+
 		ReadContext:   resourceScheduleV2Read,
 		CreateContext: resourceScheduleV2Create,
 		UpdateContext: resourceScheduleV2Create,
@@ -40,21 +41,21 @@ func resourceScheduleV2() *schema.Resource {
 				Description:  "Name of the schedule.",
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 1000),
+				ValidateFunc: validation.StringLenBetween(1, 150),
 			},
 			"description": {
-				Description:  "Detailed description about the Schedule.",
+				Description:  "Detailed description about the schedule.",
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringLenBetween(1, 1000),
+				ValidateFunc: validation.StringLenBetween(0, 1000),
 			},
 			"timezone": {
-				Description: "Timezone of the schedule",
+				Description: "Timezone for the schedule.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"entity_owner": {
-				Description: "Schedule entity owner.",
+				Description: "Schedule owner.",
 				Type:        schema.TypeList,
 				Required:    true,
 				MaxItems:    1,
@@ -94,131 +95,6 @@ func resourceScheduleV2() *schema.Resource {
 						"color": {
 							Description: "Schedule tag color.",
 							Type:        schema.TypeString,
-							Optional:    true,
-						},
-					},
-				},
-			},
-			"rotations": {
-				Description: "Schedule rotations.",
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Description: "Schedule rotation id.",
-							Type:        schema.TypeInt,
-							Computed:    true,
-						},
-						"name": {
-							Description:  "Schedule rotation name.",
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringLenBetween(1, 1000),
-						},
-						"participant_groups": {
-							Description: "Schedule rotation participant groups.",
-							Type:        schema.TypeList,
-							Optional:    true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"participants": {
-										Description: "Schedule rotation participants.",
-										Type:        schema.TypeList,
-										Optional:    true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"type": {
-													Description: "Schedule rotation participant type (user, team, squad).",
-													Type:        schema.TypeString,
-													Required:    true,
-													ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
-												},
-												"id": {
-													Description:  "Schedule rotation participant id.",
-													Type:         schema.TypeString,
-													Required:     true,
-													ValidateFunc: tf.ValidateObjectID,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						"start_date": {
-							Description: "Schedule rotation start date.",
-							Type:        schema.TypeString,
-							Required:    true,
-						},
-						"period": {
-							Description:  "Schedule rotation period.",
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"none", "daily", "weekly", "monthly", "custom"}, false),
-						},
-						"shift_timeslots": {
-							Description: "Schedule rotation shift timeslots.",
-							Type:        schema.TypeList,
-							Required:    true,
-							MinItems:    1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Description:  "Schedule rotation shift timeslots start hour.",
-										Type:         schema.TypeInt,
-										Required:     true,
-										ValidateFunc: validation.IntBetween(0, 23),
-									},
-									"start_minute": {
-										Description:  "Schedule rotation shift timeslots start minute.",
-										Type:         schema.TypeInt,
-										Required:     true,
-										ValidateFunc: validation.IntBetween(0, 59),
-									},
-									"duration": {
-										Description:  "Schedule rotation shift timeslots duration in minutes.",
-										Type:         schema.TypeInt,
-										Required:     true,
-										ValidateFunc: validation.IntBetween(0, 1440),
-									},
-									"day_of_week": {
-										Description:  "Schedule rotation shift timeslots day of week.",
-										Type:         schema.TypeString,
-										Optional:     true,
-										ValidateFunc: validation.StringInSlice([]string{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}, false),
-									},
-								},
-							},
-						},
-						"custom_period_frequency": {
-							Description: "Schedule rotation custom period frequency.",
-							Type:        schema.TypeInt,
-							Optional:    true,
-						},
-						"custom_period_unit": {
-							Description: "Schedule rotation custom period unit.",
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"change_participants_frequency": {
-							Description: "Schedule rotation change participants frequency.",
-							Type:        schema.TypeInt,
-							Required:    true,
-						},
-						"change_participants_unit": {
-							Description: "Schedule rotation change participants unit.",
-							Type:        schema.TypeString,
-							Required:    true,
-						},
-						"end_date": {
-							Description: "Schedule rotation end date.",
-							Type:        schema.TypeString,
-							Optional:    true,
-						},
-						"ends_after_iterations": {
-							Description: "Schedule rotation ends after iterations.",
-							Type:        schema.TypeInt,
 							Optional:    true,
 						},
 					},
@@ -280,7 +156,6 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	tags := d.Get("tags").([]interface{})
-
 	if len(tags) > 0 {
 		var tagsList []*api.Tag
 		err := Decode(tags, &tagsList)
@@ -288,78 +163,6 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 			return diag.Errorf("tags is invalid")
 		}
 		createScheduleReq.Tags = tagsList
-	}
-
-	rotations := d.Get("rotations").([]interface{})
-	if len(rotations) > 0 {
-		var rotationsList []*api.Rotation
-		for _, rotation := range rotations {
-			rotationMap, ok := rotation.(map[string]interface{})
-			if !ok {
-				return diag.Errorf("rotation is invalid")
-			}
-			r := &api.Rotation{
-				Name:                        rotationMap["name"].(string),
-				Period:                      rotationMap["period"].(string),
-				ChangeParticipantsFrequency: rotationMap["change_participants_frequency"].(int),
-				ChangeParticipantsUnit:      rotationMap["change_participants_unit"].(string),
-				StartDate:                   rotationMap["start_date"].(string),
-				EndDate:                     rotationMap["end_date"].(string),
-				EndsAfterIterations:         rotationMap["ends_after_iterations"].(int),
-			}
-			// convert participants to []api.Participant
-			participants := rotationMap["participant_groups"].([]interface{})
-			if len(participants) > 0 {
-				var participantGroupsList []api.ParticipantGroup
-				for _, participant := range participants {
-					participantMap, ok := participant.(map[string]interface{})
-					if !ok {
-						return diag.Errorf("participant_groups is invalid")
-					}
-					var participantGroup api.ParticipantGroup
-					var participantsList []api.Participant
-					participants := participantMap["participants"].([]interface{})
-
-					err := Decode(participants, &participantsList)
-					if err != nil {
-						return diag.Errorf(err.Error())
-					}
-					participantGroup.Participants = participantsList
-					participantGroupsList = append(participantGroupsList, participantGroup)
-				}
-				r.ParticipantGroups = participantGroupsList
-			}
-
-			// convert shift_timeslots to []api.Timeslot
-			shiftTimeSlots := rotationMap["shift_timeslots"].([]interface{})
-			if len(shiftTimeSlots) > 0 {
-				if r.Period != "custom" && len(shiftTimeSlots) > 1 {
-					return diag.Errorf("shift_timeslots can only have one timeslot when period is not custom")
-				}
-				var shiftTimeSlotsList []api.Timeslot
-				err := Decode(shiftTimeSlots, &shiftTimeSlotsList)
-				if err != nil {
-					return diag.Errorf("shift_timeslots is invalid")
-				}
-				r.ShiftTimeSlots = shiftTimeSlotsList
-			}
-
-			if r.Period == "custom" {
-				if val, ok := rotationMap["custom_period_frequency"].(int); ok {
-					r.CustomPeriodFrequency = val
-				} else {
-					return diag.Errorf("custom_period_frequency must be set when period is custom")
-				}
-				if val, ok := rotationMap["custom_period_unit"].(string); ok {
-					r.CustomPeriodUnit = val
-				} else {
-					return diag.Errorf("custom_period_unit must be set when period is custom")
-				}
-			}
-
-			rotationsList = append(rotationsList, r)
-		}
-		createScheduleReq.Rotations = rotationsList
 	}
 
 	entityOwner := d.Get("entity_owner").([]interface{})

@@ -21,14 +21,13 @@ type Schedule struct {
 }
 
 type NewSchedule struct {
-	ID          int         `graphql:"ID" json:"id,omitempty" tf:"id"`
-	Name        string      `graphql:"name" json:"name" tf:"name"`
-	Description string      `graphql:"description" json:"description" tf:"description"`
-	TimeZone    string      `graphql:"timeZone" json:"timeZone" tf:"timezone"`
-	TeamID      string      `graphql:"teamID" json:"teamID" tf:"team_id"`
-	Owner       *Owner      `graphql:"owner" json:"owner" tf:"-"`
-	Tags        []*Tag      `graphql:"tags" json:"tags,omitempty" tf:"tags"`
-	Rotations   []*Rotation `graphql:"rotations" json:"rotations,omitempty" tf:"rotations"`
+	ID          int    `graphql:"ID" json:"ID,omitempty" tf:"id"`
+	Name        string `graphql:"name" json:"name" tf:"name"`
+	Description string `graphql:"description" json:"description,omitempty" tf:"description"`
+	TimeZone    string `graphql:"timeZone" json:"timeZone" tf:"timezone"`
+	TeamID      string `graphql:"teamID" json:"teamID" tf:"team_id"`
+	Owner       *Owner `graphql:"owner" json:"owner" tf:"-"`
+	Tags        []*Tag `graphql:"tags" json:"tags,omitempty" tf:"tags"`
 }
 
 type Owner struct {
@@ -42,37 +41,6 @@ type Tag struct {
 	Color string `graphql:"color" json:"color" tf:"color"`
 }
 
-type Rotation struct {
-	ID                          int                `graphql:"ID" json:"id,omitempty" tf:"id"`
-	Name                        string             `graphql:"name" json:"name" tf:"name"`
-	ParticipantGroups           []ParticipantGroup `graphql:"participantGroups" json:"participantGroups,omitempty" tf:"participant_groups"`
-	StartDate                   string             `graphql:"startDate" json:"startDate" tf:"start_date"`
-	Period                      string             `graphql:"period" json:"period" tf:"period"`
-	ShiftTimeSlots              []Timeslot         `graphql:"shiftTimeSlots" json:"shiftTimeSlots" tf:"shift_timeslots"`
-	CustomPeriodFrequency       int                `graphql:"customPeriodFrequency" json:"customPeriodFrequency,omitempty" tf:"custom_period_frequency"`
-	CustomPeriodUnit            string             `graphql:"customPeriodUnit" json:"customPeriodUnit,omitempty" tf:"custom_period_unit"`
-	ChangeParticipantsFrequency int                `graphql:"changeParticipantsFrequency" json:"changeParticipantsFrequency" tf:"change_participants_frequency"`
-	ChangeParticipantsUnit      string             `graphql:"changeParticipantsUnit" json:"changeParticipantsUnit" tf:"change_participants_unit"`
-	EndDate                     string             `graphql:"endDate" json:"endDate,omitempty" tf:"end_date"`
-	EndsAfterIterations         int                `graphql:"endsAfterIterations" json:"endsAfterIterations,omitempty" tf:"ends_after_iterations"`
-}
-
-type ParticipantGroup struct {
-	Participants []Participant `graphql:"participants" json:"participants" tf:"participants"`
-}
-
-type Participant struct {
-	ID   string `graphql:"ID" json:"ID" tf:"id"`
-	Type string `graphql:"type" json:"type" tf:"type"`
-}
-
-type Timeslot struct {
-	StartHour   int    `graphql:"startHour" json:"startHour" tf:"start_hour"`
-	StartMinute int    `graphql:"startMin" json:"startMin" tf:"start_minute"`
-	Duration    int    `graphql:"duration" json:"duration" tf:"duration"`
-	DayOfWeek   string `graphql:"dayOfWeek" json:"dayOfWeek,omitempty" tf:"day_of_week"`
-}
-
 // GraphQL query structs
 type ScheduleQueryStruct struct {
 	NewSchedule `graphql:"schedule(ID: $ID)"`
@@ -82,8 +50,12 @@ type ScheduleMutateStruct struct {
 	NewSchedule `graphql:"createSchedule(input: $input)"`
 }
 
+type DeleteScheduleResponse struct {
+	ID   int    `graphql:"ID"`
+	Name string `graphql:"name"`
+}
 type ScheduleMutateDeleteStruct struct {
-	Schedule NewSchedule `graphql:"deleteSchedule(ID: $ID)"`
+	Schedule DeleteScheduleResponse `graphql:"deleteSchedule(ID: $ID)"`
 }
 
 func (s *Schedule) Encode() (tf.M, error) {
@@ -97,53 +69,8 @@ func (s *Schedule) Encode() (tf.M, error) {
 	return m, nil
 }
 
-// todo: encode tags
 func (tag Tag) Encode() (tf.M, error) {
 	return tf.Encode(tag)
-}
-
-func (ts Timeslot) Encode() (tf.M, error) {
-	return tf.Encode(ts)
-}
-
-func (pg ParticipantGroup) Encode() (tf.M, error) {
-	m, err := tf.Encode(pg)
-	if err != nil {
-		return nil, err
-	}
-	participantEncoded, perr := tf.EncodeSlice(pg.Participants)
-	if perr != nil {
-		return nil, perr
-	}
-	m["participants"] = participantEncoded
-	return m, nil
-}
-
-func (p Participant) Encode() (tf.M, error) {
-	return tf.Encode(p)
-}
-
-func (rot Rotation) Encode() (tf.M, error) {
-	m, err := tf.Encode(rot)
-	if err != nil {
-		return nil, err
-	}
-
-	timeslotsEncoded, terr := tf.EncodeSlice(rot.ShiftTimeSlots)
-	if terr != nil {
-		return nil, terr
-	}
-	m["shift_timeslots"] = timeslotsEncoded
-
-	if rot.ParticipantGroups != nil {
-		participantGroupsEncoded, perr := tf.EncodeSlice(rot.ParticipantGroups)
-		if perr != nil {
-			return nil, perr
-		}
-		m["participant_groups"] = participantGroupsEncoded
-	}
-
-	return m, nil
 }
 
 func (s *NewSchedule) Encode() (tf.M, error) {
@@ -159,12 +86,6 @@ func (s *NewSchedule) Encode() (tf.M, error) {
 		return nil, terr
 	}
 	m["tags"] = tagsEncoded
-
-	rotationsEncoded, rerr := tf.EncodeSlice(s.Rotations)
-	if rerr != nil {
-		return nil, rerr
-	}
-	m["rotations"] = rotationsEncoded
 
 	return m, nil
 }

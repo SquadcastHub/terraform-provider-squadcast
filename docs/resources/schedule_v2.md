@@ -3,12 +3,12 @@
 page_title: "squadcast_schedule_v2 Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast v2 schedules
+  Squadcast schedules v2 https://support.squadcast.com/docs/schedules-new are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
 ---
 
 # squadcast_schedule_v2 (Resource)
 
-Squadcast v2 schedules
+[Squadcast schedules v2](https://support.squadcast.com/docs/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
 
 ## Example Usage
 
@@ -19,8 +19,7 @@ data "squadcast_team" "example_team" {
 data "squadcast_user" "example_user" {
   email = "test@example.com"
 }
-
-resource "squadcast_schedule_v2" "name" {
+resource "squadcast_schedule_v2" "schedule_test" {
   name = "test schedule"
   description =  "test schedule"
   timezone = "Asia/Kolkata"
@@ -39,33 +38,6 @@ resource "squadcast_schedule_v2" "name" {
     value = "testval2"
     color = "green"
   }
-  rotations {
-    name = "Test Rotation"
-    start_date = "2023-06-09T00:00:00Z"
-    period = "custom"
-    shift_timeslots {
-        start_hour = 10
-        start_minute = 0
-        duration = 10
-        day_of_week = "monday"
-    }
-    shift_timeslots {
-        start_hour = 10
-        start_minute = 0
-        duration = 10
-        day_of_week = "monday"
-    }
-    change_participants_frequency = 1
-    change_participants_unit = "week"
-    custom_period_frequency = 1
-    custom_period_unit = "week"
-    participant_groups {
-        participants {
-            id = data.squadcast_user.example_user.id
-            type = "user"
-        }
-    }
-  }
 }
 ```
 
@@ -74,15 +46,14 @@ resource "squadcast_schedule_v2" "name" {
 
 ### Required
 
-- `entity_owner` (Block List, Min: 1, Max: 1) Schedule entity owner. (see [below for nested schema](#nestedblock--entity_owner))
+- `entity_owner` (Block List, Min: 1, Max: 1) Schedule owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `name` (String) Name of the schedule.
 - `team_id` (String) Team id.
-- `timezone` (String) Timezone of the schedule
+- `timezone` (String) Timezone for the schedule.
 
 ### Optional
 
-- `description` (String) Detailed description about the Schedule.
-- `rotations` (Block List) Schedule rotations. (see [below for nested schema](#nestedblock--rotations))
+- `description` (String) Detailed description about the schedule.
 - `tags` (Block List) Schedule tags. (see [below for nested schema](#nestedblock--tags))
 
 ### Read-Only
@@ -96,62 +67,6 @@ Required:
 
 - `id` (String) Schedule owner id.
 - `type` (String) Schedule owner type (user, team, squad).
-
-
-<a id="nestedblock--rotations"></a>
-### Nested Schema for `rotations`
-
-Required:
-
-- `change_participants_frequency` (Number) Schedule rotation change participants frequency.
-- `change_participants_unit` (String) Schedule rotation change participants unit.
-- `name` (String) Schedule rotation name.
-- `period` (String) Schedule rotation period.
-- `shift_timeslots` (Block List, Min: 1) Schedule rotation shift timeslots. (see [below for nested schema](#nestedblock--rotations--shift_timeslots))
-- `start_date` (String) Schedule rotation start date.
-
-Optional:
-
-- `custom_period_frequency` (Number) Schedule rotation custom period frequency.
-- `custom_period_unit` (String) Schedule rotation custom period unit.
-- `end_date` (String) Schedule rotation end date.
-- `ends_after_iterations` (Number) Schedule rotation ends after iterations.
-- `participant_groups` (Block List) Schedule rotation participant groups. (see [below for nested schema](#nestedblock--rotations--participant_groups))
-
-Read-Only:
-
-- `id` (Number) Schedule rotation id.
-
-<a id="nestedblock--rotations--shift_timeslots"></a>
-### Nested Schema for `rotations.shift_timeslots`
-
-Required:
-
-- `duration` (Number) Schedule rotation shift timeslots duration in minutes.
-- `start_hour` (Number) Schedule rotation shift timeslots start hour.
-- `start_minute` (Number) Schedule rotation shift timeslots start minute.
-
-Optional:
-
-- `day_of_week` (String) Schedule rotation shift timeslots day of week.
-
-
-<a id="nestedblock--rotations--participant_groups"></a>
-### Nested Schema for `rotations.participant_groups`
-
-Optional:
-
-- `participants` (Block List) Schedule rotation participants. (see [below for nested schema](#nestedblock--rotations--participant_groups--participants))
-
-<a id="nestedblock--rotations--participant_groups--participants"></a>
-### Nested Schema for `rotations.participant_groups.participants`
-
-Required:
-
-- `id` (String) Schedule rotation participant id.
-- `type` (String) Schedule rotation participant type (user, team, squad).
-
-
 
 
 <a id="nestedblock--tags"></a>

@@ -60,6 +60,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_runbook":             resourceRunbook(),
 				"squadcast_schedule":            resourceSchedule(),
 				"squadcast_schedule_v2":         resourceScheduleV2(),
+				"squadcast_schedule_rotation":   resourceScheduleRotation(),
 				"squadcast_service_maintenance": resourceServiceMaintenance(),
 				"squadcast_service":             resourceService(),
 				"squadcast_squad":               resourceSquad(),
