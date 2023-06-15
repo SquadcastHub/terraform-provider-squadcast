@@ -2,7 +2,9 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -149,11 +151,24 @@ func resourceScheduleRotation() *schema.Resource {
 		},
 	}
 }
+func parse3PartImportID(id string) (string, string, string, error) {
+	parts := strings.SplitN(id, ":", 3)
+
+	if len(parts) != 3 || parts[0] == "" || parts[1] == "" || parts[2] == "" {
+		return "", "", "", fmt.Errorf("unexpected format of import resource id (%s), expected teamID:ID", id)
+	}
+
+	return parts[0], parts[1], parts[2], nil
+}
 
 func resourceScheduleRotationImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
+	teamID, scheduleName, rotationName, err := parse3PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
 
-	rotation, err := client.GetScheduleRotationById(ctx, d.Id())
+	rotation, err := client.GetRotationByName(ctx, teamID, scheduleName, rotationName)
 	if err != nil {
 		return nil, err
 	}

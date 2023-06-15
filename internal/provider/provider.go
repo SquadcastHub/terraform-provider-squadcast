@@ -50,6 +50,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_team_role": dataSourceTeamRole(),
 				"squadcast_user":      dataSourceUser(),
 				"squadcast_schedule":  dataSourceSchedule(),
+				"squadcast_schedule_v2":  dataSourceScheduleV2(),
 				"squadcast_runbook":   dataSourceRunbook(),
 				"squadcast_webform":   dataSourceWebform(),
 			},

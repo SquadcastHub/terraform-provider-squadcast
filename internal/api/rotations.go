@@ -137,3 +137,14 @@ func (client *Client) CreateScheduleRotation(ctx context.Context, scheduleID int
 
 	return GraphQLRequest[ScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
 }
+
+func (client *Client) GetRotationByName (ctx context.Context, teamID string, scheduleName string, rotationName string) (*ScheduleRotationQueryStruct, error) {
+	var m ScheduleRotationQueryStruct
+
+	variables := map[string]interface{}{
+		"scheduleName": scheduleName,
+		"name": rotationName,
+	}
+
+	return GraphQLRequest[ScheduleRotationQueryStruct]("query", client, ctx, &m, variables)
+}

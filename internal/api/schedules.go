@@ -181,3 +181,14 @@ func (client *Client) CreateScheduleV2(ctx context.Context, payload NewSchedule)
 
 	return GraphQLRequest[ScheduleMutateStruct]("mutate", client, ctx, &m, variables)
 }
+
+func (client *Client) GetScheduleV2ByName(ctx context.Context, teamID string, name string) (*ScheduleQueryStruct, error) {
+	var m ScheduleQueryStruct
+
+	variables := map[string]interface{}{
+		"name": name,
+		"teamID": teamID,
+	}
+
+	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
+}

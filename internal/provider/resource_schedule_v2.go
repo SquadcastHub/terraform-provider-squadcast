@@ -106,8 +106,12 @@ func resourceScheduleV2() *schema.Resource {
 
 func resourceScheduleV2Import(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
+	teamID, scheduleName, err := parse2PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
 
-	schedule, err := client.GetScheduleV2ById(ctx, d.Id())
+	schedule, err := client.GetScheduleV2ByName(ctx, teamID, scheduleName)
 	if err != nil {
 		return nil, err
 	}
