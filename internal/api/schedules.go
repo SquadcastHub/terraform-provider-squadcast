@@ -46,6 +46,10 @@ type ScheduleQueryStruct struct {
 	NewSchedule `graphql:"schedule(ID: $ID)"`
 }
 
+type ScheduleByNameQueryStruct struct {
+	NewSchedule []*NewSchedule `graphql:"schedules(filters:  { scheduleName: $scheduleName, teamID: $teamID })"`
+}
+
 type ScheduleMutateStruct struct {
 	NewSchedule `graphql:"createSchedule(input: $input)"`
 }
@@ -78,14 +82,18 @@ func (s *NewSchedule) Encode() (tf.M, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	m["team_id"] = s.TeamID
+	m["id"] = strconv.Itoa(s.ID)
 
 	tagsEncoded, terr := tf.EncodeSlice(s.Tags)
 	if terr != nil {
 		return nil, terr
 	}
 	m["tags"] = tagsEncoded
+
+	m["entity_owner"] = tf.List(tf.M{
+		"id":   s.Owner.ID,
+		"type": s.Owner.Type,
+	})
 
 	return m, nil
 }
@@ -182,13 +190,13 @@ func (client *Client) CreateScheduleV2(ctx context.Context, payload NewSchedule)
 	return GraphQLRequest[ScheduleMutateStruct]("mutate", client, ctx, &m, variables)
 }
 
-func (client *Client) GetScheduleV2ByName(ctx context.Context, teamID string, name string) (*ScheduleQueryStruct, error) {
-	var m ScheduleQueryStruct
+func (client *Client) GetScheduleV2ByName(ctx context.Context, teamID string, scheduleName string) (*ScheduleByNameQueryStruct, error) {
+	var m ScheduleByNameQueryStruct
 
 	variables := map[string]interface{}{
-		"name": name,
-		"teamID": teamID,
+		"scheduleName": scheduleName,
+		"teamID":       teamID,
 	}
 
-	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
+	return GraphQLRequest[ScheduleByNameQueryStruct]("query", client, ctx, &m, variables)
 }

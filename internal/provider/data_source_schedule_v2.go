@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
@@ -15,7 +14,7 @@ func dataSourceScheduleV2() *schema.Resource {
 	return &schema.Resource{
 		Description: "[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. " +
 			"Use this data source to get information about a specific schedule that you can use for other Squadcast resources.",
-		ReadContext: dataSourceScheduleRead,
+		ReadContext: dataSourceScheduleV2Read,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "Schedule id.",
@@ -23,16 +22,14 @@ func dataSourceScheduleV2() *schema.Resource {
 				Computed:    true,
 			},
 			"team_id": {
-				Description:  "Team id.",
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: tf.ValidateObjectID,
+				Description: "Team id.",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"name": {
-				Description:  "Name of the Schedule.",
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.StringLenBetween(1, 1000),
+				Description: "Name of the Schedule.",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"description": {
 				Description: "Detailed description about the schedule.",
@@ -42,25 +39,23 @@ func dataSourceScheduleV2() *schema.Resource {
 			"timezone": {
 				Description: "Timezone for the schedule.",
 				Type:        schema.TypeString,
-				Required:    true,
+				Computed:    true,
 			},
 			"entity_owner": {
 				Description: "Schedule owner.",
 				Type:        schema.TypeList,
-				Computed:   true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "Schedule owner type (user, team, squad).",
-							Type:         schema.TypeString,
-							Computed:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+							Description: "Schedule owner type (user, team, squad).",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 						"id": {
-							Description:  "Schedule owner id.",
-							Type:         schema.TypeString,
-							Computed:     true,
-							ValidateFunc: tf.ValidateObjectID,
+							Description: "Schedule owner id.",
+							Type:        schema.TypeString,
+							Computed:    true,
 						},
 					},
 				},
@@ -107,12 +102,19 @@ func dataSourceScheduleV2Read(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	tflog.Info(ctx, "Reading schedule_v2 by name", tf.M{
-		"name": name.(string),
+		"name":    name.(string),
+		"team_id": teamID.(string),
 	})
-	schedule, err := client.GetScheduleV2ByName(ctx, teamID.(string), name.(string))
+
+	schedules, err := client.GetScheduleV2ByName(ctx, teamID.(string), name.(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	if len(schedules.NewSchedule) == 0 {
+		return diag.Errorf("no schedule found with name %s", name.(string))
+	}
+	schedule := schedules.NewSchedule[0]
 
 	if err = tf.EncodeAndSet(schedule, d); err != nil {
 		return diag.FromErr(err)
