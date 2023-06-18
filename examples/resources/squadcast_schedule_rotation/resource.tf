@@ -8,21 +8,15 @@ data "squadcast_user" "example_user_2" {
   email = "test2@example.com"
 }
 
-resource "squadcast_schedule_v2" "schedule_test" {
-  name = "Test schedule"
-  description =  "test schedule"
-  timezone = "Asia/Kolkata"
+data "squadcast_schedule_v2" "get_schedule" {
+  name = "Test Schedule"
   team_id = data.squadcast_team.example_team.id
-  entity_owner {
-    id = data.squadcast_user.example_user.id
-    type = "user"
-  }
 }
 
 resource "squadcast_schedule_rotation" "rotations_with_custom_period" {
-    schedule_id = squadcast_schedule_v2.schedule_test.id
+    schedule_id = data.squadcast_schedule_v2.get_schedule.id
     name = "Test Rotation"
-    start_date = "2021-08-01T00:00:00Z"
+    start_date = "2023-06-13T00:00:00Z"
     period = "custom"
     shift_timeslots {
         start_hour = 10
@@ -45,6 +39,8 @@ resource "squadcast_schedule_rotation" "rotations_with_custom_period" {
             id = data.squadcast_user.example_user.id
             type = "user"
         }
+    }
+    participant_groups {
         participants {
             id = data.squadcast_user.example_user_2.id
             type = "user"
@@ -53,7 +49,7 @@ resource "squadcast_schedule_rotation" "rotations_with_custom_period" {
 }
 
 resource "squadcast_schedule_rotation" "rotations_with_daily_period" {
-    schedule_id = squadcast_schedule_v2.schedule_test.id
+    schedule_id = data.squadcast_schedule_v2.get_schedule.id
     name = "Test Rotation 2"
     start_date = "2021-08-01T00:00:00Z"
     period = "daily"

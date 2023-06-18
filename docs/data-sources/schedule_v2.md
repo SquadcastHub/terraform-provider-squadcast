@@ -26,7 +26,6 @@ data "squadcast_schedule_v2" "test" {
 
 - `name` (String) Name of the Schedule.
 - `team_id` (String) Team id.
-- `timezone` (String) Timezone for the schedule.
 
 ### Read-Only
 
@@ -34,6 +33,7 @@ data "squadcast_schedule_v2" "test" {
 - `entity_owner` (List of Object) Schedule owner. (see [below for nested schema](#nestedatt--entity_owner))
 - `id` (String) Schedule id.
 - `tags` (List of Object) Schedule tags. (see [below for nested schema](#nestedatt--tags))
+- `timezone` (String) Timezone for the schedule.
 
 <a id="nestedatt--entity_owner"></a>
 ### Nested Schema for `entity_owner`
