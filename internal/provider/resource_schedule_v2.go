@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -111,11 +112,16 @@ func resourceScheduleV2Import(ctx context.Context, d *schema.ResourceData, meta 
 		return nil, err
 	}
 
-	schedule, err := client.GetScheduleV2ByName(ctx, teamID, scheduleName)
+	schedules, err := client.GetScheduleV2ByName(ctx, teamID, scheduleName)
 	if err != nil {
 		return nil, err
 	}
-	d.SetId(strconv.Itoa(schedule.NewSchedule.ID))
+	if len(schedules.NewSchedule) == 0 {
+		return nil, errors.New("schedule not found")
+	}
+	schedule := schedules.NewSchedule[0]
+
+	d.SetId(strconv.Itoa(schedule.ID))
 
 	return []*schema.ResourceData{d}, nil
 }

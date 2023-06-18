@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -170,7 +171,7 @@ func resourceScheduleRotationImport(ctx context.Context, d *schema.ResourceData,
 
 	rotation, err := client.GetRotationByName(ctx, teamID, scheduleName, rotationName)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("rotation not found")
 	}
 	d.SetId(strconv.Itoa(rotation.NewRotation.ID))
 

@@ -44,6 +44,10 @@ type ScheduleRotationQueryStruct struct {
 	NewRotation `graphql:"rotation(ID: $ID)"`
 }
 
+type ScheduleRotationByNameQueryStruct struct {
+	NewRotation `graphql:"rotationByName(teamID: $teamID, scheduleName: $scheduleName, rotationName: $rotationName)"`
+}
+
 type ScheduleRotationMutateStruct struct {
 	NewRotation `graphql:"createRotation(scheduleID: $scheduleID, input: $input)"`
 }
@@ -78,6 +82,8 @@ func (rot NewRotation) Encode() (tf.M, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	m["id"] = strconv.Itoa(rot.ID)
 
 	timeslotsEncoded, terr := tf.EncodeSlice(rot.ShiftTimeSlots)
 	if terr != nil {
@@ -138,13 +144,14 @@ func (client *Client) CreateScheduleRotation(ctx context.Context, scheduleID int
 	return GraphQLRequest[ScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
 }
 
-func (client *Client) GetRotationByName (ctx context.Context, teamID string, scheduleName string, rotationName string) (*ScheduleRotationQueryStruct, error) {
-	var m ScheduleRotationQueryStruct
+func (client *Client) GetRotationByName(ctx context.Context, teamID string, scheduleName string, rotationName string) (*ScheduleRotationByNameQueryStruct, error) {
+	var m ScheduleRotationByNameQueryStruct
 
 	variables := map[string]interface{}{
 		"scheduleName": scheduleName,
-		"name": rotationName,
+		"rotationName": rotationName,
+		"teamID":       teamID,
 	}
 
-	return GraphQLRequest[ScheduleRotationQueryStruct]("query", client, ctx, &m, variables)
+	return GraphQLRequest[ScheduleRotationByNameQueryStruct]("query", client, ctx, &m, variables)
 }
