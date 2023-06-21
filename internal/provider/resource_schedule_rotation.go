@@ -20,7 +20,7 @@ func resourceScheduleRotation() *schema.Resource {
 		Description:   "[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.",
 		ReadContext:   resourceScheduleRotationRead,
 		CreateContext: resourceScheduleRotationCreate,
-		UpdateContext: resourceScheduleRotationCreate,
+		UpdateContext: resourceScheduleRotationUpdate,
 		DeleteContext: resourceScheduleRotationDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceScheduleRotationImport,
@@ -283,6 +283,91 @@ func resourceScheduleRotationCreate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	d.SetId(strconv.Itoa(rotation.NewRotation.ID))
+
+	return resourceScheduleRotationRead(ctx, d, meta)
+}
+
+func resourceScheduleRotationUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Creating rotation", tf.M{
+		"name": d.Get("name").(string),
+	})
+	id, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	updateScheduleRotationReq := api.NewRotation{
+		Name:                        d.Get("name").(string),
+		StartDate:                   d.Get("start_date").(string),
+		Period:                      d.Get("period").(string),
+		ChangeParticipantsFrequency: d.Get("change_participants_frequency").(int),
+		ChangeParticipantsUnit:      d.Get("change_participants_unit").(string),
+		EndDate:                     d.Get("end_date").(string),
+		EndsAfterIterations:         d.Get("ends_after_iterations").(int),
+	}
+	participants := d.Get("participant_groups").([]interface{})
+	if len(participants) > 0 {
+		var participantGroupsList []api.ParticipantGroup
+		for _, participant := range participants {
+			participantMap, ok := participant.(map[string]interface{})
+			if !ok {
+				return diag.Errorf("participant_groups is invalid")
+			}
+			var participantGroup api.ParticipantGroup
+			var participantsList []api.Participant
+			participants := participantMap["participants"].([]interface{})
+
+			err := Decode(participants, &participantsList)
+			if err != nil {
+				return diag.Errorf(err.Error())
+			}
+			participantGroup.Participants = participantsList
+			participantGroupsList = append(participantGroupsList, participantGroup)
+		}
+		updateScheduleRotationReq.ParticipantGroups = participantGroupsList
+	}
+
+	shiftTimeSlots := d.Get("shift_timeslots").([]interface{})
+	if len(shiftTimeSlots) > 0 {
+		if updateScheduleRotationReq.Period != "custom" && len(shiftTimeSlots) > 1 {
+			return diag.Errorf("multiple shift_timeslots can only be set when period is custom")
+		}
+		var shiftTimeSlotsList []api.Timeslot
+		err := Decode(shiftTimeSlots, &shiftTimeSlotsList)
+		if err != nil {
+			return diag.Errorf("shift_timeslots is invalid")
+		}
+		updateScheduleRotationReq.ShiftTimeSlots = shiftTimeSlotsList
+	}
+
+	customPeriodFreq := d.Get("custom_period_frequency").(int)
+	customPeriodUnit := d.Get("custom_period_unit").(string)
+
+	// default values are 0 and "" for custom_period_frequency and custom_period_unit
+	// so we need to check if they are set to something else
+	if updateScheduleRotationReq.Period == "custom" {
+		if customPeriodFreq == 0 {
+			return diag.Errorf("custom_period_frequency must be set when period is custom")
+		}
+		if customPeriodUnit == "" {
+			return diag.Errorf("custom_period_unit must be set when period is custom")
+		}
+		updateScheduleRotationReq.CustomPeriodFrequency = customPeriodFreq
+		updateScheduleRotationReq.CustomPeriodUnit = customPeriodUnit
+	} else {
+		if customPeriodFreq != 0 {
+			return diag.Errorf("custom_period_frequency can only be set when period is custom")
+		}
+		if customPeriodUnit != "" {
+			return diag.Errorf("custom_period_unit can only be set when period is custom")
+		}
+	}
+
+	_, err = client.UpdateScheduleRotation(ctx, id, updateScheduleRotationReq)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	return resourceScheduleRotationRead(ctx, d, meta)
 }

@@ -30,6 +30,14 @@ type NewSchedule struct {
 	Tags        []*Tag `graphql:"tags" json:"tags,omitempty" tf:"tags"`
 }
 
+type UpdateSchedule struct {
+	Name        string `graphql:"name" json:"name" tf:"name"`
+	Description string `graphql:"description" json:"description,omitempty" tf:"description"`
+	TimeZone    string `graphql:"timeZone" json:"timeZone" tf:"timezone"`
+	Owner       *Owner `graphql:"owner" json:"owner" tf:"-"`
+	Tags        []*Tag `graphql:"tags" json:"tags,omitempty" tf:"tags"`
+}
+
 type Owner struct {
 	ID   string `graphql:"ID" json:"ID" tf:"id"`
 	Type string `graphql:"type" json:"type" tf:"type"`
@@ -50,8 +58,12 @@ type ScheduleByNameQueryStruct struct {
 	NewSchedule []*NewSchedule `graphql:"schedules(filters:  { scheduleName: $scheduleName, teamID: $teamID })"`
 }
 
-type ScheduleMutateStruct struct {
+type CreateScheduleMutateStruct struct {
 	NewSchedule `graphql:"createSchedule(input: $input)"`
+}
+
+type UpdateScheduleMutateStruct struct {
+	UpdateSchedule `graphql:"updateSchedule(ID: $ID, input: $input)"`
 }
 
 type DeleteScheduleResponse struct {
@@ -180,14 +192,25 @@ func (client *Client) GetScheduleV2ById(ctx context.Context, ID string) (*Schedu
 	return GraphQLRequest[ScheduleQueryStruct]("query", client, ctx, &m, variables)
 }
 
-func (client *Client) CreateScheduleV2(ctx context.Context, payload NewSchedule) (*ScheduleMutateStruct, error) {
-	var m ScheduleMutateStruct
+func (client *Client) CreateScheduleV2(ctx context.Context, payload NewSchedule) (*CreateScheduleMutateStruct, error) {
+	var m CreateScheduleMutateStruct
 
 	variables := map[string]interface{}{
 		"input": payload,
 	}
 
-	return GraphQLRequest[ScheduleMutateStruct]("mutate", client, ctx, &m, variables)
+	return GraphQLRequest[CreateScheduleMutateStruct]("mutate", client, ctx, &m, variables)
+}
+
+func (client *Client) UpdateScheduleV2(ctx context.Context, ID int, payload UpdateSchedule) (*UpdateScheduleMutateStruct, error) {
+	var m UpdateScheduleMutateStruct
+
+	variables := map[string]interface{}{
+		"ID":    ID,
+		"input": payload,
+	}
+
+	return GraphQLRequest[UpdateScheduleMutateStruct]("mutate", client, ctx, &m, variables)
 }
 
 func (client *Client) GetScheduleV2ByName(ctx context.Context, teamID string, scheduleName string) (*ScheduleByNameQueryStruct, error) {

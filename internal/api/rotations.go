@@ -48,11 +48,15 @@ type ScheduleRotationByNameQueryStruct struct {
 	NewRotation `graphql:"rotationByName(teamID: $teamID, scheduleName: $scheduleName, rotationName: $rotationName)"`
 }
 
-type ScheduleRotationMutateStruct struct {
+type CreateScheduleRotationMutateStruct struct {
 	NewRotation `graphql:"createRotation(scheduleID: $scheduleID, input: $input)"`
 }
 
-type ScheduleRotationMutateDeleteStruct struct {
+type UpdateScheduleRotationMutateStruct struct {
+	NewRotation `graphql:"updateRotation(ID: $ID, input: $input)"`
+}
+
+type DeleteScheduleRotationMutateStruct struct {
 	NewRotation `graphql:"deleteRotation(ID: $ID)"`
 }
 
@@ -103,8 +107,8 @@ func (rot NewRotation) Encode() (tf.M, error) {
 }
 
 // ScheduleV2 APIs
-func (client *Client) DeleteScheduleRotationByID(ctx context.Context, ID string) (*ScheduleRotationMutateDeleteStruct, error) {
-	var m ScheduleRotationMutateDeleteStruct
+func (client *Client) DeleteScheduleRotationByID(ctx context.Context, ID string) (*DeleteScheduleRotationMutateStruct, error) {
+	var m DeleteScheduleRotationMutateStruct
 
 	id, err := strconv.ParseInt(ID, 10, 64)
 	if err != nil {
@@ -115,7 +119,7 @@ func (client *Client) DeleteScheduleRotationByID(ctx context.Context, ID string)
 		"ID": id,
 	}
 
-	return GraphQLRequest[ScheduleRotationMutateDeleteStruct]("mutate", client, ctx, &m, variables)
+	return GraphQLRequest[DeleteScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
 }
 
 func (client *Client) GetScheduleRotationById(ctx context.Context, ID string) (*ScheduleRotationQueryStruct, error) {
@@ -133,15 +137,26 @@ func (client *Client) GetScheduleRotationById(ctx context.Context, ID string) (*
 	return GraphQLRequest[ScheduleRotationQueryStruct]("query", client, ctx, &m, variables)
 }
 
-func (client *Client) CreateScheduleRotation(ctx context.Context, scheduleID int, payload NewRotation) (*ScheduleRotationMutateStruct, error) {
-	var m ScheduleRotationMutateStruct
+func (client *Client) CreateScheduleRotation(ctx context.Context, scheduleID int, payload NewRotation) (*CreateScheduleRotationMutateStruct, error) {
+	var m CreateScheduleRotationMutateStruct
 
 	variables := map[string]interface{}{
 		"input":      payload,
 		"scheduleID": scheduleID,
 	}
 
-	return GraphQLRequest[ScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
+	return GraphQLRequest[CreateScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
+}
+
+func (client *Client) UpdateScheduleRotation(ctx context.Context, ID int, payload NewRotation) (*UpdateScheduleRotationMutateStruct, error) {
+	var m UpdateScheduleRotationMutateStruct
+
+	variables := map[string]interface{}{
+		"input":      payload,
+		"ID": ID,
+	}
+
+	return GraphQLRequest[UpdateScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)
 }
 
 func (client *Client) GetRotationByName(ctx context.Context, teamID string, scheduleName string, rotationName string) (*ScheduleRotationByNameQueryStruct, error) {

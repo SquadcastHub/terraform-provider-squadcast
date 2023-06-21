@@ -19,7 +19,7 @@ func resourceScheduleV2() *schema.Resource {
 
 		ReadContext:   resourceScheduleV2Read,
 		CreateContext: resourceScheduleV2Create,
-		UpdateContext: resourceScheduleV2Create,
+		UpdateContext: resourceScheduleV2Update,
 		DeleteContext: resourceScheduleV2Delete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceScheduleV2Import,
@@ -194,6 +194,51 @@ func resourceScheduleV2Create(ctx context.Context, d *schema.ResourceData, meta 
 
 	d.SetId(strconv.Itoa(schedule.NewSchedule.ID))
 
+	return resourceScheduleV2Read(ctx, d, meta)
+}
+
+func resourceScheduleV2Update(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Creating schedule", tf.M{
+		"name": d.Get("name").(string),
+	})
+	id, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	updateScheduleReq := api.UpdateSchedule{
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+		TimeZone:    d.Get("timezone").(string),
+	}
+
+	tags := d.Get("tags").([]interface{})
+	if len(tags) > 0 {
+		var tagsList []*api.Tag
+		err := Decode(tags, &tagsList)
+		if err != nil {
+			return diag.Errorf("tags is invalid")
+		}
+		updateScheduleReq.Tags = tagsList
+	}
+
+	entityOwner := d.Get("entity_owner").([]interface{})
+	if len(entityOwner) > 0 {
+		entityOwnerMap, ok := entityOwner[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("entity_owner is invalid")
+		}
+		updateScheduleReq.Owner = &api.Owner{
+			Type: entityOwnerMap["type"].(string),
+			ID:   entityOwnerMap["id"].(string),
+		}
+	}
+
+	_, err = client.UpdateScheduleV2(ctx, id, updateScheduleReq)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return resourceScheduleV2Read(ctx, d, meta)
 }
 
