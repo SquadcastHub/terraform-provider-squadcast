@@ -152,8 +152,8 @@ func (client *Client) UpdateScheduleRotation(ctx context.Context, ID int, payloa
 	var m UpdateScheduleRotationMutateStruct
 
 	variables := map[string]interface{}{
-		"input":      payload,
-		"ID": ID,
+		"input": payload,
+		"ID":    ID,
 	}
 
 	return GraphQLRequest[UpdateScheduleRotationMutateStruct]("mutate", client, ctx, &m, variables)

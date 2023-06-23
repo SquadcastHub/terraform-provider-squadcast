@@ -31,12 +31,10 @@ resource "squadcast_schedule_v2" "schedule_test" {
   tags {
     key = "testkey"
     value = "testval"
-    color = "#ccc"
   }
   tags {
     key = "testkey2"
     value = "testval2"
-    color = "green"
   }
 }
 ```
@@ -77,7 +75,7 @@ Required:
 - `key` (String) Schedule tag key.
 - `value` (String) Schedule tag value.
 
-Optional:
+Read-Only:
 
 - `color` (String) Schedule tag color.
 

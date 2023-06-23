@@ -16,11 +16,9 @@ resource "squadcast_schedule_v2" "schedule_test" {
   tags {
     key = "testkey"
     value = "testval"
-    color = "#ccc"
   }
   tags {
     key = "testkey2"
     value = "testval2"
-    color = "green"
   }
 }

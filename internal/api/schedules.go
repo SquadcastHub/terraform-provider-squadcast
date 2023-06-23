@@ -46,7 +46,7 @@ type Owner struct {
 type Tag struct {
 	Key   string `graphql:"key" json:"key" tf:"key"`
 	Value string `graphql:"value" json:"value" tf:"value"`
-	Color string `graphql:"color" json:"color" tf:"color"`
+	Color string `graphql:"color" json:"color,omitempty" tf:"color"`
 }
 
 // GraphQL query structs

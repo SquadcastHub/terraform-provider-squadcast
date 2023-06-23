@@ -96,7 +96,7 @@ func resourceScheduleV2() *schema.Resource {
 						"color": {
 							Description: "Schedule tag color.",
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 						},
 					},
 				},
