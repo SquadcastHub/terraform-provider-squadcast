@@ -118,9 +118,9 @@ func resourceScheduleRotation() *schema.Resource {
 				},
 			},
 			"custom_period_frequency": {
-				Description: "Frequency of the custom rotation repeat pattern. Only applicable if period is set to custom.",
-				Type:        schema.TypeInt,
-				Optional:    true,
+				Description:  "Frequency of the custom rotation repeat pattern. Only applicable if period is set to custom.",
+				Type:         schema.TypeInt,
+				Optional:     true,
 				ValidateFunc: validation.IntBetween(1, 100),
 			},
 			"custom_period_unit": {
@@ -130,9 +130,9 @@ func resourceScheduleRotation() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"day", "week", "month"}, false),
 			},
 			"change_participants_frequency": {
-				Description: "Frequency with which participants change in the rotation.",
-				Type:        schema.TypeInt,
-				Required:    true,
+				Description:  "Frequency with which participants change in the rotation.",
+				Type:         schema.TypeInt,
+				Required:     true,
 				ValidateFunc: validation.IntBetween(1, 100),
 			},
 			"change_participants_unit": {
@@ -218,9 +218,20 @@ func resourceScheduleRotationCreate(ctx context.Context, d *schema.ResourceData,
 		Period:                      d.Get("period").(string),
 		ChangeParticipantsFrequency: d.Get("change_participants_frequency").(int),
 		ChangeParticipantsUnit:      d.Get("change_participants_unit").(string),
-		EndDate:                     d.Get("end_date").(string),
-		EndsAfterIterations:         d.Get("ends_after_iterations").(int),
 	}
+
+	endsAfterIterations, isIterationsEndSet := d.GetOk("ends_after_iterations")
+	endDate, isEndDateSet := d.GetOk("end_date")
+	if isIterationsEndSet {
+		createScheduleRotationReq.EndsAfterIterations = endsAfterIterations.(int)
+	}
+	if isEndDateSet {
+		createScheduleRotationReq.EndDate = endDate.(string)
+	}
+	if isIterationsEndSet && isEndDateSet {
+		return diag.Errorf("only one of end_date and ends_after_iterations can be set")
+	}
+
 	participants := d.Get("participant_groups").([]interface{})
 	if len(participants) > 0 {
 		var participantGroupsList []api.ParticipantGroup
@@ -256,25 +267,24 @@ func resourceScheduleRotationCreate(ctx context.Context, d *schema.ResourceData,
 		createScheduleRotationReq.ShiftTimeSlots = shiftTimeSlotsList
 	}
 
-	customPeriodFreq := d.Get("custom_period_frequency").(int)
-	customPeriodUnit := d.Get("custom_period_unit").(string)
+	customPeriodFreq, freqIsSet := d.GetOk("custom_period_frequency")
+	customPeriodUnit, unitIsSet := d.GetOk("custom_period_unit")
 
-	// default values are 0 and "" for custom_period_frequency and custom_period_unit
-	// so we need to check if they are set to something else
 	if createScheduleRotationReq.Period == "custom" {
-		if customPeriodFreq == 0 {
+		if !freqIsSet || customPeriodFreq.(int) == 0 {
 			return diag.Errorf("custom_period_frequency must be set when period is custom")
 		}
-		if customPeriodUnit == "" {
+		if !unitIsSet || customPeriodUnit.(string) == "" {
 			return diag.Errorf("custom_period_unit must be set when period is custom")
 		}
-		createScheduleRotationReq.CustomPeriodFrequency = customPeriodFreq
-		createScheduleRotationReq.CustomPeriodUnit = customPeriodUnit
+
+		createScheduleRotationReq.CustomPeriodFrequency = customPeriodFreq.(int)
+		createScheduleRotationReq.CustomPeriodUnit = customPeriodUnit.(string)
 	} else {
-		if customPeriodFreq != 0 {
+		if freqIsSet {
 			return diag.Errorf("custom_period_frequency can only be set when period is custom")
 		}
-		if customPeriodUnit != "" {
+		if unitIsSet {
 			return diag.Errorf("custom_period_unit can only be set when period is custom")
 		}
 	}
@@ -305,9 +315,20 @@ func resourceScheduleRotationUpdate(ctx context.Context, d *schema.ResourceData,
 		Period:                      d.Get("period").(string),
 		ChangeParticipantsFrequency: d.Get("change_participants_frequency").(int),
 		ChangeParticipantsUnit:      d.Get("change_participants_unit").(string),
-		EndDate:                     d.Get("end_date").(string),
-		EndsAfterIterations:         d.Get("ends_after_iterations").(int),
 	}
+
+	endsAfterIterations, isIterationsEndSet := d.GetOk("ends_after_iterations")
+	endDate, isEndDateSet := d.GetOk("end_date")
+	if isIterationsEndSet {
+		updateScheduleRotationReq.EndsAfterIterations = endsAfterIterations.(int)
+	}
+	if isEndDateSet {
+		updateScheduleRotationReq.EndDate = endDate.(string)
+	}
+	if isIterationsEndSet && isEndDateSet {
+		return diag.Errorf("only one of end_date and ends_after_iterations can be set")
+	}
+
 	participants := d.Get("participant_groups").([]interface{})
 	if len(participants) > 0 {
 		var participantGroupsList []api.ParticipantGroup
@@ -343,25 +364,24 @@ func resourceScheduleRotationUpdate(ctx context.Context, d *schema.ResourceData,
 		updateScheduleRotationReq.ShiftTimeSlots = shiftTimeSlotsList
 	}
 
-	customPeriodFreq := d.Get("custom_period_frequency").(int)
-	customPeriodUnit := d.Get("custom_period_unit").(string)
+	customPeriodFreq, freqIsSet := d.GetOk("custom_period_frequency")
+	customPeriodUnit, unitIsSet := d.GetOk("custom_period_unit")
 
-	// default values are 0 and "" for custom_period_frequency and custom_period_unit
-	// so we need to check if they are set to something else
 	if updateScheduleRotationReq.Period == "custom" {
-		if customPeriodFreq == 0 {
+		if !freqIsSet || customPeriodFreq.(int) == 0 {
 			return diag.Errorf("custom_period_frequency must be set when period is custom")
 		}
-		if customPeriodUnit == "" {
+		if !unitIsSet || customPeriodUnit.(string) == "" {
 			return diag.Errorf("custom_period_unit must be set when period is custom")
 		}
-		updateScheduleRotationReq.CustomPeriodFrequency = customPeriodFreq
-		updateScheduleRotationReq.CustomPeriodUnit = customPeriodUnit
+
+		updateScheduleRotationReq.CustomPeriodFrequency = customPeriodFreq.(int)
+		updateScheduleRotationReq.CustomPeriodUnit = customPeriodUnit.(string)
 	} else {
-		if customPeriodFreq != 0 {
+		if freqIsSet {
 			return diag.Errorf("custom_period_frequency can only be set when period is custom")
 		}
-		if customPeriodUnit != "" {
+		if unitIsSet {
 			return diag.Errorf("custom_period_unit can only be set when period is custom")
 		}
 	}
