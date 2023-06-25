@@ -22,7 +22,7 @@ func resourceSchedule() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceScheduleImport,
 		},
-
+		DeprecationMessage: "This resource is deprecated, please use `squadcast_schedule_v2` instead.",
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "Schedule id.",
