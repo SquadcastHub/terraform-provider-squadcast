@@ -13,11 +13,12 @@ data "squadcast_schedule_v2" "get_schedule" {
   team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_schedule_rotation" "rotations_with_daily_period" {
+# Create a rotation with weekly period
+resource "squadcast_schedule_rotation_v2" "rotations_with_weekly_period" {
     schedule_id = data.squadcast_schedule_v2.get_schedule.id
     name = "Test Rotation"
     start_date = "2023-07-01T00:00:00Z"
-    period = "daily"
+    period = "weekly"
     shift_timeslots {
         start_hour = 10
         start_minute = 30
@@ -38,7 +39,8 @@ resource "squadcast_schedule_rotation" "rotations_with_daily_period" {
     ends_after_iterations = 2
 }
 
-resource "squadcast_schedule_rotation" "rotations_with_custom_period" {
+# Create a rotation with custom period
+resource "squadcast_schedule_rotation_v2" "rotations_with_custom_period" {
     schedule_id = data.squadcast_schedule_v2.get_schedule.id
     name = "Test Rotation 2"
     start_date = "2023-06-13T00:00:00Z"

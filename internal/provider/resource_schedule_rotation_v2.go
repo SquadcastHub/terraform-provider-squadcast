@@ -15,15 +15,15 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
-func resourceScheduleRotation() *schema.Resource {
+func resourceScheduleRotationV2() *schema.Resource {
 	return &schema.Resource{
 		Description:   "[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.",
-		ReadContext:   resourceScheduleRotationRead,
-		CreateContext: resourceScheduleRotationCreate,
-		UpdateContext: resourceScheduleRotationUpdate,
-		DeleteContext: resourceScheduleRotationDelete,
+		ReadContext:   resourceScheduleRotationV2Read,
+		CreateContext: resourceScheduleRotationV2Create,
+		UpdateContext: resourceScheduleRotationV2Update,
+		DeleteContext: resourceScheduleRotationV2Delete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceScheduleRotationImport,
+			StateContext: resourceScheduleRotationV2Import,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -164,7 +164,7 @@ func parse3PartImportID(id string) (string, string, string, error) {
 	return parts[0], parts[1], parts[2], nil
 }
 
-func resourceScheduleRotationImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+func resourceScheduleRotationV2Import(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
 	teamID, scheduleName, rotationName, err := parse3PartImportID(d.Id())
 	if err != nil {
@@ -180,7 +180,7 @@ func resourceScheduleRotationImport(ctx context.Context, d *schema.ResourceData,
 	return []*schema.ResourceData{d}, nil
 }
 
-func resourceScheduleRotationRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceScheduleRotationV2Read(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	id := d.Id()
@@ -205,7 +205,7 @@ func resourceScheduleRotationRead(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceScheduleRotationCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceScheduleRotationV2Create(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating rotation", tf.M{
@@ -296,10 +296,10 @@ func resourceScheduleRotationCreate(ctx context.Context, d *schema.ResourceData,
 
 	d.SetId(strconv.Itoa(rotation.NewRotation.ID))
 
-	return resourceScheduleRotationRead(ctx, d, meta)
+	return resourceScheduleRotationV2Read(ctx, d, meta)
 }
 
-func resourceScheduleRotationUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceScheduleRotationV2Update(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating rotation", tf.M{
@@ -391,10 +391,10 @@ func resourceScheduleRotationUpdate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 
-	return resourceScheduleRotationRead(ctx, d, meta)
+	return resourceScheduleRotationV2Read(ctx, d, meta)
 }
 
-func resourceScheduleRotationDelete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceScheduleRotationV2Delete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	_, err := client.DeleteScheduleRotationByID(ctx, d.Id())
