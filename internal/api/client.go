@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/hasura/go-graphql-client"
 )
 
 type Client struct {
@@ -38,6 +41,8 @@ type AppError struct {
 	ConflictData *any          `json:"conflict_data,omitempty"`
 	ErrorDetails *ErrorDetails `json:"error_details,omitempty"`
 }
+
+var GraphQLClient *graphql.Client
 
 func (err *AppError) Error() string {
 	str := fmt.Sprintf("[%d] %s", err.Status, err.Message)
@@ -128,4 +133,23 @@ func RequestSlice[TReq any, TRes any](method string, url string, client *Client,
 
 func IsResourceNotFoundError(e error) bool {
 	return strings.Contains(e.Error(), "[404]")
+}
+
+// GraphQLRequest is a generic function to make graphql requests
+// method values can be query/mutate
+func GraphQLRequest[TReq any](method string, client *Client, ctx context.Context, payload *TReq, variables map[string]interface{}) (*TReq, error) {
+	switch method {
+	case "query":
+		if err := GraphQLClient.WithDebug(true).Query(ctx, payload, variables); err != nil {
+			return nil, err
+		}
+	case "mutate":
+		if err := GraphQLClient.WithDebug(true).Mutate(ctx, payload, variables); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New("invalid method")
+	}
+
+	return payload, nil
 }

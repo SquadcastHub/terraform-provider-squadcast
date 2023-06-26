@@ -3,13 +3,24 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/hasura/go-graphql-client"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 )
+
+// initGraphQLClient initializes the graphql client.
+func initGraphQLClient(client api.Client) {
+	graphQLURL := fmt.Sprintf("https://api.%s/v3/graphql", client.Host)
+	bearerToken := fmt.Sprintf("Bearer %s", client.AccessToken)
+	api.GraphQLClient = graphql.NewClient(graphQLURL, nil).WithRequestModifier(func(req *http.Request) {
+		req.Header.Set("Authorization", bearerToken)
+	})
+}
 
 func init() {
 	// Set descriptions to support markdown syntax, this will be used in document generation
@@ -35,12 +46,13 @@ func New(version string) func() *schema.Provider {
 				"squadcast_service":           dataSourceService(),
 				"squadcast_escalation_policy": dataSourceEscalationPolicy(),
 				// "squadcast_teams": dataSourceTeams(),
-				"squadcast_team":      dataSourceTeam(),
-				"squadcast_team_role": dataSourceTeamRole(),
-				"squadcast_user":      dataSourceUser(),
-				"squadcast_schedule":  dataSourceSchedule(),
-				"squadcast_runbook":   dataSourceRunbook(),
-				"squadcast_webform":   dataSourceWebform(),
+				"squadcast_team":        dataSourceTeam(),
+				"squadcast_team_role":   dataSourceTeamRole(),
+				"squadcast_user":        dataSourceUser(),
+				"squadcast_schedule":    dataSourceSchedule(),
+				"squadcast_schedule_v2": dataSourceScheduleV2(),
+				"squadcast_runbook":     dataSourceRunbook(),
+				"squadcast_webform":     dataSourceWebform(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
 				"squadcast_deduplication_rules": resourceDeduplicationRules(),
@@ -48,6 +60,8 @@ func New(version string) func() *schema.Provider {
 				"squadcast_routing_rules":       resourceRoutingRules(),
 				"squadcast_runbook":             resourceRunbook(),
 				"squadcast_schedule":            resourceSchedule(),
+				"squadcast_schedule_v2":         resourceScheduleV2(),
+				"squadcast_schedule_rotation":   resourceScheduleRotation(),
 				"squadcast_service_maintenance": resourceServiceMaintenance(),
 				"squadcast_service":             resourceService(),
 				"squadcast_squad":               resourceSquad(),
@@ -146,6 +160,8 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 			})
 		}
 		client.OrganizationID = org.ID
+
+		initGraphQLClient(*client)
 
 		return client, nil
 	}
