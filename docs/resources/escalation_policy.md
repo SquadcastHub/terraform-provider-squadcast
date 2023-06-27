@@ -26,7 +26,7 @@ data "squadcast_squad" "example_squad" {
   team_id = data.squadcast_team.example_team.id
 }
 
-data "squadcast_schedule" "example_schedule" {
+data "squadcast_schedule_v2" "example_schedule_v2" {
   name = "example schedule name"
   team_id = data.squadcast_team.example_team.id
 }
@@ -46,8 +46,8 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
     }
 
     targets {
-      id   = data.squadcast_user.example_user.id
-      type = "user"
+      id   = data.squadcast_schedule_v2.example_schedule_v2.id
+      type = "schedulev2"
     }
   }
 
@@ -60,8 +60,8 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
     }
 
     targets {
-      id   = data.squadcast_user.example_user.id
-      type = "user"
+      id   = data.squadcast_squad.example_squad.id
+      type = "squad"
     }
 
     notification_channels = ["Phone"]
@@ -81,8 +81,8 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
     }
 
     targets {
-      id   = data.squadcast_schedule.example_schedule.id
-      type = "schedule"
+      id   = data.squadcast_schedule_v2.example_schedule_v2.id
+      type = "schedulev2"
     }
 
     round_robin {
