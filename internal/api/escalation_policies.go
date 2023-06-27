@@ -9,13 +9,20 @@ import (
 )
 
 type EscalationPolicyTarget struct {
-	ID   string `json:"id"`
+	ID   string `json:"id,omitempty"`
 	Type string `json:"type"`
+	PID  int    `json:"pid,omitempty"`
 }
 
 func (t *EscalationPolicyTarget) Encode() (tf.M, error) {
+	var ID string
+	if t.Type == "schedulev2" {
+		ID = fmt.Sprintf("%d", t.PID)
+	} else {
+		ID = t.ID
+	}
 	return tf.M{
-		"id":   t.ID,
+		"id":   ID,
 		"type": t.Type,
 	}, nil
 }

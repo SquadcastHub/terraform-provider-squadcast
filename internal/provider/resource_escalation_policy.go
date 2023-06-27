@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -110,14 +111,13 @@ func resourceEscalationPolicy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"id": {
-										Type:         schema.TypeString,
-										Required:     true,
-										ValidateFunc: tf.ValidateObjectID,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 									"type": {
 										Type:         schema.TypeString,
 										Required:     true,
-										ValidateFunc: validation.StringInSlice([]string{"user", "squad", "schedule"}, false),
+										ValidateFunc: validation.StringInSlice([]string{"user", "squad", "schedule", "schedulev2"}, false),
 									},
 								},
 							},
@@ -243,9 +243,19 @@ func decodeEscalationPolicyRules(mrules []tf.M) ([]api.EscalationPolicyRule, err
 		mtargets := tf.ListToSlice[tf.M](mrule["targets"])
 		targets := make([]*api.EscalationPolicyTarget, 0)
 		for _, mtarget := range mtargets {
+			targetType := mtarget["type"].(string)
+			ID := mtarget["id"].(string)
 			target := api.EscalationPolicyTarget{
-				ID:   mtarget["id"].(string),
-				Type: mtarget["type"].(string),
+				Type: targetType,
+			}
+			if targetType == "schedulev2" {
+				id, err := strconv.Atoi(ID)
+				if err != nil {
+					diag.Errorf("unable to convert schedule ID to int")
+				}
+				target.PID = id
+			} else {
+				target.ID = ID
 			}
 			targets = append(targets, &target)
 		}
