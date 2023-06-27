@@ -15,7 +15,8 @@ func dataSourceSchedule() *schema.Resource {
 	return &schema.Resource{
 		Description: "[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. " +
 			"Use this data source to get information about a specific schedule that you can use for other Squadcast resources.",
-		ReadContext: dataSourceScheduleRead,
+		ReadContext:        dataSourceScheduleRead,
+		DeprecationMessage: "This data source is deprecated and will be removed in a future release. Please use the `squadcast_schedule_v2` instead.",
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "Schedule id.",
