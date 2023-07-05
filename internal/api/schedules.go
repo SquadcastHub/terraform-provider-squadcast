@@ -2,8 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -94,11 +92,6 @@ type CreateUpdateScheduleReq struct {
 	Color       string `json:"colour"`
 	Description string `json:"description"`
 	TeamID      string `json:"owner_id"`
-}
-
-func (client *Client) DeleteSchedule(ctx context.Context, id string) (*any, error) {
-	url := fmt.Sprintf("%s/schedules/%s", client.BaseURLV3, id)
-	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }
 
 // ScheduleV2 APIs
