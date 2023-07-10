@@ -122,6 +122,11 @@ func dataSourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"slack_channel_id": {
+				Description: "Slack extension for the service.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 		},
 	}
 }

@@ -28,4 +28,5 @@ resource "squadcast_service" "example_service" {
     value = "testval2"
   }
   alert_sources = ["example-alert-source"]
+  slack_channel_id = "D0KAQDEPSH"
 }

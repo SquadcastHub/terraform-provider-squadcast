@@ -43,6 +43,7 @@ resource "squadcast_service" "example_service" {
     value = "testval2"
   }
   alert_sources = ["example-alert-source"]
+  slack_channel_id = "D0KAQDEPSH"
 }
 ```
 
@@ -62,6 +63,7 @@ resource "squadcast_service" "example_service" {
 - `dependencies` (List of String) Dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
 - `maintainer` (Block List, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
+- `slack_channel_id` (String) Slack extension for the service.
 - `tags` (Block List) Service tags. (see [below for nested schema](#nestedblock--tags))
 
 ### Read-Only

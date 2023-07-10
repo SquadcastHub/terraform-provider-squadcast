@@ -40,6 +40,7 @@ data "squadcast_service" "test" {
 - `escalation_policy_id` (String) Escalation policy id.
 - `id` (String) Service id.
 - `maintainer` (List of Object) Service owner (see [below for nested schema](#nestedatt--maintainer))
+- `slack_channel_id` (String) Slack extension for the service.
 - `tags` (List of Object) Service tags (see [below for nested schema](#nestedatt--tags))
 
 <a id="nestedatt--maintainer"></a>

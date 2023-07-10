@@ -30,6 +30,8 @@ func TestAccDataSourceService(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "dependencies.#", "1"),
 					resource.TestCheckResourceAttrPair(resourceName, "dependencies.0", "squadcast_service.test_parent", "id"),
 					resource.TestCheckResourceAttr(resourceName, "alert_source_endpoints.email", serviceName+"@squadcast.incidents.squadcast.com"),
+					resource.TestCheckResourceAttr(resourceName, "alert_sources.0", "APImetrics"),
+					resource.TestCheckResourceAttr(resourceName, "alert_sources.1", "Datadog"),
 				),
 			},
 		},
@@ -52,6 +54,7 @@ resource "squadcast_service" "test" {
 	escalation_policy_id = "61361415c2fc70c3101ca7db"
 	email_prefix = "%s"
 	dependencies = [squadcast_service.test_parent.id]
+    alert_sources = ["APImetrics", "Datadog"]
 }
 
 data "squadcast_service" "test" {

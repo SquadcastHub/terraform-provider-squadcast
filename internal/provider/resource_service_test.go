@@ -33,6 +33,8 @@ func TestAccResourceService(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "email", "testfoo@squadcast.incidents.squadcast.com"),
 					resource.TestCheckResourceAttr(resourceName, "dependencies.#", "0"),
 					resource.TestCheckResourceAttr(resourceName, "alert_source_endpoints.email", "testfoo@squadcast.incidents.squadcast.com"),
+					resource.TestCheckResourceAttr(resourceName, "alert_sources.0", "APImetrics"),
+					resource.TestCheckResourceAttr(resourceName, "slack_channel_id", "C04AQDEPSH3"),
 				),
 			},
 			{
@@ -104,6 +106,8 @@ resource "squadcast_service" "test" {
 	team_id = "613611c1eb22db455cfa789f"
 	escalation_policy_id = "5f8c4ff09b0ccd917237c04b"
 	email_prefix = "testfoo"
+    alert_sources = ["APImetrics"]
+	slack_channel_id = "C04AQDEPSH3"
 }
 	`, serviceName)
 }
@@ -116,6 +120,8 @@ resource "squadcast_service" "test" {
 	team_id = "613611c1eb22db455cfa789f"
 	escalation_policy_id = "61361415c2fc70c3101ca7db"
 	email_prefix = "foomp2"
+    alert_sources = ["APImetrics", "Datadog"]
+	slack_channel_id = "C04AQDEPSH3"
 }
 	`, serviceName)
 }
