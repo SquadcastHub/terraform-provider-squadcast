@@ -123,7 +123,7 @@ func dataSourceService() *schema.Resource {
 				},
 			},
 			"slack_channel_id": {
-				Description: "Slack extension for the service.",
+				Description: "Slack extension for the service. If set, specifies the ID of the Slack channel associated with the service. If this ID is set, it cannot be removed, but it can be changed to a different slack_channel_id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
