@@ -25,6 +25,11 @@ type Service struct {
 	Dependencies       []string           `json:"depends" tf:"dependencies"`
 	ActiveAlertSources map[string]string  `json:"-" tf:"active_alert_source_endpoints"`
 	AlertSources       map[string]string  `json:"-" tf:"alert_source_endpoints"`
+	Slack              *SlackChannel      `json:"slack" tf:"-"`
+}
+
+type SlackChannel struct {
+	ChannelID string `json:"channel_id" tf:"-"`
 }
 
 func (serviceTag ServiceTag) Encode() (tf.M, error) {
@@ -53,6 +58,10 @@ func (s *Service) Encode() (tf.M, error) {
 		return nil, terr
 	}
 	m["tags"] = tagsEncoded
+
+	if s.Slack != nil {
+		m["slack_channel_id"] = s.Slack.ChannelID
+	}
 
 	return m, nil
 }
@@ -104,6 +113,10 @@ type ServiceTag struct {
 	Value string `json:"value" tf:"value"`
 }
 
+type AddSlackChannelReq struct {
+	ChannelID string `json:"channel_id"`
+}
+
 type UpdateServiceDependenciesReq struct {
 	Data []string `json:"data"`
 }
@@ -126,4 +139,9 @@ func (client *Client) UpdateServiceDependencies(ctx context.Context, id string, 
 func (client *Client) DeleteService(ctx context.Context, id string) (*any, error) {
 	url := fmt.Sprintf("%s/services/%s", client.BaseURLV3, id)
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
+}
+
+func (client *Client) UpdateSlackChannel(ctx context.Context, serviceID string, req *AddSlackChannelReq) (*any, error) {
+	url := fmt.Sprintf("%s/services/%s/extensions", client.BaseURLV3, serviceID)
+	return Request[AddSlackChannelReq, any](http.MethodPut, url, client, ctx, req)
 }

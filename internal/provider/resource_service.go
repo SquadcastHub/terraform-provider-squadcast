@@ -144,6 +144,12 @@ func resourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"slack_channel_id": {
+				Description: "Slack extension for the service. If set, specifies the ID of the Slack channel associated with the service. If this ID is set, it cannot be removed, but it can be changed to a different slack_channel_id.",
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -238,6 +244,16 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
+		})
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	slackChannelID, exists := d.GetOk("slack_channel_id")
+	if exists {
+		_, err = client.UpdateSlackChannel(ctx, service.ID, &api.AddSlackChannelReq{
+			ChannelID: slackChannelID.(string),
 		})
 		if err != nil {
 			return diag.FromErr(err)
@@ -381,6 +397,15 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
+		})
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("slack_channel_id") {
+		_, err = client.UpdateSlackChannel(ctx, d.Id(), &api.AddSlackChannelReq{
+			ChannelID: d.Get("slack_channel_id").(string),
 		})
 		if err != nil {
 			return diag.FromErr(err)
