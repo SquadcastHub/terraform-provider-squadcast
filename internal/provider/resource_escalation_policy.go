@@ -117,7 +117,7 @@ func resourceEscalationPolicy() *schema.Resource {
 									"type": {
 										Type:         schema.TypeString,
 										Required:     true,
-										ValidateFunc: validation.StringInSlice([]string{"user", "squad", "schedule", "schedulev2"}, false),
+										ValidateFunc: validation.StringInSlice([]string{"user", "squad", "schedulev2"}, false),
 									},
 								},
 							},
