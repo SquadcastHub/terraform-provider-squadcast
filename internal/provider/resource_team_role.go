@@ -49,7 +49,7 @@ func resourceTeamRole() *schema.Resource {
 			},
 			"abilities": {
 				Description: "abilities. \n Current available abilities are : \n create-escalation-policies, create-postmortems, create-runbooks, create-schedules, create-services, create-slos, create-squads, create-status-pages, delete-escalation-policies, delete-postmortems, delete-runbooks, delete-schedules, delete-services, delete-slos, delete-squads, delete-status-pages, read-escalation-policies, read-postmortems, read-runbooks, read-schedules, read-services, read-slos, read-squads, read-status-pages, read-team-analytics, update-escalation-policies, update-postmortems, update-runbooks, update-schedules, update-services, update-slos, update-squads, update-status-pages",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Required:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -86,7 +86,7 @@ func resourceTeamRoleCreate(ctx context.Context, d *schema.ResourceData, meta an
 	})
 	teamRole, err := client.CreateTeamRole(ctx, d.Get("team_id").(string), &api.CreateTeamRoleReq{
 		Name:      d.Get("name").(string),
-		Abilities: tf.ListToSlice[string](d.Get("abilities")),
+		Abilities: tf.ExpandStringSet(d.Get("abilities").(*schema.Set)),
 	})
 	if err != nil {
 		return diag.FromErr(err)
@@ -132,7 +132,7 @@ func resourceTeamRoleUpdate(ctx context.Context, d *schema.ResourceData, meta an
 
 	_, err := client.UpdateTeamRole(ctx, d.Get("team_id").(string), d.Id(), &api.UpdateTeamRoleReq{
 		Name:      d.Get("name").(string),
-		Abilities: tf.ListToSlice[string](d.Get("abilities")),
+		Abilities: tf.ExpandStringSet(d.Get("abilities").(*schema.Set)),
 	})
 	if err != nil {
 		return diag.FromErr(err)

@@ -56,7 +56,7 @@ func resourceUser() *schema.Resource {
 			},
 			"abilities": {
 				Description: "user abilities/permissions.",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -83,7 +83,7 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, meta any) d
 	client := meta.(*api.Client)
 
 	role := d.Get("role").(string)
-	abilities := tf.ListToSlice[string](d.Get("abilities"))
+	abilities := tf.ExpandStringSet(d.Get("abilities").(*schema.Set))
 
 	if role == "stakeholder" && len(abilities) != 0 {
 		return diag.Errorf("stakeholders cannot have special abilities")
@@ -146,7 +146,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, meta any) d
 	}
 
 	role := d.Get("role").(string)
-	abilities := tf.ListToSlice[string](d.Get("abilities"))
+	abilities := tf.ExpandStringSet(d.Get("abilities").(*schema.Set))
 
 	if role == "stakeholder" && len(abilities) != 0 {
 		return diag.Errorf("stakeholders cannot have special abilities")

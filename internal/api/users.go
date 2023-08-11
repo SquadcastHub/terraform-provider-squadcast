@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"sort"
 
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
@@ -79,9 +78,6 @@ func (u *DataSourceUser) Encode() (tf.M, error) {
 		return nil, err
 	}
 
-	sort.Strings(u.AbilitiesSlugs)
-	m["abilities"] = u.AbilitiesSlugs
-
 	rules, err := tf.EncodeSlice(u.OncallReminderRules)
 	if err != nil {
 		return nil, err
@@ -117,9 +113,6 @@ func (u *ResourceUser) Encode() (tf.M, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	sort.Strings(u.AbilitiesSlugs)
-	m["abilities"] = u.AbilitiesSlugs
 
 	return m, nil
 }

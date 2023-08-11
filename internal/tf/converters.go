@@ -1,5 +1,7 @@
 package tf
 
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 type M = map[string]any
 
 func List[T any](item T) []T {
@@ -24,4 +26,19 @@ func ListToSlice[T any](list any) []T {
 	}
 
 	return slice
+}
+
+func ExpandStringList(configured []interface{}) []string {
+	vs := make([]string, 0, len(configured))
+	for _, v := range configured {
+		val, ok := v.(string)
+		if ok && val != "" {
+			vs = append(vs, val)
+		}
+	}
+	return vs
+}
+
+func ExpandStringSet(configured *schema.Set) []string {
+	return ExpandStringList(configured.List())
 }

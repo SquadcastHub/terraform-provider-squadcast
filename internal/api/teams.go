@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"sort"
 
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
@@ -80,9 +79,6 @@ func (tr *TeamRole) Encode() (tf.M, error) {
 			abilities = append(abilities, k)
 		}
 	}
-
-	sort.Strings(abilities)
-	m["abilities"] = abilities
 
 	return m, nil
 }
