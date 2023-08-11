@@ -71,7 +71,7 @@ func resourceService() *schema.Resource {
 			},
 			"dependencies": {
 				Description: "Dependencies (serviceIds)",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
@@ -240,7 +240,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 		}
 	}
 
-	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
+	mdependencies := ExpandStringSet(d.Get("dependencies").(*schema.Set))
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
@@ -393,7 +393,7 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		}
 	}
 
-	mdependencies := tf.ListToSlice[string](d.Get("dependencies"))
+	mdependencies := ExpandStringSet(d.Get("dependencies").(*schema.Set))
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,

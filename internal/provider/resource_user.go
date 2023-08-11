@@ -56,7 +56,7 @@ func resourceUser() *schema.Resource {
 			},
 			"abilities": {
 				Description: "user abilities/permissions.",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -64,6 +64,20 @@ func resourceUser() *schema.Resource {
 			},
 		},
 	}
+}
+
+func ExpandStringList(configured []interface{}) []string {
+	vs := make([]string, 0, len(configured))
+	for _, v := range configured {
+		val, ok := v.(string)
+		if ok && val != "" {
+			vs = append(vs, val)
+		}
+	}
+	return vs
+}
+func ExpandStringSet(configured *schema.Set) []string {
+	return ExpandStringList(configured.List())
 }
 
 func resourceUserImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
@@ -83,7 +97,7 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, meta any) d
 	client := meta.(*api.Client)
 
 	role := d.Get("role").(string)
-	abilities := tf.ListToSlice[string](d.Get("abilities"))
+	abilities := ExpandStringSet(d.Get("abilities").(*schema.Set))
 
 	if role == "stakeholder" && len(abilities) != 0 {
 		return diag.Errorf("stakeholders cannot have special abilities")
@@ -146,7 +160,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, meta any) d
 	}
 
 	role := d.Get("role").(string)
-	abilities := tf.ListToSlice[string](d.Get("abilities"))
+	abilities := ExpandStringSet(d.Get("abilities").(*schema.Set))
 
 	if role == "stakeholder" && len(abilities) != 0 {
 		return diag.Errorf("stakeholders cannot have special abilities")
