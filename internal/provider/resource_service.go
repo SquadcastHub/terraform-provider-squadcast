@@ -240,7 +240,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 		}
 	}
 
-	mdependencies := ExpandStringSet(d.Get("dependencies").(*schema.Set))
+	mdependencies := tf.ExpandStringSet(d.Get("dependencies").(*schema.Set))
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, service.ID, &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,
@@ -393,7 +393,7 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 		}
 	}
 
-	mdependencies := ExpandStringSet(d.Get("dependencies").(*schema.Set))
+	mdependencies := tf.ExpandStringSet(d.Get("dependencies").(*schema.Set))
 	if len(mdependencies) > 0 {
 		_, err = client.UpdateServiceDependencies(ctx, d.Id(), &api.UpdateServiceDependenciesReq{
 			Data: mdependencies,

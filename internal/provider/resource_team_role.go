@@ -86,7 +86,7 @@ func resourceTeamRoleCreate(ctx context.Context, d *schema.ResourceData, meta an
 	})
 	teamRole, err := client.CreateTeamRole(ctx, d.Get("team_id").(string), &api.CreateTeamRoleReq{
 		Name:      d.Get("name").(string),
-		Abilities: ExpandStringSet(d.Get("abilities").(*schema.Set)),
+		Abilities: tf.ExpandStringSet(d.Get("abilities").(*schema.Set)),
 	})
 	if err != nil {
 		return diag.FromErr(err)
@@ -132,7 +132,7 @@ func resourceTeamRoleUpdate(ctx context.Context, d *schema.ResourceData, meta an
 
 	_, err := client.UpdateTeamRole(ctx, d.Get("team_id").(string), d.Id(), &api.UpdateTeamRoleReq{
 		Name:      d.Get("name").(string),
-		Abilities: ExpandStringSet(d.Get("abilities").(*schema.Set)),
+		Abilities: tf.ExpandStringSet(d.Get("abilities").(*schema.Set)),
 	})
 	if err != nil {
 		return diag.FromErr(err)
