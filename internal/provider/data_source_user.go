@@ -76,7 +76,7 @@ func dataSourceUser() *schema.Resource {
 			},
 			"abilities": {
 				Description: "Denotes the Permissions / abilities of the user.",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

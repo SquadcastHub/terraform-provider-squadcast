@@ -44,7 +44,7 @@ func dataSourceTeamRole() *schema.Resource {
 			},
 			"abilities": {
 				Description: "All the abilities attached to a role.",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

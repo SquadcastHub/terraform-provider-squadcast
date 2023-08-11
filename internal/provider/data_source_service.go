@@ -61,7 +61,7 @@ func dataSourceService() *schema.Resource {
 			},
 			"dependencies": {
 				Description: "dependencies.",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
