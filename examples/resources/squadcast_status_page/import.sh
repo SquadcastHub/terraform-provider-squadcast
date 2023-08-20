@@ -1,0 +1,2 @@
+# statusPageID
+terraform import squadcast_status_page.test_status_page 285
