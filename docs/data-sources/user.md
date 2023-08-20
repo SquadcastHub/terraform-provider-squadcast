@@ -27,7 +27,7 @@ data "squadcast_user" "test" {
 
 ### Read-Only
 
-- `abilities` (List of String) Denotes the Permissions / abilities of the user.
+- `abilities` (Set of String) Denotes the Permissions / abilities of the user.
 - `first_name` (String) User first name.
 - `id` (String) User id.
 - `is_email_verified` (Boolean) Denotes if the user has verified their email or not.

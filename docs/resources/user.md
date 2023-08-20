@@ -34,7 +34,7 @@ resource "squadcast_user" "example_user" {
 
 ### Optional
 
-- `abilities` (List of String) user abilities/permissions.
+- `abilities` (Set of String) user abilities/permissions.
 
 ### Read-Only
 
