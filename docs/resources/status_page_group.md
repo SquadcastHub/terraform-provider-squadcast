@@ -35,27 +35,16 @@ resource "squadcast_status_page" "test_status_page" {
 	}
 }
 
+resource "squadcast_status_page_group" "example_group" {
+  	status_page_id = squadcast_status_page.test_status_page.id
+	name = "Group 1"
+}
+
 resource "squadcast_status_page_component" "example_component" {
 	status_page_id = squadcast_status_page.test_status_page.id
 	name = "Component 1"
 	description = "Component 1 description"
-}
-
-resource "squadcast_status_page_component" "example_component_2" {
-	status_page_id = squadcast_status_page.test_status_page.id
-	name = "Component 2"
-	description = "Component 2 description"
-}
-
-resource "squadcast_status_page_group" "example_group" {
-  	status_page_id = squadcast_status_page.test_status_page.id
-	name = "Group 1"
-	description = "Group 1 description"
-	allow_subscription = true
-	component_ids = [ 
-		squadcast_status_page_component.example_component.id,
-        squadcast_status_page_component.example_component_2.id
-	 ]
+	group_id = squadcast_status_page_group.example_group.id
 }
 ```
 
@@ -66,12 +55,6 @@ resource "squadcast_status_page_group" "example_group" {
 
 - `name` (String) Status page group name.
 - `status_page_id` (String) ID of the status page to which this group belongs to.
-
-### Optional
-
-- `allow_subscription` (Boolean) Allow subscription to the status page group.
-- `component_ids` (List of String) List of component ids that belong to this group.
-- `description` (String) Description of the status page group.
 
 ### Read-Only
 

@@ -19,17 +19,13 @@ resource "squadcast_status_page" "test_status_page" {
 		id = data.squadcast_team.team.id
 	}
 }
-
+resource "squadcast_status_page_group" "example_group" {
+  	status_page_id = squadcast_status_page.test_status_page.id
+	name = "Group 1"
+}
 resource "squadcast_status_page_component" "example_component" {
 	status_page_id = squadcast_status_page.test_status_page.id
 	name = "Component 1"
 	description = "Component 1 description"
-	allow_subscription = false
-}
-
-resource "squadcast_status_page_component" "example_component_2" {
-	status_page_id = squadcast_status_page.test_status_page.id
-	name = "Component 2"
-	description = "Component 2 description"
-	allow_subscription = false
+	group_id = squadcast_status_page_group.example_group.id
 }

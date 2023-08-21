@@ -46,11 +46,10 @@ func resourceStatusPageComponent() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"allow_subscription": {
-				Description: "Allow subscription to the status page component.",
-				Type:        schema.TypeBool,
+			"group_id": {
+				Description: "ID of the group to which this component belongs to.",
+				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     false,
 			},
 		},
 	}
@@ -75,9 +74,16 @@ func resourceStatusPageComponentCreate(ctx context.Context, d *schema.ResourceDa
 	client := meta.(*api.Client)
 
 	createStatusPageComponentReq := &api.StatusPageComponent{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		AllowSubscription: d.Get("allow_subscription").(bool),
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+	}
+
+	if d.Get("group_id").(string) != "" {
+		groupId, err := strconv.ParseInt(d.Get("group_id").(string), 10, 64)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		createStatusPageComponentReq.GroupID = uint(groupId)
 	}
 
 	spc, err := client.CreateStatusPageComponent(ctx, d.Get("status_page_id").(string), createStatusPageComponentReq)
@@ -119,9 +125,21 @@ func resourceStatusPageComponentUpdate(ctx context.Context, d *schema.ResourceDa
 	client := meta.(*api.Client)
 
 	updateStatusPageReq := &api.StatusPageComponent{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		AllowSubscription: d.Get("allow_subscription").(bool),
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+	}
+
+	if d.Get("group_id").(string) == "" {
+		flag := false
+		updateStatusPageReq.BelongsToGroup = &flag
+	} else {
+		groupId, err := strconv.ParseInt(d.Get("group_id").(string), 10, 64)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		flag := true
+		updateStatusPageReq.BelongsToGroup = &flag
+		updateStatusPageReq.GroupID = uint(groupId)
 	}
 
 	_, err := client.UpdateStatusPageComponent(ctx, d.Get("status_page_id").(string), d.Id(), updateStatusPageReq)

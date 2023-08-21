@@ -41,25 +41,6 @@ func resourceStatusPageGroup() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 1000),
 			},
-			"description": {
-				Description: "Description of the status page group.",
-				Type:        schema.TypeString,
-				Optional:    true,
-			},
-			"allow_subscription": {
-				Description: "Allow subscription to the status page group.",
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-			},
-			"component_ids": {
-				Description: "List of component ids that belong to this group.",
-				Type:        schema.TypeList,
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 		},
 	}
 }
@@ -83,18 +64,7 @@ func resourceStatusPageGroupCreate(ctx context.Context, d *schema.ResourceData, 
 	client := meta.(*api.Client)
 
 	createStatusPageGroupReq := &api.StatusPageGroup{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		AllowSubscription: d.Get("allow_subscription").(bool),
-	}
-
-	componentIds := d.Get("component_ids").([]interface{})
-	for _, componentId := range componentIds {
-		id, err := strconv.ParseUint(componentId.(string), 10, 32)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		createStatusPageGroupReq.ComponentIDs = append(createStatusPageGroupReq.ComponentIDs, uint(id))
+		Name: d.Get("name").(string),
 	}
 
 	spg, err := client.CreateStatusPageGroup(ctx, d.Get("status_page_id").(string), createStatusPageGroupReq)
@@ -136,18 +106,7 @@ func resourceStatusPageGroupUpdate(ctx context.Context, d *schema.ResourceData, 
 	client := meta.(*api.Client)
 
 	updateStatusPageGroupReq := &api.StatusPageGroup{
-		Name:              d.Get("name").(string),
-		Description:       d.Get("description").(string),
-		AllowSubscription: d.Get("allow_subscription").(bool),
-	}
-
-	componentIds := d.Get("component_ids").([]interface{})
-	for _, componentId := range componentIds {
-		id, err := strconv.ParseUint(componentId.(string), 10, 32)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		updateStatusPageGroupReq.ComponentIDs = append(updateStatusPageGroupReq.ComponentIDs, uint(id))
+		Name: d.Get("name").(string),
 	}
 
 	_, err := client.UpdateStatusPageGroup(ctx, d.Get("status_page_id").(string), d.Id(), updateStatusPageGroupReq)
