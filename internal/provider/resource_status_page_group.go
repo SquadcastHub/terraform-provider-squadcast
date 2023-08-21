@@ -14,7 +14,7 @@ import (
 
 func resourceStatusPageGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Status page resource.",
+		Description: "Status page group is a collection of components. You can add multiple components to a group and show the status of the group on your status page. You can also add multiple groups and show the status of each group on your status page.",
 
 		CreateContext: resourceStatusPageGroupCreate,
 		ReadContext:   resourceStatusPageGroupRead,
@@ -31,12 +31,12 @@ func resourceStatusPageGroup() *schema.Resource {
 				Computed:    true,
 			},
 			"status_page_id": {
-				Description: "ID of the status page to which this group belongs to.",
+				Description: "Id of the status page to which this group belongs to.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description:  "Status page group name.",
+				Description:  "Name of the status page group.",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 1000),
@@ -46,16 +46,12 @@ func resourceStatusPageGroup() *schema.Resource {
 }
 
 func resourceStatusPageGroupImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
-	client := meta.(*api.Client)
-	pageId, groupId, err := parse2PartImportID(d.Id())
-
-	spg, err := client.GetStatusPageGroupById(ctx, pageId, groupId)
+	pageID, groupID, err := parse2PartImportID(d.Id())
 	if err != nil {
 		return nil, err
 	}
-
-	id := strconv.FormatUint(uint64(spg.ID), 10)
-	d.SetId(id)
+	d.Set("status_page_id", pageID)
+	d.SetId(groupID)
 
 	return []*schema.ResourceData{d}, nil
 }

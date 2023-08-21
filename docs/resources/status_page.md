@@ -3,12 +3,12 @@
 page_title: "squadcast_status_page Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Status page resource.
+  Status Pages https://www.squadcast.com/blog/status-pages-101-everything-you-need-to-know-about-status-pages serves as a communication instrument enabling you to notify your customers regarding service interruptions and scheduled maintenance. You can create a status page for each of your services and customize it to your liking. You can also add components & groups to your status page to show the status of your services.
 ---
 
 # squadcast_status_page (Resource)
 
-Status page resource.
+[Status Pages](https://www.squadcast.com/blog/status-pages-101-everything-you-need-to-know-about-status-pages) serves as a communication instrument enabling you to notify your customers regarding service interruptions and scheduled maintenance. You can create a status page for each of your services and customize it to your liking. You can also add components & groups to your status page to show the status of your services.
 
 ## Example Usage
 
@@ -46,20 +46,20 @@ resource "squadcast_status_page" "test_status_page" {
 
 - `contact_email` (String) Contact email.
 - `domain_name` (String) Domain name of the status page. This will be appended to https://statuspage.squadcast.com/<ORG_ID>/ to form the URL of the status page.
-- `is_public` (Boolean) Description.
+- `is_public` (Boolean) Determines if the status page is public or not.
 - `name` (String) Status page name.
 - `owner` (Block List, Min: 1, Max: 1) Status page owner. (see [below for nested schema](#nestedblock--owner))
 - `team_id` (String) Team id.
-- `theme_color` (Block List, Min: 1, Max: 1) Theme color. (see [below for nested schema](#nestedblock--theme_color))
-- `timezone` (String) Timezone
+- `theme_color` (Block List, Min: 1, Max: 1) Theme color for the status page. (see [below for nested schema](#nestedblock--theme_color))
+- `timezone` (String) Timezone for the status page.
 
 ### Optional
 
-- `allow_components_subscription` (Boolean) Allow components subscription to the status page.
-- `allow_maintenance_subscription` (Boolean) Allow maintenance subscription to the status page.
-- `allow_webhook_subscription` (Boolean) Allow webhook subscription to the status page.
+- `allow_components_subscription` (Boolean) Determines if components subscription is allowed to the status page.
+- `allow_maintenance_subscription` (Boolean) Determines if maintenance subscription is allowed to the status page.
+- `allow_webhook_subscription` (Boolean) Determines if webhook subscription is allowed to the status page.
 - `custom_domain_name` (String) Custom domain name of the status page.
-- `description` (String) Description.
+- `description` (String) Status page description.
 
 ### Read-Only
 

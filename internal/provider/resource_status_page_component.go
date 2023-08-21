@@ -14,7 +14,7 @@ import (
 
 func resourceStatusPageComponent() *schema.Resource {
 	return &schema.Resource{
-		Description: "Status page resource.",
+		Description: "Status page component defines a component that represents a specific element within a status page. This resource enables you to configure various attributes of the component, and optionally associate it with a group on the status page.",
 
 		CreateContext: resourceStatusPageComponentCreate,
 		ReadContext:   resourceStatusPageComponentRead,
@@ -31,12 +31,12 @@ func resourceStatusPageComponent() *schema.Resource {
 				Computed:    true,
 			},
 			"status_page_id": {
-				Description: "ID of the status page to which this component belongs to.",
+				Description: "Id of the status page to which this component belongs to.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description:  "Status page component name.",
+				Description:  "Name of the status page component.",
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 1000),
@@ -47,7 +47,7 @@ func resourceStatusPageComponent() *schema.Resource {
 				Optional:    true,
 			},
 			"group_id": {
-				Description: "ID of the group to which this component belongs to.",
+				Description: "Id of the group to which this component belongs to.",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -56,16 +56,12 @@ func resourceStatusPageComponent() *schema.Resource {
 }
 
 func resourceStatusPageComponentImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
-	client := meta.(*api.Client)
-	pageId, componentId, err := parse2PartImportID(d.Id())
-
-	spc, err := client.GetStatusPageComponentById(ctx, pageId, componentId)
+	pageID, componentID, err := parse2PartImportID(d.Id())
 	if err != nil {
 		return nil, err
 	}
-
-	id := strconv.FormatUint(uint64(spc.ID), 10)
-	d.SetId(id)
+	d.Set("status_page_id", pageID)
+	d.SetId(componentID)
 
 	return []*schema.ResourceData{d}, nil
 }

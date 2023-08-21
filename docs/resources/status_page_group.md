@@ -3,12 +3,12 @@
 page_title: "squadcast_status_page_group Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Status page resource.
+  Status page group is a collection of components. You can add multiple components to a group and show the status of the group on your status page. You can also add multiple groups and show the status of each group on your status page.
 ---
 
 # squadcast_status_page_group (Resource)
 
-Status page resource.
+Status page group is a collection of components. You can add multiple components to a group and show the status of the group on your status page. You can also add multiple groups and show the status of each group on your status page.
 
 ## Example Usage
 
@@ -53,8 +53,8 @@ resource "squadcast_status_page_component" "example_component" {
 
 ### Required
 
-- `name` (String) Status page group name.
-- `status_page_id` (String) ID of the status page to which this group belongs to.
+- `name` (String) Name of the status page group.
+- `status_page_id` (String) Id of the status page to which this group belongs to.
 
 ### Read-Only
 

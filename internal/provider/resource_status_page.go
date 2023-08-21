@@ -14,7 +14,7 @@ import (
 
 func resourceStatusPage() *schema.Resource {
 	return &schema.Resource{
-		Description: "Status page resource.",
+		Description: "[Status Pages](https://www.squadcast.com/blog/status-pages-101-everything-you-need-to-know-about-status-pages) serves as a communication instrument enabling you to notify your customers regarding service interruptions and scheduled maintenance. You can create a status page for each of your services and customize it to your liking. You can also add components & groups to your status page to show the status of your services.",
 
 		CreateContext: resourceStatusPageCreate,
 		ReadContext:   resourceStatusPageRead,
@@ -43,12 +43,12 @@ func resourceStatusPage() *schema.Resource {
 				ValidateFunc: validation.StringLenBetween(1, 1000),
 			},
 			"description": {
-				Description: "Description.",
+				Description: "Status page description.",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"is_public": {
-				Description: "Description.",
+				Description: "Determines if the status page is public or not.",
 				Type:        schema.TypeBool,
 				Required:    true,
 			},
@@ -63,7 +63,7 @@ func resourceStatusPage() *schema.Resource {
 				Optional:    true,
 			},
 			"timezone": {
-				Description: "Timezone",
+				Description: "Timezone for the status page.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -73,7 +73,7 @@ func resourceStatusPage() *schema.Resource {
 				Required:    true,
 			},
 			"theme_color": {
-				Description: "Theme color.",
+				Description: "Theme color for the status page.",
 				Type:        schema.TypeList,
 				Required:    true,
 				MaxItems:    1,
@@ -115,19 +115,19 @@ func resourceStatusPage() *schema.Resource {
 				},
 			},
 			"allow_webhook_subscription": {
-				Description: "Allow webhook subscription to the status page.",
+				Description: "Determines if webhook subscription is allowed to the status page.",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
 			},
 			"allow_maintenance_subscription": {
-				Description: "Allow maintenance subscription to the status page.",
+				Description: "Determines if maintenance subscription is allowed to the status page.",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
 			},
 			"allow_components_subscription": {
-				Description: "Allow components subscription to the status page.",
+				Description: "Determines if components subscription is allowed to the status page.",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,

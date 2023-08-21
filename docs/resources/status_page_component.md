@@ -3,12 +3,12 @@
 page_title: "squadcast_status_page_component Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Status page resource.
+  Status page component defines a component that represents a specific element within a status page. This resource enables you to configure various attributes of the component, and optionally associate it with a group on the status page.
 ---
 
 # squadcast_status_page_component (Resource)
 
-Status page resource.
+Status page component defines a component that represents a specific element within a status page. This resource enables you to configure various attributes of the component, and optionally associate it with a group on the status page.
 
 ## Example Usage
 
@@ -51,13 +51,13 @@ resource "squadcast_status_page_component" "example_component" {
 
 ### Required
 
-- `name` (String) Status page component name.
-- `status_page_id` (String) ID of the status page to which this component belongs to.
+- `name` (String) Name of the status page component.
+- `status_page_id` (String) Id of the status page to which this component belongs to.
 
 ### Optional
 
 - `description` (String) Description of the status page component.
-- `group_id` (String) ID of the group to which this component belongs to.
+- `group_id` (String) Id of the group to which this component belongs to.
 
 ### Read-Only
 
