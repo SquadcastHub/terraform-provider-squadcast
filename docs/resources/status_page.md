@@ -33,7 +33,7 @@ resource "squadcast_status_page" "test_status_page" {
 		type = "team"
 		id = data.squadcast_team.team.id
 	}
-    allow_webhook_subscription = true
+	allow_webhook_subscription = true
 	allow_components_subscription = true
 	allow_maintenance_subscription = true
 }
