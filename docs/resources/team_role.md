@@ -29,7 +29,7 @@ resource "squadcast_team_role" "example_team_role" {
 
 ### Required
 
-- `abilities` (List of String) abilities. 
+- `abilities` (Set of String) abilities. 
  Current available abilities are : 
  create-escalation-policies, create-postmortems, create-runbooks, create-schedules, create-services, create-slos, create-squads, create-status-pages, delete-escalation-policies, delete-postmortems, delete-runbooks, delete-schedules, delete-services, delete-slos, delete-squads, delete-status-pages, read-escalation-policies, read-postmortems, read-runbooks, read-schedules, read-services, read-slos, read-squads, read-status-pages, read-team-analytics, update-escalation-policies, update-postmortems, update-runbooks, update-schedules, update-services, update-slos, update-squads, update-status-pages
 - `name` (String) Team role name.

@@ -60,7 +60,7 @@ resource "squadcast_service" "example_service" {
 ### Optional
 
 - `alert_sources` (List of String) List of active alert source names.
-- `dependencies` (List of String) Dependencies (serviceIds)
+- `dependencies` (Set of String) Dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
 - `maintainer` (Block List, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
 - `slack_channel_id` (String) Slack extension for the service. If set, specifies the ID of the Slack channel associated with the service. If this ID is set, it cannot be removed, but it can be changed to a different slack_channel_id.

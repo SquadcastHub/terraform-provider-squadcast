@@ -33,7 +33,7 @@ data "squadcast_service" "test" {
 - `active_alert_source_endpoints` (Map of String) Active alert source endpoints.
 - `alert_source_endpoints` (Map of String) All available alert source endpoints.
 - `api_key` (String) Unique API key of the service
-- `dependencies` (List of String) dependencies.
+- `dependencies` (Set of String) dependencies.
 - `description` (String) Detailed description about the service.
 - `email` (String) Email.
 - `email_prefix` (String) Email prefix.

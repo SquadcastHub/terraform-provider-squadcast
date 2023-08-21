@@ -55,24 +55,27 @@ func New(version string) func() *schema.Provider {
 				"squadcast_webform":     dataSourceWebform(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"squadcast_deduplication_rules":  resourceDeduplicationRules(),
-				"squadcast_escalation_policy":    resourceEscalationPolicy(),
-				"squadcast_routing_rules":        resourceRoutingRules(),
-				"squadcast_runbook":              resourceRunbook(),
-				"squadcast_schedule":             resourceSchedule(),
-				"squadcast_schedule_v2":          resourceScheduleV2(),
-				"squadcast_schedule_rotation_v2": resourceScheduleRotationV2(),
-				"squadcast_service_maintenance":  resourceServiceMaintenance(),
-				"squadcast_service":              resourceService(),
-				"squadcast_squad":                resourceSquad(),
-				"squadcast_suppression_rules":    resourceSuppressionRules(),
-				"squadcast_tagging_rules":        resourceTaggingRules(),
-				"squadcast_team_member":          resourceTeamMember(),
-				"squadcast_team_role":            resourceTeamRole(),
-				"squadcast_team":                 resourceTeam(),
-				"squadcast_user":                 resourceUser(),
-				"squadcast_slo":                  resourceSlo(),
-				"squadcast_webform":              resourceWebform(),
+				"squadcast_deduplication_rules":   resourceDeduplicationRules(),
+				"squadcast_escalation_policy":     resourceEscalationPolicy(),
+				"squadcast_routing_rules":         resourceRoutingRules(),
+				"squadcast_runbook":               resourceRunbook(),
+				"squadcast_schedule":              resourceSchedule(),
+				"squadcast_schedule_v2":           resourceScheduleV2(),
+				"squadcast_schedule_rotation_v2":  resourceScheduleRotationV2(),
+				"squadcast_service_maintenance":   resourceServiceMaintenance(),
+				"squadcast_service":               resourceService(),
+				"squadcast_squad":                 resourceSquad(),
+				"squadcast_status_page":           resourceStatusPage(),
+				"squadcast_status_page_component": resourceStatusPageComponent(),
+				"squadcast_status_page_group":     resourceStatusPageGroup(),
+				"squadcast_suppression_rules":     resourceSuppressionRules(),
+				"squadcast_tagging_rules":         resourceTaggingRules(),
+				"squadcast_team_member":           resourceTeamMember(),
+				"squadcast_team_role":             resourceTeamRole(),
+				"squadcast_team":                  resourceTeam(),
+				"squadcast_user":                  resourceUser(),
+				"squadcast_slo":                   resourceSlo(),
+				"squadcast_webform":               resourceWebform(),
 			},
 			Schema: map[string]*schema.Schema{
 				"region": {
@@ -130,11 +133,13 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		}
 
 		if region == "dev" {
+			client.BaseURLV4 = fmt.Sprintf("http://%s:8081/v4", client.Host)
 			client.BaseURLV3 = fmt.Sprintf("http://%s:8081/v3", client.Host)
 			client.BaseURLV2 = fmt.Sprintf("http://%s:8080/v2", client.Host)
 			client.AuthBaseURL = fmt.Sprintf("http://%s:8081/v3", client.Host)
 			client.IngestionBaseURL = fmt.Sprintf("http://%s:8458", client.Host)
 		} else {
+			client.BaseURLV4 = fmt.Sprintf("https://api.%s/v4", client.Host)
 			client.BaseURLV3 = fmt.Sprintf("https://api.%s/v3", client.Host)
 			client.BaseURLV2 = fmt.Sprintf("https://platform-backend.%s/v2", client.Host)
 			client.AuthBaseURL = fmt.Sprintf("https://api.%s/v3", client.Host)
