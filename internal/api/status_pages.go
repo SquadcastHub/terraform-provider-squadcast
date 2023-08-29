@@ -44,7 +44,7 @@ type StatusPageComponent struct {
 	PageID         uint   `json:"pageID" tf:"status_page_id"`
 	Name           string `json:"name" tf:"name"`
 	Description    string `json:"description,omitempty" tf:"description"`
-	GroupID        uint   `json:"groupID" tf:"group_id"`
+	GroupID        *uint  `json:"groupID,omitempty" tf:"group_id"`
 	BelongsToGroup *bool  `json:"belongsToGroup" tf:"-"`
 }
 
@@ -82,8 +82,10 @@ func (spc *StatusPageComponent) Encode() (map[string]interface{}, error) {
 	statusPageID := strconv.FormatUint(uint64(spc.PageID), 10)
 	m["status_page_id"] = statusPageID
 
-	groupID := strconv.FormatUint(uint64(spc.GroupID), 10)
-	m["group_id"] = groupID
+	if spc.GroupID != nil {
+		groupID := strconv.FormatUint(uint64(*spc.GroupID), 10)
+		m["group_id"] = groupID
+	}
 
 	return m, nil
 }
