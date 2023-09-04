@@ -30,6 +30,7 @@ type Slo struct {
 	SLOOwner            *SLOOwner             `tf:"entity_owner"`
 	SloOwnerType        string                `json:"slo_owner_type"`
 	SloOwnerID          string                `json:"slo_owner_id"`
+	Tags                map[string]string     `json:"tags" tf:"tags"`
 }
 
 type SLOOwner struct {
@@ -114,6 +115,12 @@ func (r *Slo) Encode() (map[string]interface{}, error) {
 		"id":   r.SloOwnerID,
 		"type": r.SloOwnerType,
 	})
+
+	tags, err := tf.Encode(r.Tags)
+	if err != nil {
+		return nil, err
+	}
+	m["tags"] = tags
 
 	return m, nil
 }
