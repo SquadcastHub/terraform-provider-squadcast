@@ -58,6 +58,11 @@ resource "squadcast_slo" "example_slo" {
     id  = data.squadcast_user.example_user.id
     type = "user"
   }
+
+  tags = {
+    tagKey  = "tagValue"
+    tagKey2 = "tagValue2"
+  }
 }
 ```
 
@@ -82,6 +87,7 @@ resource "squadcast_slo" "example_slo" {
 - `notify` (Block List, Max: 1) Notification rules for SLO violationUser can either choose to create an incident or get alerted via email (see [below for nested schema](#nestedblock--notify))
 - `rules` (Block List) SLO monitoring checks has rules for monitoring any SLO violation(Or warning signs) (see [below for nested schema](#nestedblock--rules))
 - `start_time` (String) SLO start time. Required only when SLO time interval type set to "fixed"
+- `tags` (Map of String) SLO Tags.
 
 ### Read-Only
 

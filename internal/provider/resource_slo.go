@@ -202,6 +202,15 @@ func resourceSlo() *schema.Resource {
 					},
 				},
 			},
+			"tags": {
+				Description: "SLO Tags.",
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -283,6 +292,15 @@ func resourceSloCreate(ctx context.Context, d *schema.ResourceData, meta any) di
 		createSloReq.SloOwnerType = sloOwner["type"].(string)
 	}
 
+	mtags := d.Get("tags").(map[string]interface{})
+	tags := make(map[string]string, len(*&mtags))
+	if len(mtags) > 0 {
+		for k, v := range *&mtags {
+			tags[k] = v.(string)
+		}
+		createSloReq.Tags = tags
+	}
+
 	slo, err := client.CreateSlo(ctx, client.OrganizationID, ownerID, createSloReq)
 	if err != nil {
 		return diag.FromErr(err)
@@ -360,7 +378,7 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 
 	sloOwner := d.Get("entity_owner").([]interface{})[0].(map[string]interface{})
 
-	_, err = client.UpdateSlo(ctx, client.OrganizationID, ownerID, id, &api.Slo{
+	updateSloReq := &api.Slo{
 		Name:                d.Get("name").(string),
 		Description:         d.Get("description").(string),
 		TargetSlo:           d.Get("target_slo").(float64),
@@ -375,7 +393,18 @@ func resourceSloUpdate(ctx context.Context, d *schema.ResourceData, meta any) di
 		OwnerID:             ownerID,
 		SloOwnerType:        sloOwner["type"].(string),
 		SloOwnerID:          sloOwner["id"].(string),
-	})
+	}
+
+	mtags := d.Get("tags").(map[string]interface{})
+	tags := make(map[string]string, len(*&mtags))
+	if len(mtags) > 0 {
+		for k, v := range *&mtags {
+			tags[k] = v.(string)
+		}
+		updateSloReq.Tags = tags
+	}
+
+	_, err = client.UpdateSlo(ctx, client.OrganizationID, ownerID, id, updateSloReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}

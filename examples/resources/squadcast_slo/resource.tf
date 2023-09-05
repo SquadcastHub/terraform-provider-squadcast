@@ -43,4 +43,9 @@ resource "squadcast_slo" "example_slo" {
     id  = data.squadcast_user.example_user.id
     type = "user"
   }
+
+  tags = {
+    tagKey  = "tagValue"
+    tagKey2 = "tagValue2"
+  }
 }
