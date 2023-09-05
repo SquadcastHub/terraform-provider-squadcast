@@ -79,7 +79,8 @@ func resourceStatusPageComponentCreate(ctx context.Context, d *schema.ResourceDa
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		createStatusPageComponentReq.GroupID = uint(groupId)
+		groupID := uint(groupId)
+		createStatusPageComponentReq.GroupID = &groupID
 	}
 
 	spc, err := client.CreateStatusPageComponent(ctx, d.Get("status_page_id").(string), createStatusPageComponentReq)
@@ -134,8 +135,9 @@ func resourceStatusPageComponentUpdate(ctx context.Context, d *schema.ResourceDa
 			return diag.FromErr(err)
 		}
 		flag := true
+		groupID := uint(groupId)
 		updateStatusPageReq.BelongsToGroup = &flag
-		updateStatusPageReq.GroupID = uint(groupId)
+		updateStatusPageReq.GroupID = &groupID
 	}
 
 	_, err := client.UpdateStatusPageComponent(ctx, d.Get("status_page_id").(string), d.Id(), updateStatusPageReq)
