@@ -45,7 +45,7 @@ resource "squadcast_status_page" "test_status_page" {
 ### Required
 
 - `contact_email` (String) Contact email.
-- `domain_name` (String) Domain name of the status page. This will be appended to https://statuspage.squadcast.com/<ORG_ID>/ to form the URL of the status page.
+- `domain_name` (String) Domain name of the status page. This will be appended to https://statuspage.squadcast.com/<ORG_ID>/ to form the URL of the status page (can only be set during creation)
 - `is_public` (Boolean) Determines if the status page is public or not.
 - `name` (String) Status page name.
 - `owner` (Block List, Min: 1, Max: 1) Status page owner. (see [below for nested schema](#nestedblock--owner))
