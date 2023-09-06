@@ -53,7 +53,7 @@ func resourceStatusPage() *schema.Resource {
 				Required:    true,
 			},
 			"domain_name": {
-				Description: "Domain name of the status page. This will be appended to https://statuspage.squadcast.com/<ORG_ID>/ to form the URL of the status page.",
+				Description: "Domain name of the status page. This will be appended to https://statuspage.squadcast.com/<ORG_ID>/ to form the URL of the status page (can only be set during creation)",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -225,12 +225,15 @@ func resourceStatusPageUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("team_id can only be set during creation.")
 	}
 
+	if d.HasChange("domain_name") {
+		return diag.Errorf("domain_name can only be set during creation.")
+	}
+
 	updateStatusPageReq := &api.StatusPage{
 		TeamID:                       d.Get("team_id").(string),
 		Name:                         d.Get("name").(string),
 		Description:                  d.Get("description").(string),
 		IsPublic:                     d.Get("is_public").(bool),
-		DomainName:                   d.Get("domain_name").(string),
 		Timezone:                     d.Get("timezone").(string),
 		ContactEmail:                 d.Get("contact_email").(string),
 		AllowWebhookSubscription:     d.Get("allow_webhook_subscription").(bool),
