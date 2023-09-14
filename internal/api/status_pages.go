@@ -17,7 +17,7 @@ type StatusPage struct {
 	Description                  string `json:"description,omitempty" tf:"description"`
 	IsPublic                     bool   `json:"isPublic" tf:"is_public"`
 	DomainName                   string `json:"domainName" tf:"domain_name"`
-	CustomDomainName             string `json:"custom_domain_name,omitempty" tf:"custom_domain_name"`
+	CustomDomainName             string `json:"customDomainName,omitempty" tf:"custom_domain_name"`
 	Timezone                     string `json:"timezone" tf:"timezone"`
 	ContactEmail                 string `json:"contactEmail" tf:"contact_email"`
 	ThemeColor                   `json:"themeColor" tf:"theme_color"`
