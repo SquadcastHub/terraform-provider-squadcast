@@ -57,6 +57,8 @@ func New(version string) func() *schema.Provider {
 			ResourcesMap: map[string]*schema.Resource{
 				"squadcast_deduplication_rules":   resourceDeduplicationRules(),
 				"squadcast_escalation_policy":     resourceEscalationPolicy(),
+				"squadcast_ger":                   resourceGER(),
+				"squadcast_ger_ruleset":           resourceGERRuleset(),
 				"squadcast_routing_rules":         resourceRoutingRules(),
 				"squadcast_runbook":               resourceRunbook(),
 				"squadcast_schedule":              resourceSchedule(),
