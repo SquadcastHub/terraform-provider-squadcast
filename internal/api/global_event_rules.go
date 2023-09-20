@@ -20,11 +20,12 @@ type GER struct {
 }
 
 type GER_Ruleset struct {
-	ID                 uint              `json:"id,omitempty" tf:"id"`
-	GER_ID             uint              `json:"global_event_rule_id" tf:"ger_id"`
-	AlertSourceName    string            `json:"alert_source_shortname" tf:"-"`
-	AlertSourceVersion string            `json:"alert_source_version" tf:"-"`
-	CatchAllAction     map[string]string `json:"catch_all_action" tf:"catch_all_action"`
+	ID                   uint              `json:"id,omitempty" tf:"id"`
+	GER_ID               uint              `json:"global_event_rule_id" tf:"ger_id"`
+	AlertSourceName      string            `json:"alert_source" tf:"-"`
+	AlertSourceShortName string            `json:"alert_source_shortname" tf:"alert_source_shortname"`
+	AlertSourceVersion   string            `json:"alert_source_version" tf:"alert_source_version"`
+	CatchAllAction       map[string]string `json:"catch_all_action" tf:"catch_all_action"`
 }
 
 type GERAlertSource struct {
@@ -74,11 +75,6 @@ func (ger *GER_Ruleset) Encode() (map[string]interface{}, error) {
 		return nil, err
 	}
 	m["catch_all_action"] = catchAllAction
-
-	m["alert_source"] = tf.List(tf.M{
-		"name":    ger.AlertSourceName,
-		"version": ger.AlertSourceVersion,
-	})
 
 	return m, nil
 }
