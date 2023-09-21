@@ -79,14 +79,7 @@ func resourceGER() *schema.Resource {
 }
 
 func resourceGERImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
-	client := meta.(*api.Client)
-
-	ger, err := client.GetGERById(ctx, d.Id())
-	if err != nil {
-		return nil, err
-	}
-	gerID := strconv.FormatUint(uint64(ger.ID), 10)
-	d.SetId(gerID)
+	d.SetId(d.Id())
 
 	return []*schema.ResourceData{d}, nil
 }

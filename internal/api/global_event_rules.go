@@ -11,7 +11,7 @@ import (
 )
 
 type GER struct {
-	ID          uint         `json:"id,omitempty" tf:"id"`
+	ID          uint         `json:"id" tf:"id"`
 	TeamID      string       `json:"owner_id" tf:"team_id"`
 	Name        string       `json:"name" tf:"name"`
 	Description string       `json:"description" tf:"description"`
@@ -20,12 +20,21 @@ type GER struct {
 }
 
 type GER_Ruleset struct {
-	ID                   uint              `json:"id,omitempty" tf:"id"`
+	ID                   uint              `json:"id" tf:"id"`
 	GER_ID               uint              `json:"global_event_rule_id" tf:"ger_id"`
 	AlertSourceName      string            `json:"alert_source" tf:"-"`
 	AlertSourceShortName string            `json:"alert_source_shortname" tf:"alert_source_shortname"`
 	AlertSourceVersion   string            `json:"alert_source_version" tf:"alert_source_version"`
 	CatchAllAction       map[string]string `json:"catch_all_action" tf:"catch_all_action"`
+	Ordering             []uint            `json:"ordering,omitempty" tf:"-"`
+}
+
+type GER_Ruleset_Rules struct {
+	ID          uint              `json:"id" tf:"id"`
+	GER_ID      uint              `json:"global_event_rule_id" tf:"ger_id"`
+	Description string            `json:"description,omitempty" tf:"description"`
+	Expression  string            `json:"expression,omitempty" tf:"expression"`
+	Action      map[string]string `json:"action" tf:"action"`
 }
 
 type GERAlertSource struct {
@@ -33,15 +42,12 @@ type GERAlertSource struct {
 	Version string `tf:"version"`
 }
 
-type GER_Ruleset_Rules struct {
-	ID          uint              `json:"id,omitempty" tf:"id"`
-	GER_ID      uint              `json:"global_event_rule_id" tf:"ger_id"`
-	Description string            `json:"description,omitempty" tf:"description"`
-	Expression  string            `json:"expression,omitempty" tf:"expression"`
-	Action      map[string]string `json:"action" tf:"action"`
+type GERReorderRulesetRulesReq struct {
+	Ordering []uint `json:"ordering"`
 }
-
-type ReorderRulesetReq struct {
+type GERReorderRulesetRules struct {
+	ID       uint   `json:"id,omitempty" tf:"id"`
+	GER_ID   uint   `json:"global_event_rule_id" tf:"ger_id"`
 	Ordering []uint `json:"ordering"`
 }
 
@@ -97,6 +103,24 @@ func (ger *GER_Ruleset_Rules) Encode() (map[string]interface{}, error) {
 	return m, nil
 }
 
+func (ger *GERReorderRulesetRules) Encode() (map[string]interface{}, error) {
+	m, err := tf.Encode(ger)
+	if err != nil {
+		return nil, err
+	}
+
+	gerID := strconv.FormatUint(uint64(ger.GER_ID), 10)
+	m["ger_id"] = gerID
+
+	ordering := make([]string, len(ger.Ordering))
+	for i, v := range ger.Ordering {
+		ordering[i] = strconv.FormatUint(uint64(v), 10)
+	}
+	m["ordering"] = ordering
+
+	return m, nil
+}
+
 func (client *Client) CreateGER(ctx context.Context, req *GER) (*GER, error) {
 	url := fmt.Sprintf("%s/global-event-rules", client.BaseURLV3)
 	data, err := Request[GER, GER](http.MethodPost, url, client, ctx, req)
@@ -135,12 +159,12 @@ func (client *Client) CreateGERRuleset(ctx context.Context, gerID string, req *G
 	return data, err
 }
 
-func (client *Client) GetGERRulesetById(ctx context.Context, gerID string, alertSource GERAlertSource) (*GER_Ruleset, error) {
+func (client *Client) GetGERRulesetByAlertSource(ctx context.Context, gerID string, alertSource GERAlertSource) (*GER_Ruleset, error) {
 	url := fmt.Sprintf("%s/global-event-rules/%s/rulesets/%s/%s", client.BaseURLV3, gerID, alertSource.Version, alertSource.Name)
 
 	data, err := Request[any, GER_Ruleset](http.MethodGet, url, client, ctx, nil)
 	if err != nil {
-		return nil, errors.New("GER Ruleset not found")
+		return nil, errors.New(alertSource.Name + " GER Ruleset with given ID not found")
 	}
 	return data, nil
 }
@@ -182,4 +206,9 @@ func (client *Client) UpdateGERRulesetRules(ctx context.Context, gerID string, r
 func (client *Client) DeleteGERRulesetRules(ctx context.Context, gerID string, ruleID string, alertSource GERAlertSource) (*any, error) {
 	url := fmt.Sprintf("%s/global-event-rules/%s/rulesets/%s/%s/rules/%s", client.BaseURLV3, gerID, alertSource.Version, alertSource.Name, ruleID)
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
+}
+
+func (client *Client) UpdateGERRulesetRulesOrdering(ctx context.Context, gerID string, alertSource GERAlertSource, req *GERReorderRulesetRulesReq) (*GERReorderRulesetRules, error) {
+	url := fmt.Sprintf("%s/global-event-rules/%s/rulesets/%s/%s/priority", client.BaseURLV3, gerID, alertSource.Version, alertSource.Name)
+	return Request[GERReorderRulesetRulesReq, GERReorderRulesetRules](http.MethodPatch, url, client, ctx, req)
 }

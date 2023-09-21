@@ -13,16 +13,16 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
-func resourceGERRuleset() *schema.Resource {
+func resourceGERRulesetRule() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset resource.",
+		Description: "GER Ruleset Rule resource.",
 
-		CreateContext: resourceGERRulesetCreate,
-		ReadContext:   resourceGERRulesetRead,
-		UpdateContext: resourceGERRulesetUpdate,
-		DeleteContext: resourceGERRulesetDelete,
+		CreateContext: resourceGERRulesetRuleCreate,
+		ReadContext:   resourceGERRulesetRuleRead,
+		UpdateContext: resourceGERRulesetRuleUpdate,
+		DeleteContext: resourceGERRulesetRuleDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceGERRulesetImport,
+			StateContext: resourceGERRulesetRuleImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -35,6 +35,11 @@ func resourceGERRuleset() *schema.Resource {
 				Description: "GER id.",
 				Type:        schema.TypeString,
 				Required:    true,
+			},
+			"description": {
+				Description: "GER Ruleset Rule description.",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"alert_source": {
 				Description: "GER Ruleset alert source.",
@@ -51,8 +56,13 @@ func resourceGERRuleset() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"catch_all_action": {
-				Description: "GER Ruleset catch all action.",
+			"expression": {
+				Description: "GER Ruleset Rule expression.",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+			"action": {
+				Description: "GER Ruleset Rule action.",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -63,9 +73,9 @@ func resourceGERRuleset() *schema.Resource {
 	}
 }
 
-func resourceGERRulesetImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+func resourceGERRulesetRuleImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
-	gerID, alertSourceName, ruleID, err := parse3PartImportID(d.Id())
+	gerID, alertSourceName, err := parse2PartImportID(d.Id())
 	if err != nil {
 		return nil, err
 	}
@@ -91,26 +101,28 @@ func resourceGERRulesetImport(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("alert_source_shortname", alertSourceShortName)
 	d.Set("alert_source_version", alertSourceVersion)
 	d.Set("ger_id", gerID)
-	d.SetId(ruleID)
 
 	return []*schema.ResourceData{d}, nil
 }
-
-func resourceGERRulesetCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceGERRulesetRuleCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	req := &api.GER_Ruleset{}
+	req := &api.GER_Ruleset_Rules{
+		Description: d.Get("description").(string),
+		Expression:  d.Get("expression").(string),
+	}
 
 	alertSource := d.Get("alert_source").(string)
 	alertSources, err := client.ListAlertSources(ctx)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	alertSourceShortName, alertSourceVersion := "", ""
 	isValidAlertSource := false
 	for _, alertSourceData := range alertSources {
 		if alertSourceData.Type == alertSource {
-			req.AlertSourceShortName = alertSourceData.ShortName
-			req.AlertSourceVersion = alertSourceData.Version
+			alertSourceShortName = alertSourceData.ShortName
+			alertSourceVersion = alertSourceData.Version
 			isValidAlertSource = true
 			break
 		}
@@ -119,36 +131,37 @@ func resourceGERRulesetCreate(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSource)
 	}
 
-	mcatchAllAction := d.Get("catch_all_action").(map[string]interface{})
-	catchAllAction := make(map[string]string, len(*&mcatchAllAction))
-	for k, v := range *&mcatchAllAction {
+	mAction := d.Get("action").(map[string]interface{})
+	action := make(map[string]string, len(*&mAction))
+	for k, v := range *&mAction {
 		if k != "route_to" {
-			return diag.Errorf("%s is not a valid catch all action. Valid catch_all_actions are: route_to", k)
+			return diag.Errorf("%s is not a valid action. Valid actions are: route_to", k)
 		}
-		catchAllAction[k] = v.(string)
+		action[k] = v.(string)
 	}
-	req.CatchAllAction = catchAllAction
+	req.Action = action
 
-	tflog.Info(ctx, "Creating GER Ruleset", tf.M{
-		"req": req,
-	})
-	gerRuleset, err := client.CreateGERRuleset(ctx, d.Get("ger_id").(string), req)
+	tflog.Info(ctx, "Creating GER Ruleset Rule", tf.M{})
+	gerRulesetRules, err := client.CreateGERRulesetRules(ctx, d.Get("ger_id").(string), api.GERAlertSource{
+		Name:    alertSourceShortName,
+		Version: alertSourceVersion,
+	}, req)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	gerRulesetID := strconv.FormatUint(uint64(gerRuleset.ID), 10)
-	d.SetId(gerRulesetID)
-	d.Set("alert_source_shortname", req.AlertSourceShortName)
-	d.Set("alert_source_version", req.AlertSourceVersion)
+	gerRulesetRulesID := strconv.FormatUint(uint64(gerRulesetRules.ID), 10)
+	d.SetId(gerRulesetRulesID)
+	d.Set("alert_source_shortname", alertSourceShortName)
+	d.Set("alert_source_version", alertSourceVersion)
 
-	return resourceGERRulesetRead(ctx, d, meta)
+	return resourceGERRulesetRuleRead(ctx, d, meta)
 }
 
-func resourceGERRulesetRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceGERRulesetRuleRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	tflog.Info(ctx, "Reading GER Ruleset", tf.M{
+	tflog.Info(ctx, "Reading GER Ruleset Rule", tf.M{
 		"id": d.Id(),
 	})
 
@@ -157,7 +170,7 @@ func resourceGERRulesetRead(ctx context.Context, d *schema.ResourceData, meta an
 		Version: d.Get("alert_source_version").(string),
 	}
 
-	gerRuleset, err := client.GetGERRulesetByAlertSource(ctx, d.Get("ger_id").(string), alertSourceData)
+	gerRulesetRules, err := client.GetGERRulesetRulesById(ctx, d.Get("ger_id").(string), d.Id(), alertSourceData)
 	if err != nil {
 		if api.IsResourceNotFoundError(err) {
 			d.SetId("")
@@ -166,17 +179,20 @@ func resourceGERRulesetRead(ctx context.Context, d *schema.ResourceData, meta an
 		return diag.FromErr(err)
 	}
 
-	if err = tf.EncodeAndSet(gerRuleset, d); err != nil {
+	if err = tf.EncodeAndSet(gerRulesetRules, d); err != nil {
 		return diag.FromErr(err)
 	}
 
 	return nil
 }
 
-func resourceGERRulesetUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceGERRulesetRuleUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	req := &api.GER_Ruleset{}
+	req := &api.GER_Ruleset_Rules{
+		Description: d.Get("description").(string),
+		Expression:  d.Get("expression").(string),
+	}
 
 	if d.HasChange("alert_source") {
 		prevAlertSource, _ := d.GetChange("alert_source")
@@ -186,32 +202,32 @@ func resourceGERRulesetUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("alert_source can only be set during creation.")
 	}
 
-	mcatchAllAction := d.Get("catch_all_action").(map[string]interface{})
-	catchAllAction := make(map[string]string, len(*&mcatchAllAction))
-	for k, v := range *&mcatchAllAction {
+	mAction := d.Get("action").(map[string]interface{})
+	action := make(map[string]string, len(*&mAction))
+	for k, v := range *&mAction {
 		if k != "route_to" {
-			return diag.Errorf("%s is not a valid catch all action. Valid catch_all_actions are: route_to", k)
+			return diag.Errorf("%s is not a valid action. Valid actions are: route_to", k)
 		}
-		catchAllAction[k] = v.(string)
+		action[k] = v.(string)
 	}
-	req.CatchAllAction = catchAllAction
+	req.Action = action
 
-	tflog.Info(ctx, "Updating GER Ruleset", tf.M{
+	tflog.Info(ctx, "Updating GER Ruleset Rule", tf.M{
 		"id": d.Id(),
 	})
 
-	_, err := client.UpdateGERRuleset(ctx, d.Get("ger_id").(string), api.GERAlertSource{
-		Name:    req.AlertSourceName,
-		Version: req.AlertSourceVersion,
+	_, err := client.UpdateGERRulesetRules(ctx, d.Get("ger_id").(string), d.Id(), api.GERAlertSource{
+		Name:    d.Get("alert_source_shortname").(string),
+		Version: d.Get("alert_source_version").(string),
 	}, req)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	return resourceGERRulesetRead(ctx, d, meta)
+	return resourceGERRulesetRuleRead(ctx, d, meta)
 }
 
-func resourceGERRulesetDelete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceGERRulesetRuleDelete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	alertSource := api.GERAlertSource{
@@ -219,7 +235,7 @@ func resourceGERRulesetDelete(ctx context.Context, d *schema.ResourceData, meta 
 		Version: d.Get("alert_source_version").(string),
 	}
 
-	_, err := client.DeleteGERRuleset(ctx, d.Get("ger_id").(string), alertSource)
+	_, err := client.DeleteGERRulesetRules(ctx, d.Get("ger_id").(string), d.Id(), alertSource)
 	if err != nil {
 		if api.IsResourceNotFoundError(err) {
 			d.SetId("")
