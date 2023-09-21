@@ -15,7 +15,7 @@ import (
 
 func resourceGERRulesetRulesOrdering() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset Rules ordering resource.",
+		Description: "GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.",
 
 		CreateContext: resourceGERRulesetRulesOrderingUpdate,
 		ReadContext:   resourceGERRulesetRulesOrderingRead,

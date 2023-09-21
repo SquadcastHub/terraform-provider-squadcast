@@ -3,12 +3,12 @@
 page_title: "squadcast_ger_ruleset_rules_ordering Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  GER Ruleset Rules ordering resource.
+  GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.
 ---
 
 # squadcast_ger_ruleset_rules_ordering (Resource)
 
-GER Ruleset Rules ordering resource.
+GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.
 
 
 
