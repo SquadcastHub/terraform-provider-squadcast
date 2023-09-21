@@ -75,7 +75,7 @@ func resourceGERRulesetRule() *schema.Resource {
 
 func resourceGERRulesetRuleImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
-	gerID, alertSourceName, err := parse2PartImportID(d.Id())
+	gerID, alertSourceName, ruleID, err := parse3PartImportID(d.Id())
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +101,7 @@ func resourceGERRulesetRuleImport(ctx context.Context, d *schema.ResourceData, m
 	d.Set("alert_source_shortname", alertSourceShortName)
 	d.Set("alert_source_version", alertSourceVersion)
 	d.Set("ger_id", gerID)
+	d.SetId(ruleID)
 
 	return []*schema.ResourceData{d}, nil
 }
