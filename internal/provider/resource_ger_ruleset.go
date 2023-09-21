@@ -15,7 +15,7 @@ import (
 
 func resourceGERRuleset() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset resource.",
+		Description: "GER Ruleset is a collection of rules that are used to route alerts to the correct service based on the alert source.",
 
 		CreateContext: resourceGERRulesetCreate,
 		ReadContext:   resourceGERRulesetRead,
@@ -37,7 +37,7 @@ func resourceGERRuleset() *schema.Resource {
 				Required:    true,
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source.",
+				Description: "GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations)",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -52,7 +52,7 @@ func resourceGERRuleset() *schema.Resource {
 				Computed:    true,
 			},
 			"catch_all_action": {
-				Description: "GER Ruleset catch all action.",
+				Description: "Catch all action allows user to select a service, this will act as a fallback service and alert source will be routed to the selected service.",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -84,7 +84,7 @@ func resourceGERRulesetImport(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -116,7 +116,7 @@ func resourceGERRulesetCreate(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
 	}
 
 	mcatchAllAction := d.Get("catch_all_action").(map[string]interface{})

@@ -45,7 +45,7 @@ func resourceGERRulesetRulesOrdering() *schema.Resource {
 				},
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.",
+				Description: "GER Ruleset alert source. Find all alert sources on https://www.squadcast.com/integrations",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -84,7 +84,7 @@ func resourceGERRulesetRulesOrderingImport(ctx context.Context, d *schema.Resour
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -148,7 +148,7 @@ func resourceGERRulesetRulesOrderingUpdate(ctx context.Context, d *schema.Resour
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
 	}
 
 	ordering := d.Get("ordering").([]interface{})

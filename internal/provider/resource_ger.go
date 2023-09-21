@@ -14,7 +14,7 @@ import (
 
 func resourceGER() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER resource.",
+		Description: "Global Event Rules aims to simplify the process of configuring alerting in Squadcast by allowing users to create global rulesets for routing alerts to the correct service.",
 
 		CreateContext: resourceGERCreate,
 		ReadContext:   resourceGERRead,

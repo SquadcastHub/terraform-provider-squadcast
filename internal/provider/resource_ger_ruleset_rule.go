@@ -15,7 +15,7 @@ import (
 
 func resourceGERRulesetRule() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset Rule resource.",
+		Description: "GER Ruleset Rule is basically a rule that is used to route alerts matching an expression to the correct service based on the alert source.",
 
 		CreateContext: resourceGERRulesetRuleCreate,
 		ReadContext:   resourceGERRulesetRuleRead,
@@ -42,7 +42,7 @@ func resourceGERRulesetRule() *schema.Resource {
 				Optional:    true,
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source.",
+				Description: "GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations).",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -94,7 +94,7 @@ func resourceGERRulesetRuleImport(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -128,7 +128,7 @@ func resourceGERRulesetRuleCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Navigate to Services -> Select any service -> Click Add Alert Source -> Copy the Alert Source name.", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
 	}
 
 	mAction := d.Get("action").(map[string]interface{})
