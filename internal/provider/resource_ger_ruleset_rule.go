@@ -15,7 +15,7 @@ import (
 
 func resourceGERRulesetRule() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset Rule is basically a rule that is used to route alerts matching an expression to the correct service based on the alert source.",
+		Description: "GER Ruleset Rules are a set of conditions defined within a Global Event Ruleset. These rules have expressions, whose evaluation will determine the destination service for the incoming events.",
 
 		CreateContext: resourceGERRulesetRuleCreate,
 		ReadContext:   resourceGERRulesetRuleRead,
@@ -42,27 +42,27 @@ func resourceGERRulesetRule() *schema.Resource {
 				Optional:    true,
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations).",
+				Description: "An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"alert_source_version": {
-				Description: "GER Ruleset alert source version.",
+				Description: "Version of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"alert_source_shortname": {
-				Description: "GER Ruleset alert source shortname.",
+				Description: "Shortname of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"expression": {
-				Description: "GER Ruleset Rule expression.",
+				Description: "An expression is a single condition or a set of conditions that must be met for the rule to take action, such as routing the incoming event to a specific service.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"action": {
-				Description: "GER Ruleset Rule action.",
+				Description: "Rule Action refers to the designated destination service to which an event should be directed towards, whenever a rule expression is true.",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem: &schema.Schema{

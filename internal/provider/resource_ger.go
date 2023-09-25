@@ -14,7 +14,7 @@ import (
 
 func resourceGER() *schema.Resource {
 	return &schema.Resource{
-		Description: "Global Event Rules aims to simplify the process of configuring alerting in Squadcast by allowing users to create global rulesets for routing alerts to the correct service.",
+		Description: "Global Event Ruleset (GER) is a centralized set of rules that defines service routes for incoming events.",
 
 		CreateContext: resourceGERCreate,
 		ReadContext:   resourceGERRead,
@@ -48,7 +48,7 @@ func resourceGER() *schema.Resource {
 				Optional:    true,
 			},
 			"routing_key": {
-				Description: "GER routing key.",
+				Description: "Routing Key is an identifier used to determine the ruleset that an incoming event belongs to. It is a common key that associates multiple alert sources with their configured rules, ensuring events are routed to the appropriate services when the defined criteria are met.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},

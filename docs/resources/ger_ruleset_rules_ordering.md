@@ -3,12 +3,12 @@
 page_title: "squadcast_ger_ruleset_rules_ordering Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.
+  The ordering of rules within a Ruleset dictates the sequence in which rules are evaluated for an alert source. These rules are evaluated sequentially, starting from the top.
 ---
 
 # squadcast_ger_ruleset_rules_ordering (Resource)
 
-GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.
+The ordering of rules within a Ruleset dictates the sequence in which rules are evaluated for an alert source. These rules are evaluated sequentially, starting from the top.
 
 ## Example Usage
 
@@ -75,14 +75,14 @@ resource "squadcast_ger_ruleset_rules_ordering" "rule_ordering" {
 
 ### Required
 
-- `alert_source` (String) GER Ruleset alert source. Find all alert sources on https://www.squadcast.com/integrations
+- `alert_source` (String) An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).
 - `ger_id` (String) GER id.
 - `ordering` (List of String) GER Ruleset Rule Ordering.
 
 ### Read-Only
 
-- `alert_source_shortname` (String) GER Ruleset alert source shortname.
-- `alert_source_version` (String) GER Ruleset alert source version.
+- `alert_source_shortname` (String) Shortname of the linked alert source.
+- `alert_source_version` (String) Version of the linked alert source.
 - `id` (String) GER Ruleset id.
 
 ## Import

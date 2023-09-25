@@ -15,7 +15,7 @@ import (
 
 func resourceGERRulesetRulesOrdering() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset Rules ordering determines the order in which the rules are evaluated for an alert source in a ruleset. The rules are evaluated from top to bottom. The first rule that matches the alert source will be used to route the alert to the service.",
+		Description: "The ordering of rules within a Ruleset dictates the sequence in which rules are evaluated for an alert source. These rules are evaluated sequentially, starting from the top.",
 
 		CreateContext: resourceGERRulesetRulesOrderingUpdate,
 		ReadContext:   resourceGERRulesetRulesOrderingRead,
@@ -45,17 +45,17 @@ func resourceGERRulesetRulesOrdering() *schema.Resource {
 				},
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source. Find all alert sources on https://www.squadcast.com/integrations",
+				Description: "An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"alert_source_version": {
-				Description: "GER Ruleset alert source version.",
+				Description: "Version of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"alert_source_shortname": {
-				Description: "GER Ruleset alert source shortname.",
+				Description: "Shortname of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},

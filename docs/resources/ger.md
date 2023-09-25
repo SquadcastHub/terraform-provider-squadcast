@@ -3,12 +3,12 @@
 page_title: "squadcast_ger Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Global Event Rules aims to simplify the process of configuring alerting in Squadcast by allowing users to create global rulesets for routing alerts to the correct service.
+  Global Event Ruleset (GER) is a centralized set of rules that defines service routes for incoming events.
 ---
 
 # squadcast_ger (Resource)
 
-Global Event Rules aims to simplify the process of configuring alerting in Squadcast by allowing users to create global rulesets for routing alerts to the correct service.
+Global Event Ruleset (GER) is a centralized set of rules that defines service routes for incoming events.
 
 ## Example Usage
 
@@ -49,7 +49,7 @@ resource "squadcast_ger" "ger" {
 ### Read-Only
 
 - `id` (String) GER id.
-- `routing_key` (String) GER routing key.
+- `routing_key` (String) Routing Key is an identifier used to determine the ruleset that an incoming event belongs to. It is a common key that associates multiple alert sources with their configured rules, ensuring events are routed to the appropriate services when the defined criteria are met.
 
 <a id="nestedblock--entity_owner"></a>
 ### Nested Schema for `entity_owner`

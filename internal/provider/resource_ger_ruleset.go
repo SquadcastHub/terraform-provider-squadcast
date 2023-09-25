@@ -15,7 +15,7 @@ import (
 
 func resourceGERRuleset() *schema.Resource {
 	return &schema.Resource{
-		Description: "GER Ruleset is a collection of rules that are used to route alerts to the correct service based on the alert source.",
+		Description: "GER Ruleset is a set of rules and configurations in Squadcast. It allows users to define how alerts are routed to services without the need to set up individual webhooks for each alert source.",
 
 		CreateContext: resourceGERRulesetCreate,
 		ReadContext:   resourceGERRulesetRead,
@@ -37,22 +37,22 @@ func resourceGERRuleset() *schema.Resource {
 				Required:    true,
 			},
 			"alert_source": {
-				Description: "GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations)",
+				Description: "An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"alert_source_version": {
-				Description: "GER Ruleset alert source version.",
+				Description: "Version of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"alert_source_shortname": {
-				Description: "GER Ruleset alert source shortname.",
+				Description: "Shortname of the linked alert source.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"catch_all_action": {
-				Description: "Catch all action allows user to select a service, this will act as a fallback service and alert source will be routed to the selected service.",
+				Description: "The \"Catch-All Action\", when configured, specifies a fall back service. If none of the defined rules for an incoming event evaluate to true, the incoming event is routed to the Catch-All service, ensuring no events are missed.",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem: &schema.Schema{

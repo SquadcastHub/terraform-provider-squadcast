@@ -3,12 +3,12 @@
 page_title: "squadcast_ger_ruleset_rule Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  GER Ruleset Rule is basically a rule that is used to route alerts matching an expression to the correct service based on the alert source.
+  GER Ruleset Rules are a set of conditions defined within a Global Event Ruleset. These rules have expressions, whose evaluation will determine the destination service for the incoming events.
 ---
 
 # squadcast_ger_ruleset_rule (Resource)
 
-GER Ruleset Rule is basically a rule that is used to route alerts matching an expression to the correct service based on the alert source.
+GER Ruleset Rules are a set of conditions defined within a Global Event Ruleset. These rules have expressions, whose evaluation will determine the destination service for the incoming events.
 
 ## Example Usage
 
@@ -56,19 +56,19 @@ resource "squadcast_ger_ruleset_rule" "example_ger_ruleset_rule" {
 
 ### Required
 
-- `alert_source` (String) GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations).
-- `expression` (String) GER Ruleset Rule expression.
+- `alert_source` (String) An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).
+- `expression` (String) An expression is a single condition or a set of conditions that must be met for the rule to take action, such as routing the incoming event to a specific service.
 - `ger_id` (String) GER id.
 
 ### Optional
 
-- `action` (Map of String) GER Ruleset Rule action.
+- `action` (Map of String) Rule Action refers to the designated destination service to which an event should be directed towards, whenever a rule expression is true.
 - `description` (String) GER Ruleset Rule description.
 
 ### Read-Only
 
-- `alert_source_shortname` (String) GER Ruleset alert source shortname.
-- `alert_source_version` (String) GER Ruleset alert source version.
+- `alert_source_shortname` (String) Shortname of the linked alert source.
+- `alert_source_version` (String) Version of the linked alert source.
 - `id` (String) GER Ruleset id.
 
 ## Import

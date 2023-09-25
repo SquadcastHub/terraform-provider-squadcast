@@ -3,12 +3,12 @@
 page_title: "squadcast_ger_ruleset Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  GER Ruleset is a collection of rules that are used to route alerts to the correct service based on the alert source.
+  GER Ruleset is a set of rules and configurations in Squadcast. It allows users to define how alerts are routed to services without the need to set up individual webhooks for each alert source.
 ---
 
 # squadcast_ger_ruleset (Resource)
 
-GER Ruleset is a collection of rules that are used to route alerts to the correct service based on the alert source.
+GER Ruleset is a set of rules and configurations in Squadcast. It allows users to define how alerts are routed to services without the need to set up individual webhooks for each alert source.
 
 ## Example Usage
 
@@ -46,17 +46,17 @@ resource "squadcast_ger_ruleset" "example_ger_ruleset" {
 
 ### Required
 
-- `alert_source` (String) GER Ruleset alert source. Find all alert sources [here](https://www.squadcast.com/integrations)
+- `alert_source` (String) An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).
 - `ger_id` (String) GER id.
 
 ### Optional
 
-- `catch_all_action` (Map of String) Catch all action allows user to select a service, this will act as a fallback service and alert source will be routed to the selected service.
+- `catch_all_action` (Map of String) The "Catch-All Action", when configured, specifies a fall back service. If none of the defined rules for an incoming event evaluate to true, the incoming event is routed to the Catch-All service, ensuring no events are missed.
 
 ### Read-Only
 
-- `alert_source_shortname` (String) GER Ruleset alert source shortname.
-- `alert_source_version` (String) GER Ruleset alert source version.
+- `alert_source_shortname` (String) Shortname of the linked alert source.
+- `alert_source_version` (String) Version of the linked alert source.
 - `id` (String) GER Ruleset id.
 
 ## Import
