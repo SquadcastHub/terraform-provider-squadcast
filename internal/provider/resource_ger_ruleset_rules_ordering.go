@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -69,27 +67,14 @@ func resourceGERRulesetRulesOrderingImport(ctx context.Context, d *schema.Resour
 	if err != nil {
 		return nil, err
 	}
-	alertSourceShortName, alertSourceVersion := "", ""
-	alertSources, err := client.ListAlertSources(ctx)
+	alertSource, err := api.GetAlertSourceDetailsByName(client, ctx, alertSourceName)
 	if err != nil {
 		return nil, err
 	}
-	isValidAlertSource := false
-	for _, alertSourceData := range alertSources {
-		if alertSourceData.Type == alertSourceName {
-			alertSourceShortName = alertSourceData.ShortName
-			alertSourceVersion = alertSourceData.Version
-			isValidAlertSource = true
-			break
-		}
-	}
-	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSourceName))
-	}
 
 	d.Set("alert_source", alertSourceName)
-	d.Set("alert_source_shortname", alertSourceShortName)
-	d.Set("alert_source_version", alertSourceVersion)
+	d.Set("alert_source_shortname", alertSource.ShortName)
+	d.Set("alert_source_version", alertSource.Version)
 	d.Set("ger_id", gerID)
 
 	return []*schema.ResourceData{d}, nil
@@ -132,23 +117,10 @@ func resourceGERRulesetRulesOrderingUpdate(ctx context.Context, d *schema.Resour
 
 	req := &api.GERReorderRulesetRulesReq{}
 
-	alertSource := d.Get("alert_source").(string)
-	alertSources, err := client.ListAlertSources(ctx)
+	alertSourceName := d.Get("alert_source").(string)
+	alertSource, err := api.GetAlertSourceDetailsByName(client, ctx, alertSourceName)
 	if err != nil {
 		return diag.FromErr(err)
-	}
-	alertSourceShortName, alertSourceVersion := "", ""
-	isValidAlertSource := false
-	for _, alertSourceData := range alertSources {
-		if alertSourceData.Type == alertSource {
-			alertSourceShortName = alertSourceData.ShortName
-			alertSourceVersion = alertSourceData.Version
-			isValidAlertSource = true
-			break
-		}
-	}
-	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSource)
 	}
 
 	ordering := d.Get("ordering").([]interface{})
@@ -168,8 +140,8 @@ func resourceGERRulesetRulesOrderingUpdate(ctx context.Context, d *schema.Resour
 	})
 
 	gerRulesetRulesOrdering, err := client.UpdateGERRulesetRulesOrdering(ctx, d.Get("ger_id").(string), api.GERAlertSource{
-		Name:    alertSourceShortName,
-		Version: alertSourceVersion,
+		Name:    alertSource.ShortName,
+		Version: alertSource.Version,
 	}, req)
 	if err != nil {
 		return diag.FromErr(err)
@@ -177,8 +149,8 @@ func resourceGERRulesetRulesOrderingUpdate(ctx context.Context, d *schema.Resour
 
 	id := strconv.FormatUint(uint64(gerRulesetRulesOrdering.ID), 10)
 	d.SetId(id)
-	d.Set("alert_source_shortname", alertSourceShortName)
-	d.Set("alert_source_version", alertSourceVersion)
+	d.Set("alert_source_shortname", alertSource.ShortName)
+	d.Set("alert_source_version", alertSource.Version)
 
 	return resourceGERRulesetRulesOrderingRead(ctx, d, meta)
 }

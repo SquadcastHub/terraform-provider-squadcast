@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -69,27 +67,15 @@ func resourceGERRulesetImport(ctx context.Context, d *schema.ResourceData, meta 
 	if err != nil {
 		return nil, err
 	}
-	alertSourceShortName, alertSourceVersion := "", ""
-	alertSources, err := client.ListAlertSources(ctx)
+
+	alertSource, err := api.GetAlertSourceDetailsByName(client, ctx, alertSourceName)
 	if err != nil {
 		return nil, err
 	}
-	isValidAlertSource := false
-	for _, alertSourceData := range alertSources {
-		if alertSourceData.Type == alertSourceName {
-			alertSourceShortName = alertSourceData.ShortName
-			alertSourceVersion = alertSourceData.Version
-			isValidAlertSource = true
-			break
-		}
-	}
-	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSourceName))
-	}
 
 	d.Set("alert_source", alertSourceName)
-	d.Set("alert_source_shortname", alertSourceShortName)
-	d.Set("alert_source_version", alertSourceVersion)
+	d.Set("alert_source_shortname", alertSource.ShortName)
+	d.Set("alert_source_version", alertSource.Version)
 	d.Set("ger_id", gerID)
 
 	return []*schema.ResourceData{d}, nil
@@ -100,23 +86,13 @@ func resourceGERRulesetCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	req := &api.GER_Ruleset{}
 
-	alertSource := d.Get("alert_source").(string)
-	alertSources, err := client.ListAlertSources(ctx)
+	alertSourceName := d.Get("alert_source").(string)
+	alertSource, err := api.GetAlertSourceDetailsByName(client, ctx, alertSourceName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	isValidAlertSource := false
-	for _, alertSourceData := range alertSources {
-		if alertSourceData.Type == alertSource {
-			req.AlertSourceShortName = alertSourceData.ShortName
-			req.AlertSourceVersion = alertSourceData.Version
-			isValidAlertSource = true
-			break
-		}
-	}
-	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSource)
-	}
+	req.AlertSourceShortName = alertSource.ShortName
+	req.AlertSourceVersion = alertSource.Version
 
 	mcatchAllAction := d.Get("catch_all_action").(map[string]interface{})
 	catchAllAction := make(map[string]string, len(*&mcatchAllAction))
