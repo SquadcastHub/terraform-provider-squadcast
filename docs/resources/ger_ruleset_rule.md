@@ -66,7 +66,7 @@ resource "squadcast_ger_ruleset_rule" "example_ger_ruleset_rule" {
 
 - `alert_source_shortname` (String) Shortname of the linked alert source.
 - `alert_source_version` (String) Version of the linked alert source.
-- `id` (String) GER Ruleset id.
+- `id` (String) GER Ruleset rule id.
 
 ## Import
 

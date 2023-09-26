@@ -27,7 +27,7 @@ func resourceGERRulesetRule() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "GER Ruleset id.",
+				Description: "GER Ruleset rule id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
