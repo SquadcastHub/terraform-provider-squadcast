@@ -146,8 +146,11 @@ func resourceGERRead(ctx context.Context, d *schema.ResourceData, meta any) diag
 func resourceGERUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
+	if d.HasChange("team_id") {
+		return diag.Errorf("team_id can only be set during resource creation")
+	}
+
 	req := &api.GER{
-		TeamID:      d.Get("team_id").(string),
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 	}

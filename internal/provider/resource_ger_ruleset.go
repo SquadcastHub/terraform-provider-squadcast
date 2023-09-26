@@ -84,7 +84,7 @@ func resourceGERRulesetImport(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -115,7 +115,7 @@ func resourceGERRulesetCreate(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSource)
 	}
 
 	mcatchAllAction := d.Get("catch_all_action").(map[string]interface{})
@@ -200,8 +200,8 @@ func resourceGERRulesetUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	})
 
 	_, err := client.UpdateGERRuleset(ctx, d.Get("ger_id").(string), api.GERAlertSource{
-		Name:    req.AlertSourceName,
-		Version: req.AlertSourceVersion,
+		Name:    d.Get("alert_source_shortname").(string),
+		Version: d.Get("alert_source_version").(string),
 	}, req)
 	if err != nil {
 		return diag.FromErr(err)

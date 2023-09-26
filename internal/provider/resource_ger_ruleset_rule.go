@@ -39,7 +39,7 @@ func resourceGERRulesetRule() *schema.Resource {
 			"description": {
 				Description: "GER Ruleset Rule description.",
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 			},
 			"alert_source": {
 				Description: "An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).",
@@ -64,7 +64,7 @@ func resourceGERRulesetRule() *schema.Resource {
 			"action": {
 				Description: "Rule Action refers to the designated destination service to which an event should be directed towards, whenever a rule expression is true.",
 				Type:        schema.TypeMap,
-				Optional:    true,
+				Required:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -94,7 +94,7 @@ func resourceGERRulesetRuleImport(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -129,7 +129,7 @@ func resourceGERRulesetRuleCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSource)
 	}
 
 	mAction := d.Get("action").(map[string]interface{})

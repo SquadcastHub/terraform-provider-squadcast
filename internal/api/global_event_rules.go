@@ -11,7 +11,7 @@ import (
 )
 
 type GER struct {
-	ID          uint         `json:"id" tf:"id"`
+	ID          uint         `json:"id,omitempty" tf:"id"`
 	TeamID      string       `json:"owner_id" tf:"team_id"`
 	Name        string       `json:"name" tf:"name"`
 	Description string       `json:"description" tf:"description"`
@@ -20,7 +20,7 @@ type GER struct {
 }
 
 type GER_Ruleset struct {
-	ID                   uint              `json:"id" tf:"id"`
+	ID                   uint              `json:"id,omitempty" tf:"id"`
 	GER_ID               uint              `json:"global_event_rule_id" tf:"ger_id"`
 	AlertSourceName      string            `json:"alert_source" tf:"-"`
 	AlertSourceShortName string            `json:"alert_source_shortname" tf:"alert_source_shortname"`
@@ -30,7 +30,7 @@ type GER_Ruleset struct {
 }
 
 type GER_Ruleset_Rules struct {
-	ID          uint              `json:"id" tf:"id"`
+	ID          uint              `json:"id,omitempty" tf:"id"`
 	GER_ID      uint              `json:"global_event_rule_id" tf:"ger_id"`
 	Description string            `json:"description,omitempty" tf:"description"`
 	Expression  string            `json:"expression,omitempty" tf:"expression"`
@@ -76,11 +76,11 @@ func (ger *GER_Ruleset) Encode() (map[string]interface{}, error) {
 	gerID := strconv.FormatUint(uint64(ger.GER_ID), 10)
 	m["ger_id"] = gerID
 
-	catchAllAction, err := tf.Encode(ger.CatchAllAction)
-	if err != nil {
-		return nil, err
+	if len(ger.CatchAllAction["route_to"]) > 0 {
+		m["catch_all_action"] = ger.CatchAllAction
+	} else {
+		m["catch_all_action"] = nil
 	}
-	m["catch_all_action"] = catchAllAction
 
 	return m, nil
 }

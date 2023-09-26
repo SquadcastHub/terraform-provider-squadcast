@@ -84,7 +84,7 @@ func resourceGERRulesetRulesOrderingImport(ctx context.Context, d *schema.Resour
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSourceName))
+		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSourceName))
 	}
 
 	d.Set("alert_source", alertSourceName)
@@ -148,7 +148,7 @@ func resourceGERRulesetRulesOrderingUpdate(ctx context.Context, d *schema.Resour
 		}
 	}
 	if !isValidAlertSource {
-		return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", alertSource)
+		return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", alertSource)
 	}
 
 	ordering := d.Get("ordering").([]interface{})

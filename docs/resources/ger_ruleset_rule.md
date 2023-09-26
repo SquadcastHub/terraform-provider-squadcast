@@ -56,14 +56,11 @@ resource "squadcast_ger_ruleset_rule" "example_ger_ruleset_rule" {
 
 ### Required
 
+- `action` (Map of String) Rule Action refers to the designated destination service to which an event should be directed towards, whenever a rule expression is true.
 - `alert_source` (String) An alert source refers to the origin of an event (alert), such as a monitoring tool. These alert sources are associated with specific rules in GER, determining where events from each source should be routed. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).
+- `description` (String) GER Ruleset Rule description.
 - `expression` (String) An expression is a single condition or a set of conditions that must be met for the rule to take action, such as routing the incoming event to a specific service.
 - `ger_id` (String) GER id.
-
-### Optional
-
-- `action` (Map of String) Rule Action refers to the designated destination service to which an event should be directed towards, whenever a rule expression is true.
-- `description` (String) GER Ruleset Rule description.
 
 ### Read-Only
 

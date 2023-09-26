@@ -121,7 +121,7 @@ func resourceService() *schema.Resource {
 				},
 			},
 			"alert_sources": {
-				Description: "List of active alert source names.",
+				Description: "List of active alert source names. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -224,7 +224,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 					break
 				}
 				if alertSource.Type != malertsource && alertSource.Type == alertSources[len(alertSources)-1].Type {
-					return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", malertsource)
+					return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", malertsource)
 				}
 			}
 		}
@@ -377,7 +377,7 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 					break
 				}
 				if alertSource.Type != malertsource && alertSource.Type == alertSources[len(alertSources)-1].Type {
-					return diag.Errorf("%s is not a valid alert source name. Find all alert sources on https://www.squadcast.com/integrations", malertsource)
+					return diag.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).", malertsource)
 				}
 			}
 		}
