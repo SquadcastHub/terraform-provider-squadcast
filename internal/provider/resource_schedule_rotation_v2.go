@@ -127,7 +127,7 @@ func resourceScheduleRotationV2() *schema.Resource {
 				Description:  "Unit of the custom rotation repeat pattern (day, week, month). Only applicable if period is set to custom.",
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"day", "week", "month"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"day", "week"}, false),
 			},
 			"change_participants_frequency": {
 				Description:  "Frequency with which participants change in the rotation.",
