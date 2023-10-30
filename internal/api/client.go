@@ -141,11 +141,11 @@ func IsResourceNotFoundError(e error) bool {
 func GraphQLRequest[TReq any](method string, client *Client, ctx context.Context, payload *TReq, variables map[string]interface{}) (*TReq, error) {
 	switch method {
 	case "query":
-		if err := GraphQLClient.WithDebug(true).Query(ctx, payload, variables); err != nil {
+		if err := GraphQLClient.WithDebug(false).Query(ctx, payload, variables); err != nil {
 			return nil, err
 		}
 	case "mutate":
-		if err := GraphQLClient.WithDebug(true).Mutate(ctx, payload, variables); err != nil {
+		if err := GraphQLClient.WithDebug(false).Mutate(ctx, payload, variables); err != nil {
 			return nil, err
 		}
 	default:
