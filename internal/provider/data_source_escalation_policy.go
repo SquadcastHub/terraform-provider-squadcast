@@ -20,7 +20,7 @@ func dataSourceEscalationPolicy() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "EscalationPolicy id.",
+				Description: "Escalation Policy id.",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
@@ -61,7 +61,7 @@ func dataSourceEscalationPolicy() *schema.Resource {
 				},
 			},
 			"repeat": {
-				Description: "You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once",
+				Description: "You can choose to repeat the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{
