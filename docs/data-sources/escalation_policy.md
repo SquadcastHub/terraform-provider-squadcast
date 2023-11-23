@@ -32,8 +32,8 @@ data "squadcast_escalation_policy" "test" {
 
 - `description` (String) Detailed description about the nature & purpose Escalation policy
 - `entity_owner` (List of Object) Escalation policy owner (see [below for nested schema](#nestedatt--entity_owner))
-- `id` (String) EscalationPolicy id.
-- `repeat` (List of Object) You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once (see [below for nested schema](#nestedatt--repeat))
+- `id` (String) Escalation Policy id.
+- `repeat` (List of Object) You can choose to repeat the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once (see [below for nested schema](#nestedatt--repeat))
 - `rules` (List of Object) Rules will have the details of who to notify and when to notify and how to notify them. (see [below for nested schema](#nestedatt--rules))
 
 <a id="nestedatt--entity_owner"></a>
