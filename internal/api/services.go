@@ -5,31 +5,66 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
 type Service struct {
-	ID                 string             `json:"id" tf:"id"`
-	Name               string             `json:"name" tf:"name"`
-	APIKey             string             `json:"api_key" tf:"api_key"`
-	Email              string             `json:"email" tf:"email"`
-	EmailPrefix        string             `json:"-" tf:"email_prefix"`
-	Description        string             `json:"description" tf:"description"`
-	EscalationPolicyID string             `json:"escalation_policy_id" tf:"escalation_policy_id"`
-	OnMaintenance      bool               `json:"on_maintenance" tf:"-"`
-	Owner              OwnerRef           `json:"owner" tf:"-"`
-	Maintainer         *ServiceMaintainer `json:"maintainer" tf:"maintainer"`
-	Tags               []ServiceTag       `json:"tags" tf:"tags"`
-	Dependencies       []string           `json:"depends" tf:"dependencies"`
-	ActiveAlertSources map[string]string  `json:"-" tf:"active_alert_source_endpoints"`
-	AlertSources       map[string]string  `json:"-" tf:"alert_source_endpoints"`
-	Slack              *SlackChannel      `json:"slack" tf:"-"`
+	ID                      string                    `json:"id" tf:"id"`
+	Name                    string                    `json:"name" tf:"name"`
+	APIKey                  string                    `json:"api_key" tf:"api_key"`
+	Email                   string                    `json:"email" tf:"email"`
+	EmailPrefix             string                    `json:"-" tf:"email_prefix"`
+	Description             string                    `json:"description" tf:"description"`
+	EscalationPolicyID      string                    `json:"escalation_policy_id" tf:"escalation_policy_id"`
+	OnMaintenance           bool                      `json:"on_maintenance" tf:"-"`
+	Owner                   OwnerRef                  `json:"owner" tf:"-"`
+	Maintainer              *ServiceMaintainer        `json:"maintainer" tf:"maintainer"`
+	Tags                    []ServiceTag              `json:"tags" tf:"tags"`
+	Dependencies            []string                  `json:"depends" tf:"dependencies"`
+	ActiveAlertSources      map[string]string         `json:"-" tf:"active_alert_source_endpoints"`
+	AlertSources            map[string]string         `json:"-" tf:"alert_source_endpoints"`
+	Slack                   *SlackChannel             `json:"slack" tf:"-"`
+	DelayNotificationConfig *NotificationsDelayConfig `json:"delay_notification_config" tf:"delay_notification_config"`
 }
 
 type SlackChannel struct {
 	ChannelID string `json:"channel_id" tf:"-"`
+}
+
+type NotificationsDelayConfig struct {
+	IsEnabled              bool                       `json:"is_enabled" tf:"is_enabled"`
+	Timezone               string                     `json:"timezone" tf:"timezone"`
+	FixedTimeslotConfig    *FixedTimeslotConfig       `json:"fixed_timeslot_config,omitempty" tf:"fixed_timeslot_config"`
+	CustomTimeslotsEnabled bool                       `json:"custom_timeslots_enabled" tf:"custom_timeslots_enabled"`
+	CustomTimeslots        map[string][]DelayTimeSlot `json:"custom_timeslots,omitempty" tf:"custom_timeslots"`
+	AssignedTo             *AssignTo                  `json:"assigned_to" tf:"assigned_to"`
+}
+type AssignTo struct {
+	ID   string `json:"id,omitempty" tf:"id"`
+	Type string `json:"type,omitempty" tf:"type"`
+}
+type FixedTimeslotConfig struct {
+	DelayTimeSlot
+	RepeatOnDays []int `json:"repeat_days,omitempty" tf:"repeat_days"`
+}
+type DelayTimeSlot struct {
+	StartTime string `json:"start_time,omitempty" tf:"start_time"`
+	EndTime   string `json:"end_time,omitempty" tf:"end_time"`
+}
+
+var days = []string{"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
+var DayOfWeekMap = map[string]time.Weekday{
+	"sunday":    time.Sunday,
+	"monday":    time.Monday,
+	"tuesday":   time.Tuesday,
+	"wednesday": time.Wednesday,
+	"thursday":  time.Thursday,
+	"friday":    time.Friday,
+	"saturday":  time.Saturday,
 }
 
 func (serviceTag ServiceTag) Encode() (tf.M, error) {
@@ -63,6 +98,51 @@ func (s *Service) Encode() (tf.M, error) {
 		m["slack_channel_id"] = s.Slack.ChannelID
 	}
 
+	if s.DelayNotificationConfig != nil {
+		delayConfig := tf.M{
+			"is_enabled":               s.DelayNotificationConfig.IsEnabled,
+			"timezone":                 s.DelayNotificationConfig.Timezone,
+			"custom_timeslots_enabled": s.DelayNotificationConfig.CustomTimeslotsEnabled,
+		}
+		if s.DelayNotificationConfig.FixedTimeslotConfig != nil {
+			if s.DelayNotificationConfig.FixedTimeslotConfig.StartTime != "" && s.DelayNotificationConfig.FixedTimeslotConfig.EndTime != "" && len(s.DelayNotificationConfig.FixedTimeslotConfig.RepeatOnDays) > 0 {
+				repeatDays := make([]string, 0, len(s.DelayNotificationConfig.FixedTimeslotConfig.RepeatOnDays))
+				for _, repeatDay := range s.DelayNotificationConfig.FixedTimeslotConfig.RepeatOnDays {
+					repeatDays = append(repeatDays, strings.ToLower(time.Weekday(repeatDay).String()))
+				}
+				delayConfig["fixed_timeslot_config"] = tf.List(tf.M{
+					"start_time":  s.DelayNotificationConfig.FixedTimeslotConfig.StartTime,
+					"end_time":    s.DelayNotificationConfig.FixedTimeslotConfig.EndTime,
+					"repeat_days": repeatDays,
+				})
+			}
+		}
+		if s.DelayNotificationConfig.AssignedTo != nil {
+			delayConfig["assigned_to"] = tf.List(tf.M{
+				"id":   s.DelayNotificationConfig.AssignedTo.ID,
+				"type": s.DelayNotificationConfig.AssignedTo.Type,
+			})
+		}
+		if s.DelayNotificationConfig.CustomTimeslots != nil {
+			customTimeSlots := make([]tf.M, 0, len(s.DelayNotificationConfig.CustomTimeslots))
+			for k, v := range s.DelayNotificationConfig.CustomTimeslots {
+				for _, slot := range v {
+					day, e := strconv.Atoi(k)
+					if e != nil {
+						return nil, e
+					}
+					customTimeSlots = append(customTimeSlots, tf.M{
+						"day_of_week": days[day],
+						"start_time":  slot.StartTime,
+						"end_time":    slot.EndTime,
+					})
+				}
+			}
+			delayConfig["custom_timeslots"] = customTimeSlots
+		}
+
+		m["delay_notification_config"] = tf.List(delayConfig)
+	}
 	return m, nil
 }
 
@@ -85,22 +165,24 @@ func (client *Client) ListServices(ctx context.Context, teamID string) ([]*Servi
 }
 
 type CreateServiceReq struct {
-	Name               string             `json:"name"`
-	Description        string             `json:"description"`
-	TeamID             string             `json:"owner_id"`
-	EscalationPolicyID string             `json:"escalation_policy_id"`
-	EmailPrefix        string             `json:"email_prefix"`
-	Maintainer         *ServiceMaintainer `json:"maintainer"`
-	Tags               []ServiceTag       `json:"tags"`
+	Name                    string                    `json:"name"`
+	Description             string                    `json:"description"`
+	TeamID                  string                    `json:"owner_id"`
+	EscalationPolicyID      string                    `json:"escalation_policy_id"`
+	EmailPrefix             string                    `json:"email_prefix"`
+	Maintainer              *ServiceMaintainer        `json:"maintainer"`
+	Tags                    []ServiceTag              `json:"tags"`
+	DelayNotificationConfig *NotificationsDelayConfig `json:"notification_delay_config"`
 }
 
 type UpdateServiceReq struct {
-	Name               string             `json:"name"`
-	Description        string             `json:"description"`
-	EscalationPolicyID string             `json:"escalation_policy_id"`
-	EmailPrefix        string             `json:"email_prefix"`
-	Maintainer         *ServiceMaintainer `json:"maintainer"`
-	Tags               []ServiceTag       `json:"tags"`
+	Name                    string                    `json:"name"`
+	Description             string                    `json:"description"`
+	EscalationPolicyID      string                    `json:"escalation_policy_id"`
+	EmailPrefix             string                    `json:"email_prefix"`
+	Maintainer              *ServiceMaintainer        `json:"maintainer"`
+	Tags                    []ServiceTag              `json:"tags"`
+	DelayNotificationConfig *NotificationsDelayConfig `json:"notification_delay_config"`
 }
 
 type ServiceMaintainer struct {
