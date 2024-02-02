@@ -3,12 +3,12 @@
 page_title: "squadcast_squad Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squads https://support.squadcast.com/docs/squads are smaller groups of members within Teams. Squads could correspond to groups of people that are responsible for specific projects within a Team.
+  Squads https://support.squadcast.com/docs/squads are smaller groups of members within Teams. Squads could correspond to groups of people that are responsible for specific projects within a Team. The name of the Escalation Policy must be unique within a Team.
 ---
 
 # squadcast_squad (Resource)
 
-[Squads](https://support.squadcast.com/docs/squads) are smaller groups of members within Teams. Squads could correspond to groups of people that are responsible for specific projects within a Team.
+[Squads](https://support.squadcast.com/docs/squads) are smaller groups of members within Teams. Squads could correspond to groups of people that are responsible for specific projects within a Team. The name of the Escalation Policy must be unique within a Team.
 
 ## Example Usage
 

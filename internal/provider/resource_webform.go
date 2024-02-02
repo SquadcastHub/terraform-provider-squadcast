@@ -14,7 +14,7 @@ import (
 
 func resourceWebform() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation.",
+		Description: "[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. The name of the Webform must be unique within and across Teams.",
 
 		CreateContext: resourceWebformCreate,
 		ReadContext:   resourceWebformRead,

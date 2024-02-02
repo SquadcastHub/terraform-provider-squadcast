@@ -13,7 +13,7 @@ import (
 
 func resourceTeamRole() *schema.Resource {
 	return &schema.Resource{
-		Description: "Use this resource to manage the Team roles and their permissions",
+		Description: "Use this resource to manage the Team roles and their permissions. The name of the Team Role must be unique within a Team.",
 
 		CreateContext: resourceTeamRoleCreate,
 		ReadContext:   resourceTeamRoleRead,

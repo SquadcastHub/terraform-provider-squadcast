@@ -3,12 +3,12 @@
 page_title: "squadcast_team_role Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Use this resource to manage the Team roles and their permissions
+  Use this resource to manage the Team roles and their permissions. The name of the Team Role must be unique within a Team.
 ---
 
 # squadcast_team_role (Resource)
 
-Use this resource to manage the Team roles and their permissions
+Use this resource to manage the Team roles and their permissions. The name of the Team Role must be unique within a Team.
 
 ## Example Usage
 

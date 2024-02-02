@@ -3,12 +3,12 @@
 page_title: "squadcast_schedule_rotation_v2 Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Schedule rotations https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
+  Schedule rotations https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Rotation must be unique within a Schedule.
 ---
 
 # squadcast_schedule_rotation_v2 (Resource)
 
-[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
+[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Rotation must be unique within a Schedule.
 
 ## Example Usage
 
@@ -108,7 +108,7 @@ resource "squadcast_schedule_rotation_v2" "rotations_with_custom_period" {
 ### Optional
 
 - `custom_period_frequency` (Number) Frequency of the custom rotation repeat pattern. Only applicable if period is set to custom.
-- `custom_period_unit` (String) Unit of the custom rotation repeat pattern (day, week, month). Only applicable if period is set to custom.
+- `custom_period_unit` (String) Unit of the custom rotation repeat pattern (day, week). Only applicable if period is set to custom.
 - `end_date` (String) Defines the end date of the schedule rotation.
 - `ends_after_iterations` (Number) Defines the number of iterations of the schedule rotation.
 - `participant_groups` (Block List) Ordered list of participant groups for the rotation. For each rotation the participant_groups are cycled through in order. (see [below for nested schema](#nestedblock--participant_groups))

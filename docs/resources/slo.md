@@ -3,12 +3,12 @@
 page_title: "squadcast_slo Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  squadcast_slo manages an SLO.
+  squadcast_slo manages an SLO. The name of the SLO must be unique within a Team.
 ---
 
 # squadcast_slo (Resource)
 
-`squadcast_slo` manages an SLO.
+`squadcast_slo` manages an SLO. The name of the SLO must be unique within a Team.
 
 ## Example Usage
 

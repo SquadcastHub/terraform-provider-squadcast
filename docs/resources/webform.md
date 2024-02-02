@@ -3,12 +3,12 @@
 page_title: "squadcast_webform Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation.
+  Squadcast Webforms https://support.squadcast.com/webforms/webforms allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. The name of the Webform must be unique within and across Teams.
 ---
 
 # squadcast_webform (Resource)
 
-[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation.
+[Squadcast Webforms](https://support.squadcast.com/webforms/webforms) allows organizations to expand their customer support by hosting public Webforms, so their customers can quickly create an alert from outside the Squadcast ecosystem. Not only this, but internal stakeholders can also leverage Webforms for easy alert creation. The name of the Webform must be unique within and across Teams.
 
 ## Example Usage
 
