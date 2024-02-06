@@ -13,7 +13,7 @@ import (
 
 func resourceTeam() *schema.Resource {
 	return &schema.Resource{
-		Description: "Use this resource to manage the Team meta details like Name, descripton etc.",
+		Description: "Use this resource to manage the Team meta details like Name, description etc. The name of the Team must be unique within an organization.",
 
 		CreateContext: resourceTeamCreate,
 		ReadContext:   resourceTeamRead,

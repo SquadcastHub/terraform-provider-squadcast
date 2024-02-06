@@ -3,12 +3,12 @@
 page_title: "squadcast_schedule Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast schedules https://support.squadcast.com/docs/schedules are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
+  Squadcast schedules https://support.squadcast.com/docs/schedules are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Schedule must be unique within and across Teams.
 ---
 
 # squadcast_schedule (Resource)
 
-[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.
+[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Schedule must be unique within and across Teams.
 
 ## Example Usage
 

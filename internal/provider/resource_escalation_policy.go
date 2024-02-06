@@ -15,7 +15,7 @@ import (
 
 func resourceEscalationPolicy() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Escalation Policies](https://support.squadcast.com/docs/escalation-policies) defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization.",
+		Description: "[Escalation Policies](https://support.squadcast.com/docs/escalation-policies) defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization. The name of the Escalation Policy must be unique within and across Teams.",
 
 		CreateContext: resourceEscalationPolicyCreate,
 		ReadContext:   resourceEscalationPolicyRead,

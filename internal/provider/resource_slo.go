@@ -14,7 +14,7 @@ import (
 
 func resourceSlo() *schema.Resource {
 	return &schema.Resource{
-		Description: "`squadcast_slo` manages an SLO.",
+		Description: "`squadcast_slo` manages an SLO. The name of the SLO must be unique within a Team.",
 
 		CreateContext: resourceSloCreate,
 		ReadContext:   resourceSloRead,

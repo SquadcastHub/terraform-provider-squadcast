@@ -15,7 +15,7 @@ import (
 
 func resourceScheduleV2() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Squadcast schedules v2](https://support.squadcast.com/docs/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.",
+		Description: "[Squadcast schedules v2](https://support.squadcast.com/docs/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Schedule must be unique within a Team.",
 
 		ReadContext:   resourceScheduleV2Read,
 		CreateContext: resourceScheduleV2Create,

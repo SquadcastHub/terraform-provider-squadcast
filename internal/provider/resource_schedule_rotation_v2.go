@@ -17,7 +17,7 @@ import (
 
 func resourceScheduleRotationV2() *schema.Resource {
 	return &schema.Resource{
-		Description:   "[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered.",
+		Description:   "[Schedule rotations](https://support.squadcast.com/schedules/schedules-new/adding-a-schedule#2.-choose-a-rotation-pattern) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. The name of the Rotation must be unique within a Schedule.",
 		ReadContext:   resourceScheduleRotationV2Read,
 		CreateContext: resourceScheduleRotationV2Create,
 		UpdateContext: resourceScheduleRotationV2Update,

@@ -3,12 +3,12 @@
 page_title: "squadcast_team Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Use this resource to manage the Team meta details like Name, descripton etc.
+  Use this resource to manage the Team meta details like Name, description etc. The name of the Team must be unique within an organization.
 ---
 
 # squadcast_team (Resource)
 
-Use this resource to manage the Team meta details like Name, descripton etc.
+Use this resource to manage the Team meta details like Name, description etc. The name of the Team must be unique within an organization.
 
 ## Example Usage
 

@@ -3,12 +3,12 @@
 page_title: "squadcast_escalation_policy Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Escalation Policies https://support.squadcast.com/docs/escalation-policies defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization.
+  Escalation Policies https://support.squadcast.com/docs/escalation-policies defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization. The name of the Escalation Policy must be unique within and across Teams.
 ---
 
 # squadcast_escalation_policy (Resource)
 
-[Escalation Policies](https://support.squadcast.com/docs/escalation-policies) defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization.
+[Escalation Policies](https://support.squadcast.com/docs/escalation-policies) defines rules indicating when and how alerts will escalate to various Users, Squads and (or) Schedules within your Organization. The name of the Escalation Policy must be unique within and across Teams.
 
 ## Example Usage
 
