@@ -3,12 +3,12 @@
 page_title: "squadcast_schedule_v2 Data Source - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Squadcast schedules https://support.squadcast.com/docs/schedules are used to manage on-call scheduling & determine who will be notified when an incident is triggered. Use this data source to get information about a specific schedule that you can use for other Squadcast resources.
+  Squadcast schedules v2 https://support.squadcast.com/schedules/schedules-new are used to manage on-call scheduling & determine who will be notified when an incident is triggered. Use this data source to get information about a specific schedule that you can use for other Squadcast resources.
 ---
 
 # squadcast_schedule_v2 (Data Source)
 
-[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. Use this data source to get information about a specific schedule that you can use for other Squadcast resources.
+[Squadcast schedules v2](https://support.squadcast.com/schedules/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. Use this data source to get information about a specific schedule that you can use for other Squadcast resources.
 
 ## Example Usage
 
@@ -52,5 +52,3 @@ Read-Only:
 - `color` (String)
 - `key` (String)
 - `value` (String)
-
-
