@@ -12,7 +12,7 @@ import (
 
 func dataSourceScheduleV2() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Squadcast schedules](https://support.squadcast.com/docs/schedules) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. " +
+		Description: "[Squadcast schedules v2](https://support.squadcast.com/schedules/schedules-new) are used to manage on-call scheduling & determine who will be notified when an incident is triggered. " +
 			"Use this data source to get information about a specific schedule that you can use for other Squadcast resources.",
 		ReadContext: dataSourceScheduleV2Read,
 		Schema: map[string]*schema.Schema{
