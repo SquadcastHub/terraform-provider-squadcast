@@ -136,7 +136,7 @@ Required:
 
 Optional:
 
-- `notification_channels` (List of String)
+- `notification_channels` (List of String) Notification channels to notify the targets. (SMS, Phone, Email, Push)
 - `repeat` (Block List, Max: 1) repeat this rule (see [below for nested schema](#nestedblock--rules--repeat))
 - `round_robin` (Block List, Max: 1) (see [below for nested schema](#nestedblock--rules--round_robin))
 
@@ -145,11 +145,8 @@ Optional:
 
 Required:
 
-- `type` (String)
-
-Read-Only:
-
-- `id` (String) The ID of this resource.
+- `id` (String) ID of the target
+- `type` (String) Type of the target. (user, squad, schedule, schedulev2)
 
 
 <a id="nestedblock--rules--repeat"></a>
