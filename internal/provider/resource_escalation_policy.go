@@ -111,10 +111,12 @@ func resourceEscalationPolicy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"id": {
-										Type:     schema.TypeString,
-										Required: true,
+										Description: "ID of the target",
+										Type:        schema.TypeString,
+										Required:    true,
 									},
 									"type": {
+										Description:  "Type of the target. (user, squad, schedule, schedulev2)",
 										Type:         schema.TypeString,
 										Required:     true,
 										ValidateFunc: validation.StringInSlice([]string{"user", "squad", "schedule", "schedulev2"}, false),
@@ -123,8 +125,9 @@ func resourceEscalationPolicy() *schema.Resource {
 							},
 						},
 						"notification_channels": {
-							Type:     schema.TypeList,
-							Optional: true,
+							Type:        schema.TypeList,
+							Description: "Notification channels to notify the targets. (SMS, Phone, Email, Push)",
+							Optional:    true,
 							Elem: &schema.Schema{
 								Type:         schema.TypeString,
 								ValidateFunc: validation.StringInSlice([]string{"SMS", "Phone", "Email", "Push"}, false),
