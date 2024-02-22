@@ -55,7 +55,7 @@ func resourceUser() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"user", "stakeholder", "account_owner"}, false),
 			},
 			"abilities": {
-				Description: "user abilities/permissions.",
+				Description: "user abilities/permissions. (manage-api-tokens, manage-billing, manage-extensions, manage-teams, manage-users, manage-webhooks, manage-organization-analytics, manage-postmortem-templates)",
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem: &schema.Schema{
