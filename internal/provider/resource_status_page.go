@@ -132,6 +132,12 @@ func resourceStatusPage() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"hide_from_search_engines": {
+				Description: "Determines if the status page is hidden from search engines.",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+			},
 		},
 	}
 }
@@ -164,6 +170,11 @@ func resourceStatusPageCreate(ctx context.Context, d *schema.ResourceData, meta 
 		AllowWebhookSubscription:     d.Get("allow_webhook_subscription").(bool),
 		AllowMaintenanceSubscription: d.Get("allow_maintenance_subscription").(bool),
 		AllowComponentsSubscription:  d.Get("allow_components_subscription").(bool),
+		HideFromSearchEngines:        d.Get("hide_from_search_engines").(bool),
+	}
+
+	if !d.Get("is_public").(bool) && d.Get("hide_from_search_engines").(bool) {
+		return diag.Errorf("hide_from_search_engines can only be set if is_public is true")
 	}
 
 	if d.Get("custom_domain_name").(string) != "" {
@@ -239,6 +250,11 @@ func resourceStatusPageUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		AllowWebhookSubscription:     d.Get("allow_webhook_subscription").(bool),
 		AllowMaintenanceSubscription: d.Get("allow_maintenance_subscription").(bool),
 		AllowComponentsSubscription:  d.Get("allow_components_subscription").(bool),
+		HideFromSearchEngines:        d.Get("hide_from_search_engines").(bool),
+	}
+
+	if !d.Get("is_public").(bool) && d.Get("hide_from_search_engines").(bool) {
+		return diag.Errorf("hide_from_search_engines can only be set if is_public is true")
 	}
 
 	if d.Get("custom_domain_name").(string) != "" {
