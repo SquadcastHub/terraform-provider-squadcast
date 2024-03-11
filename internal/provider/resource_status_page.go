@@ -133,7 +133,7 @@ func resourceStatusPage() *schema.Resource {
 				Default:     false,
 			},
 			"hide_from_search_engines": {
-				Description: "Determines if the status page is hidden from search engines.",
+				Description: "Determines if the status page is hidden from search engines. Applicable on public status pages only.",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
