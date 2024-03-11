@@ -34,7 +34,7 @@ resource "squadcast_user" "example_user" {
 
 ### Optional
 
-- `abilities` (Set of String) user abilities/permissions.
+- `abilities` (Set of String) user abilities/permissions. (manage-api-tokens, manage-billing, manage-extensions, manage-teams, manage-users, manage-webhooks, manage-organization-analytics, manage-postmortem-templates)
 
 ### Read-Only
 
