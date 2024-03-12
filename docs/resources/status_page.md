@@ -60,6 +60,7 @@ resource "squadcast_status_page" "test_status_page" {
 - `allow_webhook_subscription` (Boolean) Determines if webhook subscription is allowed to the status page.
 - `custom_domain_name` (String) Custom domain name of the status page.
 - `description` (String) Status page description.
+- `hide_from_search_engines` (Boolean) Determines if the status page is hidden from search engines. Applicable on public status pages only.
 
 ### Read-Only
 

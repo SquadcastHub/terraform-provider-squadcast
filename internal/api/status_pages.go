@@ -27,6 +27,7 @@ type StatusPage struct {
 	AllowWebhookSubscription     bool             `json:"allowWebhookSubscription" tf:"allow_webhook_subscription"`
 	AllowMaintenanceSubscription bool             `json:"allowMaintenanceSubscription" tf:"allow_maintenance_subscription"`
 	AllowComponentsSubscription  bool             `json:"allowComponentsSubscription" tf:"allow_components_subscription"`
+	HideFromSearchEngines        bool             `json:"hideFromSearchEngines" tf:"hide_from_search_engines"`
 }
 
 type StatusPageOwner struct {
