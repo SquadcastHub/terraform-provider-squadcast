@@ -112,6 +112,7 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
 
 ### Required
 
+- `entity_owner` (Block List, Min: 1, Max: 1) Escalation policy owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `name` (String) Name of the Escalation Policy.
 - `rules` (Block List, Min: 1) Rules will have the details of who to notify and when to notify and how to notify them. (see [below for nested schema](#nestedblock--rules))
 - `team_id` (String) Team id.
@@ -119,12 +120,20 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
 ### Optional
 
 - `description` (String) Detailed description about the Escalation Policy.
-- `entity_owner` (Block List, Max: 1) Escalation policy owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `repeat` (Block List, Max: 1) You can choose to repeate the entire policy, if no one acknowledges the incident even after the Escalation Policy has been executed fully once (see [below for nested schema](#nestedblock--repeat))
 
 ### Read-Only
 
 - `id` (String) EscalationPolicy id.
+
+<a id="nestedblock--entity_owner"></a>
+### Nested Schema for `entity_owner`
+
+Required:
+
+- `id` (String) Escalation policy owner id.
+- `type` (String) Escalation policy owner type. (user or squad)
+
 
 <a id="nestedblock--rules"></a>
 ### Nested Schema for `rules`
@@ -178,15 +187,6 @@ Optional:
 - `enabled` (Boolean) enable rotation within
 
 
-
-
-<a id="nestedblock--entity_owner"></a>
-### Nested Schema for `entity_owner`
-
-Required:
-
-- `id` (String) Escalation policy owner id.
-- `type` (String) Escalation policy owner type. (user or squad or team)
 
 
 <a id="nestedblock--repeat"></a>

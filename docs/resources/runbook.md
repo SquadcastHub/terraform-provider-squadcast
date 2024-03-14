@@ -45,25 +45,14 @@ resource "squadcast_runbook" "example_runbook" {
 
 ### Required
 
+- `entity_owner` (Block List, Min: 1, Max: 1) Runbooks owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `name` (String) Name of the Runbook.
 - `steps` (Block List, Min: 1) Step by Step instructions, you can add as many steps as you want, supports markdown formatting. (see [below for nested schema](#nestedblock--steps))
 - `team_id` (String) Team id.
 
-### Optional
-
-- `entity_owner` (Block List, Max: 1) Runbooks owner. (see [below for nested schema](#nestedblock--entity_owner))
-
 ### Read-Only
 
 - `id` (String) Runbook id.
-
-<a id="nestedblock--steps"></a>
-### Nested Schema for `steps`
-
-Required:
-
-- `content` (String)
-
 
 <a id="nestedblock--entity_owner"></a>
 ### Nested Schema for `entity_owner`
@@ -71,7 +60,15 @@ Required:
 Required:
 
 - `id` (String) Runbook owner id.
-- `type` (String) Runbook owner type. (user or squad or team)
+- `type` (String) Runbook owner type. (user or squad)
+
+
+<a id="nestedblock--steps"></a>
+### Nested Schema for `steps`
+
+Required:
+
+- `content` (String)
 
 ## Import
 

@@ -26,8 +26,8 @@ func TestAccResourceRunbook(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "613611c1eb22db455cfa789f"),
 					resource.TestCheckResourceAttr(resourceName, "name", runbookName),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "613611c1eb22db455cfa789f"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "user"),
 					resource.TestCheckResourceAttr(resourceName, "steps.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "steps.0.content", "some text here"),
 				),
@@ -38,8 +38,8 @@ func TestAccResourceRunbook(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "613611c1eb22db455cfa789f"),
 					resource.TestCheckResourceAttr(resourceName, "name", runbookName),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "613611c1eb22db455cfa789f"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.type", "user"),
 					resource.TestCheckResourceAttr(resourceName, "steps.#", "2"),
 					resource.TestCheckResourceAttr(resourceName, "steps.0.content", "some text here"),
 					resource.TestCheckResourceAttr(resourceName, "steps.1.content", "some text here 2"),
@@ -83,8 +83,8 @@ resource "squadcast_runbook" "test" {
 	team_id = "613611c1eb22db455cfa789f"
 
 	entity_owner{
-		id = "613611c1eb22db455cfa789f"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 
 	steps {
@@ -101,8 +101,8 @@ resource "squadcast_runbook" "test" {
 	team_id = "613611c1eb22db455cfa789f"
 
 	entity_owner{
-		id = "613611c1eb22db455cfa789f"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 
 	steps {

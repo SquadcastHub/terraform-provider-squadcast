@@ -21,9 +21,9 @@ func TestAccDataSourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "61305a9e127c63c6d2c8f76d"),
 					resource.TestCheckResourceAttr(resourceName, "name", serviceName),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "61305a9e127c63c6d2c8f76d"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "team"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.name", "Default Team"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "6112b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "squad"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.name", "Sample Squad"),
 					resource.TestCheckResourceAttr(resourceName, "header", "test header"),
 					resource.TestCheckResourceAttr(resourceName, "title", "test title"),
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
@@ -42,9 +42,9 @@ func TestAccDataSourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "61305a9e127c63c6d2c8f76d"),
 					resource.TestCheckResourceAttr(resourceName, "name", serviceName),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "61305a9e127c63c6d2c8f76d"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "team"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.name", "Default Team"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "6112b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "squad"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.name", "Sample Squad"),
 					resource.TestCheckResourceAttr(resourceName, "header", "test header"),
 					resource.TestCheckResourceAttr(resourceName, "title", "test title"),
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
@@ -67,9 +67,9 @@ func testAccWebformDataSourceConfigWithInputFields(serviceName string) string {
 			name = "%s"
 			team_id = "61305a9e127c63c6d2c8f76d"
 			owner {
-				id = "61305a9e127c63c6d2c8f76d"
-				type = "team"
-				name = "Default Team"
+				id = "6112b0ffe4d98ae048c37010"
+				type = "squad"
+				name = "Sample Squad"
 			}
 			header = "test header"
 			title = "test title"
@@ -100,9 +100,9 @@ func testAccWebformDataSourceConfigWithSeverity(serviceName string) string {
 			name = "%s"
 			team_id = "61305a9e127c63c6d2c8f76d"
 			owner {
-				id = "61305a9e127c63c6d2c8f76d"
-				type = "team"
-				name = "Default Team"
+				id = "6112b0ffe4d98ae048c37010"
+				type = "squad"
+				name = "Sample Squad"
 			}
 			header = "test header"
 			title = "test title"
