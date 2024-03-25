@@ -81,8 +81,7 @@ func resourceService() *schema.Resource {
 			"maintainer": {
 				Description: "Service owner.",
 				Type:        schema.TypeList,
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -93,10 +92,10 @@ func resourceService() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "The type of the maintainer. (user, team or squad)",
+							Description:  "The type of the maintainer. (user or squad)",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
 						},
 					},
 				},

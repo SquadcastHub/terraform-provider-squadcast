@@ -2,6 +2,11 @@ data "squadcast_team" "team" {
   name = "Default Team"
 }
 
+data "squadcast_user" "user" {
+  email = "john@example.com"
+}
+
+
 resource "squadcast_status_page" "test_status_page" {
 	team_id = data.squadcast_team.team.id
 	name = "Test Status Page"
@@ -15,8 +20,8 @@ resource "squadcast_status_page" "test_status_page" {
 		secondary = "#dddddd"
 	}
 	owner {
-		type = "team"
-		id = data.squadcast_team.team.id
+		type = "user"
+		id = data.squadcast_user.user.id
 	}
 	allow_webhook_subscription = true
 	allow_components_subscription = true

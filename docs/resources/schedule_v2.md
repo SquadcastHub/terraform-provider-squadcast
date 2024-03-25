@@ -64,7 +64,7 @@ resource "squadcast_schedule_v2" "schedule_test" {
 Required:
 
 - `id` (String) Schedule owner id.
-- `type` (String) Schedule owner type (user, team, squad).
+- `type` (String) Schedule owner type (user, squad).
 
 
 <a id="nestedblock--tags"></a>

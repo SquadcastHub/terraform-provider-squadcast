@@ -71,6 +71,7 @@ resource "squadcast_slo" "example_slo" {
 
 ### Required
 
+- `entity_owner` (Block List, Min: 1, Max: 1) SLO owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `name` (String) The name of the SLO.
 - `service_ids` (List of String) Service IDs associated with the SLO.Only incidents from the associated services can be promoted as SLO violating incident
 - `slis` (List of String) List of indentified SLIs for the SLO
@@ -83,7 +84,6 @@ resource "squadcast_slo" "example_slo" {
 - `description` (String) Description of the SLO.
 - `duration_in_days` (Number) Tracks SLO for the last x days. Required only when SLO time interval type set to "rolling"
 - `end_time` (String) SLO end time. Required only when SLO time interval type set to "fixed"
-- `entity_owner` (Block List, Max: 1) SLO owner. (see [below for nested schema](#nestedblock--entity_owner))
 - `notify` (Block List, Max: 1) Notification rules for SLO violationUser can either choose to create an incident or get alerted via email (see [below for nested schema](#nestedblock--notify))
 - `rules` (Block List) SLO monitoring checks has rules for monitoring any SLO violation(Or warning signs) (see [below for nested schema](#nestedblock--rules))
 - `start_time` (String) SLO start time. Required only when SLO time interval type set to "fixed"
@@ -99,7 +99,7 @@ resource "squadcast_slo" "example_slo" {
 Required:
 
 - `id` (String) SLO owner id.
-- `type` (String) SLO owner type (user, team, squad).
+- `type` (String) SLO owner type (user, squad).
 
 
 <a id="nestedblock--notify"></a>

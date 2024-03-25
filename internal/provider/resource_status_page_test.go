@@ -31,8 +31,8 @@ func TestAccResourceStatusPage(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "domain_name", "sq-statuspage"),
 					resource.TestCheckResourceAttr(resourceName, "timezone", "Asia/Kolkata"),
 					resource.TestCheckResourceAttr(resourceName, "contact_email", "test@squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "613611c1eb22db455cfa789f"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "user"),
 					resource.TestCheckResourceAttr(resourceName, "theme_color.0.primary", "#000000"),
 					resource.TestCheckResourceAttr(resourceName, "theme_color.0.secondary", "#ffffff"),
 					resource.TestCheckResourceAttr(resourceName, "allow_webhook_subscription", "true"),
@@ -51,8 +51,8 @@ func TestAccResourceStatusPage(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "domain_name", "sq-statuspage"),
 					resource.TestCheckResourceAttr(resourceName, "timezone", "Asia/Kolkata"),
 					resource.TestCheckResourceAttr(resourceName, "contact_email", "contact@squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "613611c1eb22db455cfa789f"),
-					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "owner.0.type", "user"),
 					resource.TestCheckResourceAttr(resourceName, "theme_color.0.primary", "#000000"),
 					resource.TestCheckResourceAttr(resourceName, "theme_color.0.secondary", "#ffffff"),
 					resource.TestCheckResourceAttr(resourceName, "allow_webhook_subscription", "false"),
@@ -96,8 +96,8 @@ resource "squadcast_status_page" "test" {
 	timezone = "Asia/Kolkata"
 	contact_email = "test@squadcast.com"
 	owner {
-		id = "613611c1eb22db455cfa789f"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 	theme_color {
 		primary = "#000000"
@@ -121,8 +121,8 @@ resource "squadcast_status_page" "test" {
 	timezone = "Asia/Kolkata"
 	contact_email = "contact@squadcast.com"
 	owner {
-		id = "613611c1eb22db455cfa789f"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 	theme_color {
 		primary = "#000000"

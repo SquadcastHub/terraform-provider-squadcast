@@ -24,8 +24,8 @@ func TestAccDataSourceScheduleV2(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", scheduleName),
 					resource.TestCheckResourceAttr(resourceName, "description", "Test schedule"),
 					resource.TestCheckResourceAttr(resourceName, "timezone", "Asia/Kolkata"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "team"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "613611c1eb22db455cfa789f"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "user"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "6113b0ffe4d98ae048c37010"),
 					resource.TestCheckResourceAttr(resourceName, "tags.0.key", "test"),
 					resource.TestCheckResourceAttr(resourceName, "tags.0.value", "test"),
 					resource.TestCheckResourceAttr(resourceName, "tags.0.color", "#9900ef"),
@@ -43,8 +43,8 @@ func testAccScheduleV2DataSourceConfig(scheduleName string) string {
 			timezone = "Asia/Kolkata"
 			description = "Test schedule"
 			entity_owner {
-				type = "team"
-				id = "613611c1eb22db455cfa789f"
+				type = "user"
+				id = "6113b0ffe4d98ae048c37010"
 			}
 			tags {
 				key = "test"

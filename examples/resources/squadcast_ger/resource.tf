@@ -2,6 +2,10 @@ data "squadcast_team" "team" {
   name = "Example Team"
 }
 
+data "squadcast_user" "user" {
+  email = "john@example.com"
+}
+
 data "squadcast_service" "service" {
   name = "Example Service"
   team_id = data.squadcast_team.team.id
@@ -12,7 +16,7 @@ resource "squadcast_ger" "ger" {
   description = "Example GER Description"
   team_id =   data.squadcast_team.team.id
   entity_owner {
-    id = data.squadcast_team.team.id
-    type = "team"
+    id = data.squadcast_user.user.id
+    type = "user"
   }
 }

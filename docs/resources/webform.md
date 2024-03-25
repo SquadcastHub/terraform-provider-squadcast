@@ -137,7 +137,7 @@ resource "squadcast_webform" "example_webform" {
 Required:
 
 - `id` (String) Form owner id.
-- `type` (String) Form owner type (user, team, squad).
+- `type` (String) Form owner type (user or squad).
 
 Read-Only:
 
