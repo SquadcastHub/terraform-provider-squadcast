@@ -80,6 +80,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_user":                       resourceUser(),
 				"squadcast_slo":                        resourceSlo(),
 				"squadcast_webform":                    resourceWebform(),
+				"squadcast_workflows":                  resourceWorkflows(),
 			},
 			Schema: map[string]*schema.Schema{
 				"region": {

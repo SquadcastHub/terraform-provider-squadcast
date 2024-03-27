@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -13,10 +14,10 @@ import (
 
 func resourceWorkflows() *schema.Resource {
 	return &schema.Resource{
-		// CreateContext: resourceWorkflowsCreate,
-		// ReadContext:   resourceWorkflowsRead,
-		// UpdateContext: resourceWorkflowsUpdate,
-		// DeleteContext: resourceWorkflowsDelete,
+		CreateContext: resourceWorkflowsCreate,
+		ReadContext:   resourceWorkflowsRead,
+		UpdateContext: resourceWorkflowsUpdate,
+		DeleteContext: resourceWorkflowsDelete,
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,
@@ -41,11 +42,11 @@ func resourceWorkflows() *schema.Resource {
 			"trigger": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"incident_created", "incident_acknowledged", "incident_resolved"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"incident_created", "incident_triggered", "incident_acknowledged", "incident_resolved"}, false),
 			},
 			"filters": {
 				Type:     schema.TypeList,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"fields": {
@@ -110,6 +111,10 @@ func resourceWorkflows() *schema.Resource {
 }
 
 func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+
+	tflog.Info(ctx, "Damns a new workflow", tf.M{
+		"title": d.Get("title").(string),
+	})
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating a new workflow", tf.M{
@@ -127,32 +132,54 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 			ID:   d.Get("entity_owner.0.id").(string),
 			Type: d.Get("entity_owner.0.type").(string),
 		},
-		Filters: []api.Filters{
-			{
-				Type: d.Get("filters.0.type").(string),
-				Fields: api.Field{
-					Value: d.Get("filters.0.fields.0.value").(string),
-				},
-			},
-		},
+
+		// Filters: []api.Filters{
+		// 	{
+		// 		Type: d.Get("filters.0.type").(string),
+		// 		Fields: api.Field{
+		// 			Value: d.Get("filters.0.fields.0.value").(string),
+		// 		},
+		// 	},
+		// },
 	}
 
-	tags := d.Get("tags").([]interface{})
-	if len(tags) > 0 {
-		var tagsList []*api.Tag
-		err := Decode(tags, &tagsList)
+	mtags := d.Get("tags").([]any)
+	tflog.Info(ctx, "Received tags are", tf.M{
+		"tags1": mtags,
+	})
+
+	if len(mtags) > 0 {
+		var tags []api.Tag
+		err := Decode(mtags, &tags)
 		if err != nil {
-			return diag.Errorf("tags is invalid")
+			return diag.FromErr(err)
 		}
-		workflowReq.Tags = tagsList
+		workflowReq.Tags = tags
 	}
+
+	tflog.Info(ctx, "Atleast the basic init is done", tf.M{
+		"title": d.Get("title").(string),
+	})
 
 	workflow, err := client.CreateWorkflow(ctx, &workflowReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(workflow.ID)
+	workflowID := strconv.FormatUint(uint64(workflow.ID), 10)
+	d.SetId(workflowID)
 
 	return nil // change this
+}
+
+func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return nil
+}
+
+func resourceWorkflowsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return nil
+}
+
+func resourceWorkflowsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return nil
 }
