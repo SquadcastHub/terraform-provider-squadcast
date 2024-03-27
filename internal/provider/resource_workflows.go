@@ -18,6 +18,7 @@ func resourceWorkflows() *schema.Resource {
 		ReadContext:   resourceWorkflowsRead,
 		UpdateContext: resourceWorkflowsUpdate,
 		DeleteContext: resourceWorkflowsDelete,
+		// TODO: Import
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,
@@ -52,6 +53,7 @@ func resourceWorkflows() *schema.Resource {
 						"fields": {
 							Type:     schema.TypeList,
 							Required: true,
+							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"value": {
@@ -132,16 +134,22 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 			ID:   d.Get("entity_owner.0.id").(string),
 			Type: d.Get("entity_owner.0.type").(string),
 		},
-
-		// Filters: []api.Filters{
-		// 	{
-		// 		Type: d.Get("filters.0.type").(string),
-		// 		Fields: api.Field{
-		// 			Value: d.Get("filters.0.fields.0.value").(string),
-		// 		},
-		// 	},
-		// },
 	}
+
+	// TODO: Support filters
+	// mfilters := d.Get("filters").([]any)
+	// tflog.Info(ctx, "Received filters are", tf.M{
+	// 	"filters1": mfilters,
+	// })
+
+	// if len(mfilters) > 0 {
+	// 	var filters []*api.Filters
+	// 	err := Decode(mfilters, &filters)
+	// 	if err != nil {
+	// 		return diag.FromErr(err)
+	// 	}
+	// 	workflowReq.Filters = filters
+	// }
 
 	mtags := d.Get("tags").([]any)
 	tflog.Info(ctx, "Received tags are", tf.M{
@@ -149,7 +157,7 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 	})
 
 	if len(mtags) > 0 {
-		var tags []api.Tag
+		var tags map[string]api.TagWithColor
 		err := Decode(mtags, &tags)
 		if err != nil {
 			return diag.FromErr(err)
@@ -169,17 +177,87 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 	workflowID := strconv.FormatUint(uint64(workflow.ID), 10)
 	d.SetId(workflowID)
 
-	return nil // change this
-}
-
-func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return nil
+	return resourceWorkflowsRead(ctx, d, meta)
 }
 
 func resourceWorkflowsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Reading workflow", tf.M{
+		"id": d.Id(),
+	})
+	workflow, err := client.GetWorkflowById(ctx, d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	tflog.Info(ctx, "debug: Called getByWorkflowID", tf.M{
+		"id": d.Id(),
+	})
+
+	if err = tf.EncodeAndSet(workflow, d); err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }
 
+func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Updating workflow", tf.M{
+		"id": d.Id(),
+	})
+
+	workflowReq := api.Workflow{
+		Title:       d.Get("title").(string),
+		Description: d.Get("description").(string),
+		OwnerID:     d.Get("owner_id").(string),
+		Enabled:     d.Get("enabled").(bool),
+		Trigger:     d.Get("trigger").(string),
+		EntityOwner: api.EntityOwner{
+			ID:   d.Get("entity_owner.0.id").(string),
+			Type: d.Get("entity_owner.0.type").(string),
+		},
+	}
+
+	mtags := d.Get("tags").([]any)
+	tflog.Info(ctx, "Received tags are", tf.M{
+		"tags1": mtags,
+	})
+
+	if len(mtags) > 0 {
+		var tags map[string]api.TagWithColor
+		err := Decode(mtags, &tags)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		workflowReq.Tags = tags
+	}
+
+	_, err := client.UpdateWorkflow(ctx, d.Id(), &workflowReq)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceWorkflowsRead(ctx, d, meta)
+}
+
 func resourceWorkflowsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Deleting workflow", tf.M{
+		"id": d.Id(),
+	})
+
+	_, err := client.DeleteWorkflow(ctx, d.Id())
+	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
+		return diag.FromErr(err)
+	}
+
 	return nil
 }
