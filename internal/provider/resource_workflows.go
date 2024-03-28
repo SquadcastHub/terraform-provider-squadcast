@@ -123,7 +123,6 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 		"title": d.Get("title").(string),
 	})
 
-	// Create a new workflowReq object
 	workflowReq := api.Workflow{
 		Title:       d.Get("title").(string),
 		Description: d.Get("description").(string),
@@ -152,16 +151,17 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 	// }
 
 	mtags := d.Get("tags").([]any)
-	tflog.Info(ctx, "Received tags are", tf.M{
-		"tags1": mtags,
+	tflog.Info(ctx, "Length of tags from create are", tf.M{
+		"tagsLen": len(mtags),
 	})
 
 	if len(mtags) > 0 {
-		var tags map[string]api.TagWithColor
+		var tags []*api.WorkflowTag
 		err := Decode(mtags, &tags)
 		if err != nil {
 			return diag.FromErr(err)
 		}
+
 		workflowReq.Tags = tags
 	}
 
@@ -222,16 +222,17 @@ func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	mtags := d.Get("tags").([]any)
-	tflog.Info(ctx, "Received tags are", tf.M{
+	tflog.Info(ctx, "Received tags from update are", tf.M{
 		"tags1": mtags,
 	})
 
 	if len(mtags) > 0 {
-		var tags map[string]api.TagWithColor
+		var tags []*api.WorkflowTag
 		err := Decode(mtags, &tags)
 		if err != nil {
 			return diag.FromErr(err)
 		}
+
 		workflowReq.Tags = tags
 	}
 
