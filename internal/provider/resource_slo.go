@@ -187,7 +187,7 @@ func resourceSlo() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "SLO owner type (user, squad).",
+							Description:  "SLO owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),

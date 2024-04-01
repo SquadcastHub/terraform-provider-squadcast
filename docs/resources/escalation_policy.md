@@ -132,7 +132,7 @@ resource "squadcast_escalation_policy" "example_escalaion_policy" {
 Required:
 
 - `id` (String) Escalation policy owner id.
-- `type` (String) Escalation policy owner type. (user or squad)
+- `type` (String) Escalation policy owner type. Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--rules"></a>

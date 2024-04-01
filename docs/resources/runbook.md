@@ -60,7 +60,7 @@ resource "squadcast_runbook" "example_runbook" {
 Required:
 
 - `id` (String) Runbook owner id.
-- `type` (String) Runbook owner type. (user or squad)
+- `type` (String) Runbook owner type. Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--steps"></a>

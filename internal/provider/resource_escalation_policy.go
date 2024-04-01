@@ -64,7 +64,7 @@ func resourceEscalationPolicy() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "Escalation policy owner type. (user or squad)",
+							Description:  "Escalation policy owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),

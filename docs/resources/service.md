@@ -80,7 +80,7 @@ resource "squadcast_service" "example_service" {
 Required:
 
 - `id` (String) The id of the maintainer.
-- `type` (String) The type of the maintainer. (user or squad)
+- `type` (String) The type of the maintainer. Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--tags"></a>

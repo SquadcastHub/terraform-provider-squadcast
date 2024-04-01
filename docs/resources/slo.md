@@ -99,7 +99,7 @@ resource "squadcast_slo" "example_slo" {
 Required:
 
 - `id` (String) SLO owner id.
-- `type` (String) SLO owner type (user, squad).
+- `type` (String) SLO owner type. Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--notify"></a>

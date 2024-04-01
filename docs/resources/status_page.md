@@ -77,7 +77,7 @@ resource "squadcast_status_page" "test_status_page" {
 Required:
 
 - `id` (String) Status page owner id.
-- `type` (String) Status page owner type (user or squad).
+- `type` (String) Status page owner type Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--theme_color"></a>

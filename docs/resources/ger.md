@@ -61,7 +61,7 @@ resource "squadcast_ger" "ger" {
 Required:
 
 - `id` (String) GER owner id.
-- `type` (String) GER owner type. (user or squad or team)
+- `type` (String) GER owner type. Supported values are 'user' or 'squad'.
 
 ## Import
 

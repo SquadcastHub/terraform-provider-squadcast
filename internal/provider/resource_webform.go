@@ -60,7 +60,7 @@ func resourceWebform() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "Form owner type (user or squad).",
+							Description:  "Form owner type Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),

@@ -56,7 +56,7 @@ func resourceRunbook() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "Runbook owner type. (user or squad)",
+							Description:  "Runbook owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),

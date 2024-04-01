@@ -100,7 +100,7 @@ func resourceStatusPage() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "Status page owner type (user or squad).",
+							Description:  "Status page owner type Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),

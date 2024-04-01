@@ -63,7 +63,7 @@ func resourceScheduleV2() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "Schedule owner type (user, squad).",
+							Description:  "Schedule owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
