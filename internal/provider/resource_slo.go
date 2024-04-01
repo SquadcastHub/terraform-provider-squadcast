@@ -182,16 +182,15 @@ func resourceSlo() *schema.Resource {
 			"entity_owner": {
 				Description: "SLO owner.",
 				Type:        schema.TypeList,
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "SLO owner type (user, team, squad).",
+							Description:  "SLO owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
 						},
 						"id": {
 							Description:  "SLO owner id.",

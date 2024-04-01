@@ -54,6 +54,7 @@ resource "squadcast_service" "example_service" {
 
 - `email_prefix` (String) Email prefix.
 - `escalation_policy_id` (String) Escalation policy id.
+- `maintainer` (Block List, Min: 1, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
 - `name` (String) Name of the Service.
 - `team_id` (String) Team id.
 
@@ -62,7 +63,6 @@ resource "squadcast_service" "example_service" {
 - `alert_sources` (List of String) List of active alert source names. Find all alert sources supported on Squadcast [here](https://www.squadcast.com/integrations).
 - `dependencies` (Set of String) Dependencies (serviceIds)
 - `description` (String) Detailed description about this service.
-- `maintainer` (Block List, Max: 1) Service owner. (see [below for nested schema](#nestedblock--maintainer))
 - `slack_channel_id` (String) Slack extension for the service. If set, specifies the ID of the Slack channel associated with the service. If this ID is set, it cannot be removed, but it can be changed to a different slack_channel_id.
 - `tags` (Block List) Service tags. (see [below for nested schema](#nestedblock--tags))
 
@@ -80,7 +80,7 @@ resource "squadcast_service" "example_service" {
 Required:
 
 - `id` (String) The id of the maintainer.
-- `type` (String) The type of the maintainer. (user, team or squad)
+- `type` (String) The type of the maintainer. Supported values are 'user' or 'squad'.
 
 
 <a id="nestedblock--tags"></a>

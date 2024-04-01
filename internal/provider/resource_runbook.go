@@ -45,8 +45,7 @@ func resourceRunbook() *schema.Resource {
 			"entity_owner": {
 				Description: "Runbooks owner.",
 				Type:        schema.TypeList,
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -57,10 +56,10 @@ func resourceRunbook() *schema.Resource {
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "Runbook owner type. (user or squad or team)",
+							Description:  "Runbook owner type. Supported values are 'user' or 'squad'.",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad"}, false),
 						},
 					},
 				},

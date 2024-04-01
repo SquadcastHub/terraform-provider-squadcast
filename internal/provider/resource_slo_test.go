@@ -41,8 +41,8 @@ func TestAccResourceSlo(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "rules.1.name", "unhealthy_slo"),
 					resource.TestCheckResourceAttr(resourceName, "rules.1.threshold", "1"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "61443b953ffd52818bf1616a"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "61443b953ffd52818bf1616a"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "user"),
 				),
 			},
 			{
@@ -70,8 +70,8 @@ func TestAccResourceSlo(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "rules.2.name", "remaining_error_budget"),
 					resource.TestCheckResourceAttr(resourceName, "rules.2.threshold", "11"),
 					resource.TestCheckResourceAttr(resourceName, "team_id", "61443b953ffd52818bf1616a"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "61443b953ffd52818bf1616a"),
-					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "team"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.id", "6113b0ffe4d98ae048c37010"),
+					resource.TestCheckResourceAttr(resourceName, "entity_owner.0.type", "user"),
 				),
 			},
 		},
@@ -120,8 +120,8 @@ resource "squadcast_slo" "test" {
 	
 	team_id = "61443b953ffd52818bf1616a"
 	entity_owner {
-		id = "61443b953ffd52818bf1616a"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 }
 	`, sloName)
@@ -160,8 +160,8 @@ resource "squadcast_slo" "test" {
 
 	team_id = "61443b953ffd52818bf1616a"
 	entity_owner {
-		id = "61443b953ffd52818bf1616a"
-		type = "team"
+		id = "6113b0ffe4d98ae048c37010"
+		type = "user"
 	}
 }
 	`, sloName)
