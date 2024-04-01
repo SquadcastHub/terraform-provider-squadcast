@@ -12,7 +12,7 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
-func resourceWorkflows() *schema.Resource {
+func resourceWorkflow() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceWorkflowsCreate,
 		ReadContext:   resourceWorkflowsRead,
@@ -114,9 +114,6 @@ func resourceWorkflows() *schema.Resource {
 
 func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
-	tflog.Info(ctx, "Damns a new workflow", tf.M{
-		"title": d.Get("title").(string),
-	})
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating a new workflow", tf.M{

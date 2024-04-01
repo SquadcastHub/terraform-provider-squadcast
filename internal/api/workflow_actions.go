@@ -9,8 +9,9 @@ import (
 )
 
 type WorkflowAction struct {
-	Name string             `json:"name" tf:"name"`
-	Data WorkflowActionData `json:"data" tf:"data"`
+	Name       string             `json:"name" tf:"name"`
+	WorkflowID string             `json:"workflow_id" tf:"workflow_id"`
+	Data       WorkflowActionData `json:"data" tf:"data"`
 }
 
 type WorkflowActionData struct {
@@ -19,12 +20,10 @@ type WorkflowActionData struct {
 
 type WorkflowActionResponse struct {
 	Data struct {
-		Data struct {
-			Note string `json:"note"`
-		} `json:"data"`
-		ID   int    `json:"id"`
-		Name string `json:"name"`
+		Note string `json:"note"`
 	} `json:"data"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 func (twc *WorkflowActionData) Encode() (tf.M, error) {
