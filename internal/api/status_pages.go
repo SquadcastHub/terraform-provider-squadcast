@@ -116,7 +116,7 @@ func (client *Client) GetStatusPageById(ctx context.Context, ID string) (*Status
 	url := fmt.Sprintf("%s/statuspages/%s", client.BaseURLV4, ID)
 	data, err := Request[any, StatusPage](http.MethodGet, url, client, ctx, nil)
 	if err != nil {
-		return nil, errors.New("Status page with given ID not found")
+		return nil, errors.New("status page with given ID not found")
 	}
 	return data, nil
 }
@@ -145,7 +145,7 @@ func (client *Client) GetStatusPageComponentById(ctx context.Context, pageID, co
 	url := fmt.Sprintf("%s/statuspages/%s/components/%s", client.BaseURLV4, pageID, componentID)
 	data, err := Request[any, StatusPageComponent](http.MethodGet, url, client, ctx, nil)
 	if err != nil {
-		return nil, errors.New("Status page with given ID not found")
+		return nil, errors.New("status page component with given ID not found")
 	}
 	return data, nil
 }
@@ -174,7 +174,7 @@ func (client *Client) GetStatusPageGroupById(ctx context.Context, pageID, groupI
 	url := fmt.Sprintf("%s/statuspages/%s/groups/%s", client.BaseURLV4, pageID, groupID)
 	data, err := Request[any, StatusPageGroup](http.MethodGet, url, client, ctx, nil)
 	if err != nil {
-		return nil, errors.New("Status page with given ID not found")
+		return nil, errors.New("status page group with given ID not found")
 	}
 	return data, nil
 }
