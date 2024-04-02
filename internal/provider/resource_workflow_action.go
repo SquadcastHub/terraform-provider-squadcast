@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
@@ -23,8 +24,9 @@ func resourceWorkflowAction() *schema.Resource {
 				Required: true,
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note"}, false),
 			},
 			"note": {
 				Type:     schema.TypeString,
@@ -58,12 +60,6 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 
 	workflowActionID := strconv.FormatUint(uint64(workflowActionResponse.ID), 10)
 	d.SetId(workflowActionID)
-	tflog.Info(ctx, "Temp: Setting workflow action id", tf.M{
-		"action_id": d.Id(),
-		// "action_id_without_buzz": workflowActionResponse.ID,
-		// "less_dump":              workflowActionResponse.Data,
-		// "dump":                   workflowActionResponse,
-	})
 
 	return resourceWorkflowActionRead(ctx, d, meta)
 }
@@ -83,8 +79,6 @@ func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, met
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	tflog.Info(ctx, "About to encode", tf.M{})
 
 	// TODO: Check if this is the correct way to encode the data
 	workFlowActionEncoded := &api.WorkflowAction{
@@ -107,7 +101,7 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Updating workflow action", tf.M{
-		"id": d.Id(),
+		"action_id": d.Id(),
 	})
 
 	workflowAction := &api.WorkflowAction{

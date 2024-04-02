@@ -11,7 +11,7 @@ import (
 type WorkflowAction struct {
 	Name       string             `json:"name" tf:"name"`
 	WorkflowID string             `json:"workflow_id" tf:"workflow_id"`
-	Data       WorkflowActionData `json:"data" tf:"data"`
+	Data       WorkflowActionData `json:"data" tf:"-"`
 }
 
 type WorkflowActionData struct {
@@ -26,12 +26,18 @@ type WorkflowActionResponse struct {
 	Name string `json:"name"`
 }
 
+// TODO: Check if we even need this??
 func (twc *WorkflowActionData) Encode() (tf.M, error) {
 	return tf.Encode(twc)
 }
 
 func (w *WorkflowAction) Encode() (tf.M, error) {
-	return tf.Encode(w)
+	m, err := tf.Encode(w)
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
 func (client *Client) CreateWorkflowAction(ctx context.Context, workflowID string, workflowAction *WorkflowAction) (*WorkflowActionResponse, error) {
@@ -46,7 +52,7 @@ func (client *Client) GetWorkflowActionById(ctx context.Context, workflowID, act
 
 func (client *Client) UpdateWorkflowAction(ctx context.Context, workflowID, actionID string, workflowAction *WorkflowAction) (*WorkflowActionResponse, error) {
 	url := fmt.Sprintf("%s/workflows/%s/actions/%s", client.BaseURLV3, workflowID, actionID)
-	return Request[WorkflowAction, WorkflowActionResponse](http.MethodPut, url, client, ctx, workflowAction)
+	return Request[WorkflowAction, WorkflowActionResponse](http.MethodPatch, url, client, ctx, workflowAction)
 }
 
 func (client *Client) DeleteWorkflowAction(ctx context.Context, workflowID, actionID string) (*any, error) {
