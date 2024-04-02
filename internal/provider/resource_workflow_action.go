@@ -38,11 +38,12 @@ func resourceWorkflowAction() *schema.Resource {
 
 func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
-	tflog.Info(ctx, "Creating a new workflow action", tf.M{
-		"name": d.Get("name").(string),
-	})
-
 	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Creating a new workflow action", tf.M{
+		"name":        d.Get("name").(string),
+		"worfklow_id": d.Get("workflow_id").(string),
+	})
 
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
@@ -52,7 +53,6 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	workflowID := d.Get("workflow_id").(string)
-
 	workflowActionResponse, err := client.CreateWorkflowAction(ctx, workflowID, workflowAction)
 	if err != nil {
 		return diag.FromErr(err)
@@ -60,7 +60,6 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 
 	workflowActionID := strconv.FormatUint(uint64(workflowActionResponse.ID), 10)
 	d.SetId(workflowActionID)
-
 	return resourceWorkflowActionRead(ctx, d, meta)
 }
 
@@ -68,8 +67,8 @@ func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, met
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Reading workflow action", tf.M{
-		"action_id":   d.Id(),
-		"workflow_id": d.Get("workflow_id").(string),
+		"name":        d.Get("name").(string),
+		"worfklow_id": d.Get("workflow_id").(string),
 	})
 
 	workflowID := d.Get("workflow_id").(string)
@@ -80,19 +79,9 @@ func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, met
 		return diag.FromErr(err)
 	}
 
-	// TODO: Check if this is the correct way to encode the data
-	workFlowActionEncoded := &api.WorkflowAction{
-		Name:       workflowAction.Name,
-		WorkflowID: workflowID,
-		Data: api.WorkflowActionData{
-			Note: workflowAction.Data.Note,
-		},
-	}
-
-	if err = tf.EncodeAndSet(workFlowActionEncoded, d); err != nil {
+	if err = tf.EncodeAndSet(workflowAction, d); err != nil {
 		return diag.FromErr(err)
 	}
-
 	return nil
 }
 
@@ -101,12 +90,12 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Updating workflow action", tf.M{
-		"action_id": d.Id(),
+		"worfklow_id": d.Get("workflow_id").(string),
+		"action_id":   d.Id(),
 	})
 
 	workflowAction := &api.WorkflowAction{
-		WorkflowID: d.Get("workflow_id").(string),
-		Name:       d.Get("name").(string),
+		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
 			Note: d.Get("note").(string),
 		},
@@ -126,7 +115,8 @@ func resourceWorkflowActionDelete(ctx context.Context, d *schema.ResourceData, m
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Deleting workflow action", tf.M{
-		"id": d.Id(),
+		"worfklow_id": d.Get("workflow_id").(string),
+		"action_id":   d.Id(),
 	})
 
 	workflowID := d.Get("workflow_id").(string)
