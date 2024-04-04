@@ -17,10 +17,17 @@ type WorkflowAction struct {
 }
 
 type WorkflowActionData struct {
-	Note     string   `json:"note" tf:"note"`
-	Runbooks []string `json:"runbooks" tf:"runbooks"`
-	SLO      int      `json:"slo" tf:"slo"`
-	SLIs     []string `json:"slis" tf:"slis"`
+	Note     string     `json:"note" tf:"note"`
+	Runbooks []string   `json:"runbooks" tf:"runbooks"`
+	SLO      int        `json:"slo" tf:"slo"`
+	SLIs     []string   `json:"slis" tf:"slis"`
+	Channels []Channels `json:"channels" tf:"channels"`
+}
+
+type Channels struct {
+	ChannelType string `json:"type" tf:"type"`
+	Link        string `json:"link" tf:"link"`
+	DisplayText string `json:"display_text" tf:"display_text"`
 }
 
 // WorkflowActionRes represents a workflow action response
@@ -39,6 +46,7 @@ type WorkflowActionDataRes struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"runbooks"`
+	Channels []Channels `json:"channels" tf:"channels"`
 }
 
 // TODO: Check if we even need this??

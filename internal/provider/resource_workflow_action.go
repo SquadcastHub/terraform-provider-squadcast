@@ -28,7 +28,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Type:         schema.TypeString,
 				Description:  "The name of the action",
 				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks", "sq_mark_incident_slo_affecting"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks", "sq_mark_incident_slo_affecting", "sq_add_communication_channel"}, false),
 			},
 			"note": {
 				Type:        schema.TypeString,
@@ -56,6 +56,31 @@ func resourceWorkflowAction() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"channels": {
+				Type:        schema.TypeList,
+				Description: "The communication channels to be added to the incident",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:         schema.TypeString,
+							Description:  "The type of the communication channel",
+							ValidateFunc: validation.StringInSlice([]string{"chat_room", "video_conference", "other"}, false),
+							Required:     true,
+						},
+						"link": {
+							Type:        schema.TypeString,
+							Description: "The link of the communication channel",
+							Required:    true,
+						},
+						"display_text": {
+							Type:        schema.TypeString,
+							Description: "The display text of the communication channel",
+							Required:    true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -70,6 +95,11 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 	})
 
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
+	channels := make([]api.Channels, 0)
+
+	if err := Decode(d.Get("channels"), &channels); err != nil {
+		return diag.FromErr(err)
+	}
 
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
@@ -78,6 +108,7 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			SLO:      d.Get("slo").(int),
 			SLIs:     tf.ListToSlice[string](d.Get("slis")),
 			Runbooks: runbooks,
+			Channels: channels,
 		},
 	}
 
@@ -104,6 +135,11 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	})
 
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
+	channels := make([]api.Channels, 0)
+
+	if err := Decode(d.Get("channels"), &channels); err != nil {
+		return diag.FromErr(err)
+	}
 
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
@@ -112,6 +148,7 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			SLO:      d.Get("slo").(int),
 			SLIs:     tf.ListToSlice[string](d.Get("slis")),
 			Runbooks: runbooks,
+			Channels: channels,
 		},
 	}
 
