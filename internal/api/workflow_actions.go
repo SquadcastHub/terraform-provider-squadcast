@@ -22,6 +22,7 @@ type WorkflowActionData struct {
 	SLO      int        `json:"slo" tf:"slo"`
 	SLIs     []string   `json:"slis" tf:"slis"`
 	Channels []Channels `json:"channels" tf:"channels"`
+	Priority string     `json:"priority" tf:"priority"`
 }
 
 type Channels struct {
@@ -47,6 +48,7 @@ type WorkflowActionDataRes struct {
 		Name string `json:"name"`
 	} `json:"runbooks"`
 	Channels []Channels `json:"channels" tf:"channels"`
+	Priority string     `json:"priority" tf:"priority"`
 }
 
 // TODO: Check if we even need this??

@@ -25,10 +25,11 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 			},
 			"name": {
-				Type:         schema.TypeString,
-				Description:  "The name of the action",
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks", "sq_mark_incident_slo_affecting", "sq_add_communication_channel"}, false),
+				Type:        schema.TypeString,
+				Description: "The name of the action",
+				Required:    true,
+				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
+					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority"}, false),
 			},
 			"note": {
 				Type:        schema.TypeString,
@@ -81,6 +82,12 @@ func resourceWorkflowAction() *schema.Resource {
 					},
 				},
 			},
+			"priority": {
+				Type:         schema.TypeString,
+				Description:  "The priority of the incident",
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"P1", "P2", "P3", "P4", "P5", "UNSET"}, false),
+			},
 		},
 	}
 }
@@ -107,6 +114,7 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			Note:     d.Get("note").(string),
 			SLO:      d.Get("slo").(int),
 			SLIs:     tf.ListToSlice[string](d.Get("slis")),
+			Priority: d.Get("priority").(string),
 			Runbooks: runbooks,
 			Channels: channels,
 		},
@@ -147,6 +155,7 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			Note:     d.Get("note").(string),
 			SLO:      d.Get("slo").(int),
 			SLIs:     tf.ListToSlice[string](d.Get("slis")),
+			Priority: d.Get("priority").(string),
 			Runbooks: runbooks,
 			Channels: channels,
 		},
