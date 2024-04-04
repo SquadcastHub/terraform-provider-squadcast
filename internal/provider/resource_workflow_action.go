@@ -28,7 +28,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Type:         schema.TypeString,
 				Description:  "The name of the action",
 				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks", "sq_mark_incident_slo_affecting"}, false),
 			},
 			"note": {
 				Type:        schema.TypeString,
@@ -38,6 +38,19 @@ func resourceWorkflowAction() *schema.Resource {
 			"runbooks": {
 				Type:        schema.TypeList,
 				Description: "The runbooks to be added to the incident",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"slo": {
+				Type:        schema.TypeInt,
+				Description: "ID of the SLO to be added to the incident",
+				Optional:    true,
+			},
+			"slis": {
+				Type:        schema.TypeList,
+				Description: "The SLIs to be added to the incident",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -62,63 +75,23 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
 			Note:     d.Get("note").(string),
+			SLO:      d.Get("slo").(int),
+			SLIs:     tf.ListToSlice[string](d.Get("slis")),
 			Runbooks: runbooks,
 		},
 	}
 
 	workflowID := d.Get("workflow_id").(string)
 
-	switch d.Get("name").(string) {
-	case "sq_add_incident_note":
-		workflowActionResponse, err := client.CreateWorkflowAction(ctx, workflowID, workflowAction)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		workflowActionID := strconv.FormatUint(uint64(workflowActionResponse.ID), 10)
-		d.SetId(workflowActionID)
-	case "sq_attach_runbooks":
-		workflowActionResponse, err := client.CreateRunbookWorkflowAction(ctx, workflowID, workflowAction)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		workflowActionID := strconv.FormatUint(uint64(workflowActionResponse.ID), 10)
-		d.SetId(workflowActionID)
+	workflowActionResponse, err := client.CreateWorkflowAction(ctx, workflowID, workflowAction)
+	if err != nil {
+		return diag.FromErr(err)
 	}
+
+	workflowActionID := strconv.FormatUint(uint64(workflowActionResponse.ID), 10)
+	d.SetId(workflowActionID)
 
 	return resourceWorkflowActionRead(ctx, d, meta)
-}
-
-func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	client := meta.(*api.Client)
-
-	tflog.Info(ctx, "Reading workflow action", tf.M{
-		"name":        d.Get("name").(string),
-		"action_id":   d.Id(),
-		"worfklow_id": d.Get("workflow_id").(string),
-	})
-
-	workflowID := d.Get("workflow_id").(string)
-	workflowActionID := d.Id()
-
-	switch d.Get("name").(string) {
-	case "sq_add_incident_note":
-		workflowAction, err := client.GetWorkflowActionById(ctx, workflowID, workflowActionID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		if err = tf.EncodeAndSet(workflowAction, d); err != nil {
-			return diag.FromErr(err)
-		}
-	case "sq_attach_runbooks":
-		workflowAction, err := client.GetRunbookWorkflowActionById(ctx, workflowID, workflowActionID)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		if err = tf.EncodeAndSet(workflowAction, d); err != nil {
-			return diag.FromErr(err)
-		}
-	}
-	return nil
 }
 
 func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -136,26 +109,44 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
 			Note:     d.Get("note").(string),
+			SLO:      d.Get("slo").(int),
+			SLIs:     tf.ListToSlice[string](d.Get("slis")),
 			Runbooks: runbooks,
 		},
 	}
 
 	workflowID := d.Get("workflow_id").(string)
 
-	switch d.Get("name").(string) {
-	case "sq_add_incident_note":
-		_, err := client.UpdateWorkflowAction(ctx, workflowID, d.Id(), workflowAction)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	case "sq_attach_runbooks":
-		_, err := client.UpdateRunbookWorkflowAction(ctx, workflowID, d.Id(), workflowAction)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+	_, err := client.UpdateWorkflowAction(ctx, workflowID, d.Id(), workflowAction)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	return resourceWorkflowActionRead(ctx, d, meta)
+}
+
+func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*api.Client)
+
+	tflog.Info(ctx, "Reading workflow action", tf.M{
+		"name":        d.Get("name").(string),
+		"action_id":   d.Id(),
+		"worfklow_id": d.Get("workflow_id").(string),
+	})
+
+	workflowID := d.Get("workflow_id").(string)
+	workflowActionID := d.Id()
+
+	workflowAction, err := client.GetWorkflowActionById(ctx, workflowID, workflowActionID)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = tf.EncodeAndSet(workflowAction, d); err != nil {
+		return diag.FromErr(err)
+	}
+
+	return nil
 }
 
 func resourceWorkflowActionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
