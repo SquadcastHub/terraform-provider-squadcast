@@ -30,7 +30,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
-					"sq_make_http_call"}, false),
+					"sq_make_http_call", "sq_send_email"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -130,6 +130,21 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The body of the request",
 				Optional:    true,
 			},
+			// Send Email Action
+			"to": {
+				Type:        schema.TypeList,
+				Description: "The email addresses to which the email is to be sent",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"subject": {
+				Type:        schema.TypeString,
+				Description: "The subject of the email",
+				Optional:    true,
+			},
+			// body is needed for email as well
 		},
 	}
 }
@@ -167,6 +182,8 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			URL:      d.Get("url").(string),
 			Body:     d.Get("body").(string),
 			Headers:  headers,
+			To:       tf.ListToSlice[string](d.Get("to")),
+			Subject:  d.Get("subject").(string),
 		},
 	}
 
@@ -216,6 +233,8 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			URL:      d.Get("url").(string),
 			Body:     d.Get("body").(string),
 			Headers:  headers,
+			To:       tf.ListToSlice[string](d.Get("to")),
+			Subject:  d.Get("subject").(string),
 		},
 	}
 

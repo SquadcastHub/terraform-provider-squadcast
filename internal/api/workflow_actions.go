@@ -32,6 +32,10 @@ type WorkflowActionData struct {
 	URL     string    `json:"url" tf:"url"`
 	Body    string    `json:"body" tf:"body"`
 	Headers []Headers `json:"headers" tf:"headers"`
+	// Send Email
+	To      []string `json:"to" tf:"to"`
+	Subject string   `json:"subject" tf:"subject"`
+	// body is needed for email as well
 }
 
 type Channels struct {
@@ -70,6 +74,8 @@ type WorkflowActionDataRes struct {
 		Key   string `json:"key" tf:"key"`
 		Value string `json:"value" tf:"value"`
 	} `json:"headers" tf:"headers"`
+	To      []string `json:"to" tf:"to"`
+	Subject string   `json:"subject" tf:"subject"`
 }
 
 // TODO: Check if we even need this??
