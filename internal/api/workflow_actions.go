@@ -17,18 +17,32 @@ type WorkflowAction struct {
 }
 
 type WorkflowActionData struct {
-	Note     string     `json:"note" tf:"note"`
-	Runbooks []string   `json:"runbooks" tf:"runbooks"`
-	SLO      int        `json:"slo" tf:"slo"`
-	SLIs     []string   `json:"slis" tf:"slis"`
+	Note string `json:"note" tf:"note"`
+	// Runbooks
+	Runbooks []string `json:"runbooks" tf:"runbooks"`
+	// SLO
+	SLO  int      `json:"slo" tf:"slo"`
+	SLIs []string `json:"slis" tf:"slis"`
+	// Communication channels
 	Channels []Channels `json:"channels" tf:"channels"`
-	Priority string     `json:"priority" tf:"priority"`
+	// Incident priority
+	Priority string `json:"priority" tf:"priority"`
+	// Http request
+	Method  string    `json:"method" tf:"method"`
+	URL     string    `json:"url" tf:"url"`
+	Body    string    `json:"body" tf:"body"`
+	Headers []Headers `json:"headers" tf:"headers"`
 }
 
 type Channels struct {
 	ChannelType string `json:"type" tf:"type"`
 	Link        string `json:"link" tf:"link"`
 	DisplayText string `json:"display_text" tf:"display_text"`
+}
+
+type Headers struct {
+	Key   string `json:"key" tf:"key"`
+	Value string `json:"value" tf:"value"`
 }
 
 // WorkflowActionRes represents a workflow action response
@@ -49,6 +63,13 @@ type WorkflowActionDataRes struct {
 	} `json:"runbooks"`
 	Channels []Channels `json:"channels" tf:"channels"`
 	Priority string     `json:"priority" tf:"priority"`
+	Method   string     `json:"method" tf:"method"`
+	URL      string     `json:"url" tf:"url"`
+	Body     string     `json:"body" tf:"body"`
+	Headers  []struct {
+		Key   string `json:"key" tf:"key"`
+		Value string `json:"value" tf:"value"`
+	} `json:"headers" tf:"headers"`
 }
 
 // TODO: Check if we even need this??

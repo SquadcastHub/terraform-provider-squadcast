@@ -29,13 +29,16 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The name of the action",
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
-					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority"}, false),
+					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
+					"sq_make_http_call"}, false),
 			},
+			// Add Notes Action
 			"note": {
 				Type:        schema.TypeString,
 				Description: "The note to be added to the incident",
 				Optional:    true,
 			},
+			// Attach Runbooks Action
 			"runbooks": {
 				Type:        schema.TypeList,
 				Description: "The runbooks to be added to the incident",
@@ -44,6 +47,7 @@ func resourceWorkflowAction() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			// SLO Action
 			"slo": {
 				Type:        schema.TypeInt,
 				Description: "ID of the SLO to be added to the incident",
@@ -57,6 +61,7 @@ func resourceWorkflowAction() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			// Communication Channel Action
 			"channels": {
 				Type:        schema.TypeList,
 				Description: "The communication channels to be added to the incident",
@@ -82,11 +87,48 @@ func resourceWorkflowAction() *schema.Resource {
 					},
 				},
 			},
+			// Incident Priority Action
 			"priority": {
 				Type:         schema.TypeString,
 				Description:  "The priority of the incident",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"P1", "P2", "P3", "P4", "P5", "UNSET"}, false),
+			},
+			// HTTP Call Action
+			"method": {
+				Type:         schema.TypeString,
+				Description:  "The HTTP method to be used for the call",
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, false),
+			},
+			"url": {
+				Type:        schema.TypeString,
+				Description: "The URL to be called",
+				Optional:    true,
+			},
+			"headers": {
+				Type:        schema.TypeList,
+				Description: "The headers to be sent with the request",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:        schema.TypeString,
+							Description: "The key of the header",
+							Required:    true,
+						},
+						"value": {
+							Type:        schema.TypeString,
+							Description: "The value of the header",
+							Required:    true,
+						},
+					},
+				},
+			},
+			"body": {
+				Type:        schema.TypeString,
+				Description: "The body of the request",
+				Optional:    true,
 			},
 		},
 	}
@@ -103,8 +145,12 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
 	channels := make([]api.Channels, 0)
+	headers := make([]api.Headers, 0)
 
 	if err := Decode(d.Get("channels"), &channels); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := Decode(d.Get("headers"), &headers); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -117,6 +163,10 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			Priority: d.Get("priority").(string),
 			Runbooks: runbooks,
 			Channels: channels,
+			Method:   d.Get("method").(string),
+			URL:      d.Get("url").(string),
+			Body:     d.Get("body").(string),
+			Headers:  headers,
 		},
 	}
 
@@ -144,8 +194,12 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
 	channels := make([]api.Channels, 0)
+	headers := make([]api.Headers, 0)
 
 	if err := Decode(d.Get("channels"), &channels); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := Decode(d.Get("headers"), &headers); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -158,6 +212,10 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			Priority: d.Get("priority").(string),
 			Runbooks: runbooks,
 			Channels: channels,
+			Method:   d.Get("method").(string),
+			URL:      d.Get("url").(string),
+			Body:     d.Get("body").(string),
+			Headers:  headers,
 		},
 	}
 
