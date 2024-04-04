@@ -36,6 +36,8 @@ type WorkflowActionData struct {
 	To      []string `json:"to" tf:"to"`
 	Subject string   `json:"subject" tf:"subject"`
 	// body is needed for email as well
+	// Trigger Manual Webhook
+	WebhookID string `json:"id" tf:"webhook_id"`
 }
 
 type Channels struct {
@@ -74,8 +76,9 @@ type WorkflowActionDataRes struct {
 		Key   string `json:"key" tf:"key"`
 		Value string `json:"value" tf:"value"`
 	} `json:"headers" tf:"headers"`
-	To      []string `json:"to" tf:"to"`
-	Subject string   `json:"subject" tf:"subject"`
+	To        []string `json:"to" tf:"to"`
+	Subject   string   `json:"subject" tf:"subject"`
+	WebhookID string   `json:"id" tf:"webhook_id"`
 }
 
 // TODO: Check if we even need this??

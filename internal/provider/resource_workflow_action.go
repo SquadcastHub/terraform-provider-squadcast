@@ -30,7 +30,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
-					"sq_make_http_call", "sq_send_email"}, false),
+					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -145,6 +145,12 @@ func resourceWorkflowAction() *schema.Resource {
 				Optional:    true,
 			},
 			// body is needed for email as well
+			// Trigger Manual Webhook Action
+			"webhook_id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the webhook to be triggered. (Only for Trigger Manual Webhook action)",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -172,18 +178,19 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
-			Note:     d.Get("note").(string),
-			SLO:      d.Get("slo").(int),
-			SLIs:     tf.ListToSlice[string](d.Get("slis")),
-			Priority: d.Get("priority").(string),
-			Runbooks: runbooks,
-			Channels: channels,
-			Method:   d.Get("method").(string),
-			URL:      d.Get("url").(string),
-			Body:     d.Get("body").(string),
-			Headers:  headers,
-			To:       tf.ListToSlice[string](d.Get("to")),
-			Subject:  d.Get("subject").(string),
+			Note:      d.Get("note").(string),
+			SLO:       d.Get("slo").(int),
+			SLIs:      tf.ListToSlice[string](d.Get("slis")),
+			Priority:  d.Get("priority").(string),
+			Runbooks:  runbooks,
+			Channels:  channels,
+			Method:    d.Get("method").(string),
+			URL:       d.Get("url").(string),
+			Body:      d.Get("body").(string),
+			Headers:   headers,
+			To:        tf.ListToSlice[string](d.Get("to")),
+			Subject:   d.Get("subject").(string),
+			WebhookID: d.Get("webhook_id").(string),
 		},
 	}
 
@@ -223,18 +230,19 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
-			Note:     d.Get("note").(string),
-			SLO:      d.Get("slo").(int),
-			SLIs:     tf.ListToSlice[string](d.Get("slis")),
-			Priority: d.Get("priority").(string),
-			Runbooks: runbooks,
-			Channels: channels,
-			Method:   d.Get("method").(string),
-			URL:      d.Get("url").(string),
-			Body:     d.Get("body").(string),
-			Headers:  headers,
-			To:       tf.ListToSlice[string](d.Get("to")),
-			Subject:  d.Get("subject").(string),
+			Note:      d.Get("note").(string),
+			SLO:       d.Get("slo").(int),
+			SLIs:      tf.ListToSlice[string](d.Get("slis")),
+			Priority:  d.Get("priority").(string),
+			Runbooks:  runbooks,
+			Channels:  channels,
+			Method:    d.Get("method").(string),
+			URL:       d.Get("url").(string),
+			Body:      d.Get("body").(string),
+			Headers:   headers,
+			To:        tf.ListToSlice[string](d.Get("to")),
+			Subject:   d.Get("subject").(string),
+			WebhookID: d.Get("webhook_id").(string),
 		},
 	}
 
