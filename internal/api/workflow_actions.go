@@ -38,6 +38,22 @@ type WorkflowActionData struct {
 	// body is needed for email as well
 	// Trigger Manual Webhook
 	WebhookID string `json:"id" tf:"webhook_id"`
+	// Status page
+	StatusPageID       int                  `json:"status_page_id" tf:"status_page_id"`
+	IssueTitle         string               `json:"issue_title" tf:"issue_title"`
+	PageStatusID       int                  `json:"page_status_id" tf:"page_status_id"`
+	ComponentAndImpact []ComponentAndImpact `json:"component_and_impact" tf:"component_and_impact"`
+	StatusAndMessage   []StatusAndMessage   `json:"status_and_message" tf:"status_and_message"`
+}
+
+type ComponentAndImpact struct {
+	ComponentID    int `json:"component_id" tf:"component_id"`
+	ImpactStatusID int `json:"impact_status_id" tf:"impact_status_id"`
+}
+
+type StatusAndMessage struct {
+	StatusID int      `json:"status_id" tf:"status_id"`
+	Messages []string `json:"messages" tf:"messages"`
 }
 
 type Channels struct {
@@ -76,9 +92,19 @@ type WorkflowActionDataRes struct {
 		Key   string `json:"key" tf:"key"`
 		Value string `json:"value" tf:"value"`
 	} `json:"headers" tf:"headers"`
-	To        []string `json:"to" tf:"to"`
-	Subject   string   `json:"subject" tf:"subject"`
-	WebhookID string   `json:"id" tf:"webhook_id"`
+	To                 []string                `json:"to" tf:"to"`
+	Subject            string                  `json:"subject" tf:"subject"`
+	WebhookID          string                  `json:"id" tf:"webhook_id"`
+	StatusPageID       int                     `json:"status_page_id" tf:"status_page_id"`
+	IssueTitle         string                  `json:"issue_title" tf:"issue_title"`
+	PageStatusID       int                     `json:"page_status_id" tf:"page_status_id"`
+	ComponentAndImpact []ComponentAndImpactRes `json:"component_and_impact" tf:"component_and_impact"`
+	StatusAndMessage   []StatusAndMessage      `json:"status_and_message" tf:"status_and_message"`
+}
+
+type ComponentAndImpactRes struct {
+	ComponentID    int `json:"component_id" tf:"component_id"`
+	ImpactStatusID int `json:"impact_status_id" tf:"impact_status_id"`
 }
 
 // TODO: Check if we even need this??

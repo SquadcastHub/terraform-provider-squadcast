@@ -30,7 +30,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
-					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook"}, false),
+					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -151,6 +151,63 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The ID of the webhook to be triggered. (Only for Trigger Manual Webhook action)",
 				Optional:    true,
 			},
+			// Status Page Issue Action
+			"status_page_id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the status page to which the issue is to be added. (Only for Add Status Page Issue action)",
+				Optional:    true,
+			},
+			"issue_title": {
+				Type:        schema.TypeString,
+				Description: "The title of the issue to be added. (Only for Add Status Page Issue action)",
+				Optional:    true,
+			},
+			"page_status_id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the status to be set for the issue. (Only for Add Status Page Issue action)",
+				Optional:    true,
+			},
+			"component_and_impact": {
+				Type:        schema.TypeList,
+				Description: "The components and their impact to be set for the issue. (Only for Add Status Page Issue action)",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"component_id": {
+							Type:        schema.TypeInt,
+							Description: "The ID of the component",
+							Required:    true,
+						},
+						"impact_status_id": {
+							Type:        schema.TypeInt,
+							Description: "The ID of the impact status",
+							Required:    true,
+						},
+					},
+				},
+			},
+			"status_and_message": {
+				Type:        schema.TypeList,
+				Description: "The status and message to be set for the issue. (Only for Add Status Page Issue action)",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"status_id": {
+							Type:        schema.TypeInt,
+							Description: "The ID of the status",
+							Required:    true,
+						},
+						"messages": {
+							Type:        schema.TypeList,
+							Description: "The messages to be set for the issue",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -167,6 +224,8 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
 	channels := make([]api.Channels, 0)
 	headers := make([]api.Headers, 0)
+	componentAndImpact := make([]api.ComponentAndImpact, 0)
+	statusAndMessage := make([]api.StatusAndMessage, 0)
 
 	if err := Decode(d.Get("channels"), &channels); err != nil {
 		return diag.FromErr(err)
@@ -174,23 +233,34 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 	if err := Decode(d.Get("headers"), &headers); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := Decode(d.Get("component_and_impact"), &componentAndImpact); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := Decode(d.Get("status_and_message"), &statusAndMessage); err != nil {
+		return diag.FromErr(err)
+	}
 
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
-			Note:      d.Get("note").(string),
-			SLO:       d.Get("slo").(int),
-			SLIs:      tf.ListToSlice[string](d.Get("slis")),
-			Priority:  d.Get("priority").(string),
-			Runbooks:  runbooks,
-			Channels:  channels,
-			Method:    d.Get("method").(string),
-			URL:       d.Get("url").(string),
-			Body:      d.Get("body").(string),
-			Headers:   headers,
-			To:        tf.ListToSlice[string](d.Get("to")),
-			Subject:   d.Get("subject").(string),
-			WebhookID: d.Get("webhook_id").(string),
+			Note:               d.Get("note").(string),
+			SLO:                d.Get("slo").(int),
+			SLIs:               tf.ListToSlice[string](d.Get("slis")),
+			Priority:           d.Get("priority").(string),
+			Runbooks:           runbooks,
+			Channels:           channels,
+			Method:             d.Get("method").(string),
+			URL:                d.Get("url").(string),
+			Body:               d.Get("body").(string),
+			Headers:            headers,
+			To:                 tf.ListToSlice[string](d.Get("to")),
+			Subject:            d.Get("subject").(string),
+			WebhookID:          d.Get("webhook_id").(string),
+			StatusPageID:       d.Get("status_page_id").(int),
+			IssueTitle:         d.Get("issue_title").(string),
+			PageStatusID:       d.Get("page_status_id").(int),
+			ComponentAndImpact: componentAndImpact,
+			StatusAndMessage:   statusAndMessage,
 		},
 	}
 
@@ -219,6 +289,8 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
 	channels := make([]api.Channels, 0)
 	headers := make([]api.Headers, 0)
+	componentAndImpact := make([]api.ComponentAndImpact, 0)
+	statusAndMessage := make([]api.StatusAndMessage, 0)
 
 	if err := Decode(d.Get("channels"), &channels); err != nil {
 		return diag.FromErr(err)
@@ -226,23 +298,34 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 	if err := Decode(d.Get("headers"), &headers); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := Decode(d.Get("component_and_impact"), &componentAndImpact); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := Decode(d.Get("status_and_message"), &statusAndMessage); err != nil {
+		return diag.FromErr(err)
+	}
 
 	workflowAction := &api.WorkflowAction{
 		Name: d.Get("name").(string),
 		Data: api.WorkflowActionData{
-			Note:      d.Get("note").(string),
-			SLO:       d.Get("slo").(int),
-			SLIs:      tf.ListToSlice[string](d.Get("slis")),
-			Priority:  d.Get("priority").(string),
-			Runbooks:  runbooks,
-			Channels:  channels,
-			Method:    d.Get("method").(string),
-			URL:       d.Get("url").(string),
-			Body:      d.Get("body").(string),
-			Headers:   headers,
-			To:        tf.ListToSlice[string](d.Get("to")),
-			Subject:   d.Get("subject").(string),
-			WebhookID: d.Get("webhook_id").(string),
+			Note:               d.Get("note").(string),
+			SLO:                d.Get("slo").(int),
+			SLIs:               tf.ListToSlice[string](d.Get("slis")),
+			Priority:           d.Get("priority").(string),
+			Runbooks:           runbooks,
+			Channels:           channels,
+			Method:             d.Get("method").(string),
+			URL:                d.Get("url").(string),
+			Body:               d.Get("body").(string),
+			Headers:            headers,
+			To:                 tf.ListToSlice[string](d.Get("to")),
+			Subject:            d.Get("subject").(string),
+			WebhookID:          d.Get("webhook_id").(string),
+			StatusPageID:       d.Get("status_page_id").(int),
+			IssueTitle:         d.Get("issue_title").(string),
+			PageStatusID:       d.Get("page_status_id").(int),
+			ComponentAndImpact: componentAndImpact,
+			StatusAndMessage:   statusAndMessage,
 		},
 	}
 
