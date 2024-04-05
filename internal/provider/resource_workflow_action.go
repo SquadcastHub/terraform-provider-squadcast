@@ -30,7 +30,7 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
-					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue"}, false),
+					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue", "jira_create_ticket"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -208,6 +208,32 @@ func resourceWorkflowAction() *schema.Resource {
 					},
 				},
 			},
+			// Jira Create Ticket Action
+			"account": {
+				Type:        schema.TypeString,
+				Description: "The account to be used for creating the ticket. (Only for Jira Create Ticket action)",
+				Optional:    true,
+			},
+			"project": {
+				Type:        schema.TypeString,
+				Description: "The project to be used for creating the ticket. (Only for Jira Create Ticket action)",
+				Optional:    true,
+			},
+			"issue_type": {
+				Type:        schema.TypeString,
+				Description: "The issue type to be used for creating the ticket. (Only for Jira Create Ticket action)",
+				Optional:    true,
+			},
+			"title": {
+				Type:        schema.TypeString,
+				Description: "The title of the ticket. (Only for Jira Create Ticket action)",
+				Optional:    true,
+			},
+			"description": {
+				Type:        schema.TypeString,
+				Description: "The description of the ticket. (Only for Jira Create Ticket action)",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -261,6 +287,11 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			PageStatusID:       d.Get("page_status_id").(int),
 			ComponentAndImpact: componentAndImpact,
 			StatusAndMessage:   statusAndMessage,
+			Account:            d.Get("account").(string),
+			Project:            d.Get("project").(string),
+			IssueType:          d.Get("issue_type").(string),
+			Title:              d.Get("title").(string),
+			Description:        d.Get("description").(string),
 		},
 	}
 
@@ -326,6 +357,11 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			PageStatusID:       d.Get("page_status_id").(int),
 			ComponentAndImpact: componentAndImpact,
 			StatusAndMessage:   statusAndMessage,
+			Account:            d.Get("account").(string),
+			Project:            d.Get("project").(string),
+			IssueType:          d.Get("issue_type").(string),
+			Title:              d.Get("title").(string),
+			Description:        d.Get("description").(string),
 		},
 	}
 

@@ -44,6 +44,12 @@ type WorkflowActionData struct {
 	PageStatusID       int                  `json:"page_status_id" tf:"page_status_id"`
 	ComponentAndImpact []ComponentAndImpact `json:"component_and_impact" tf:"component_and_impact"`
 	StatusAndMessage   []StatusAndMessage   `json:"status_and_message" tf:"status_and_message"`
+	// Jira ticket
+	Account     string `json:"account" tf:"account"`
+	Project     string `json:"project" tf:"project"`
+	IssueType   string `json:"issue_type" tf:"issue_type"`
+	Title       string `json:"title" tf:"title"`
+	Description string `json:"description" tf:"description"`
 }
 
 type ComponentAndImpact struct {
@@ -100,6 +106,11 @@ type WorkflowActionDataRes struct {
 	PageStatusID       int                     `json:"page_status_id" tf:"page_status_id"`
 	ComponentAndImpact []ComponentAndImpactRes `json:"component_and_impact" tf:"component_and_impact"`
 	StatusAndMessage   []StatusAndMessage      `json:"status_and_message" tf:"status_and_message"`
+	Account            string                  `json:"account" tf:"account"`
+	Project            string                  `json:"project" tf:"project"`
+	IssueType          string                  `json:"issue_type" tf:"issue_type"`
+	Title              string                  `json:"title" tf:"title"`
+	Description        string                  `json:"description" tf:"description"`
 }
 
 type ComponentAndImpactRes struct {
