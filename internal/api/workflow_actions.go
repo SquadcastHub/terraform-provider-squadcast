@@ -53,6 +53,9 @@ type WorkflowActionData struct {
 	// Slack - Create channel
 	AutoName    bool   `json:"auto_name" tf:"auto_name"`
 	ChannelName string `json:"channel_name" tf:"channel_name"`
+	// Slack - Send message to channel
+	ChannelID string `json:"channel_id" tf:"channel_id"`
+	Message   string `json:"message" tf:"message"`
 }
 
 type ComponentAndImpact struct {
@@ -116,6 +119,8 @@ type WorkflowActionDataRes struct {
 	Description        string                  `json:"description" tf:"description"`
 	AutoName           bool                    `json:"auto_name" tf:"auto_name"`
 	ChannelName        string                  `json:"channel_name" tf:"channel_name"`
+	ChannelID          string                  `json:"channel_id" tf:"channel_id"`
+	Message            string                  `json:"message" tf:"message"`
 }
 
 type ComponentAndImpactRes struct {
