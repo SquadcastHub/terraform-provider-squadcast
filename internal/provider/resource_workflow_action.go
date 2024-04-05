@@ -30,7 +30,8 @@ func resourceWorkflowAction() *schema.Resource {
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
-					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue", "jira_create_ticket"}, false),
+					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue", "jira_create_ticket",
+					"slack_create_incident_channel", "slack_archive_channel"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -234,6 +235,17 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The description of the ticket. (Only for Jira Create Ticket action)",
 				Optional:    true,
 			},
+			// Slack Channel Creation Action
+			"auto_name": {
+				Type:        schema.TypeBool,
+				Description: "Whether to automatically name the action",
+				Optional:    true,
+			},
+			"channel_name": {
+				Type:        schema.TypeString,
+				Description: "The name of the channel to be archived. (Only for Slack Archive Channel action)",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -292,6 +304,8 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			IssueType:          d.Get("issue_type").(string),
 			Title:              d.Get("title").(string),
 			Description:        d.Get("description").(string),
+			AutoName:           d.Get("auto_name").(bool),
+			ChannelName:        d.Get("channel_name").(string),
 		},
 	}
 
@@ -362,6 +376,8 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			IssueType:          d.Get("issue_type").(string),
 			Title:              d.Get("title").(string),
 			Description:        d.Get("description").(string),
+			AutoName:           d.Get("auto_name").(bool),
+			ChannelName:        d.Get("channel_name").(string),
 		},
 	}
 
