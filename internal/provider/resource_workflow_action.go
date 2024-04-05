@@ -452,6 +452,10 @@ func resourceWorkflowActionDelete(ctx context.Context, d *schema.ResourceData, m
 
 	_, err := client.DeleteWorkflowAction(ctx, workflowID, d.Id())
 	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
 

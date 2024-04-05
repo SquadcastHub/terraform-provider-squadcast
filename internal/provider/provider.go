@@ -82,6 +82,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_webform":                    resourceWebform(),
 				"squadcast_workflow":                   resourceWorkflow(),
 				"squadcast_workflow_action":            resourceWorkflowAction(),
+				"squadcast_workflow_action_ordering":   resourceWorkflowActionOrdering(),
 			},
 			Schema: map[string]*schema.Schema{
 				"region": {

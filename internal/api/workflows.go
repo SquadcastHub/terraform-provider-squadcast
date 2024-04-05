@@ -19,6 +19,10 @@ type Workflow struct {
 	// Filters     []*Filters  `json:"filters,omitempty" tf:"filters"`
 	EntityOwner EntityOwner    `json:"entity_owner" tf:"entity_owner"`
 	Tags        []*WorkflowTag `json:"tags,omitempty" tf:"-"`
+
+	// Should be used only for action ordering resource
+	// Hence we are not encoding this field (tf:"-")
+	Actions []*WorkflowAction `json:"actions,omitempty" tf:"-"`
 }
 
 type WorkflowTag struct {
