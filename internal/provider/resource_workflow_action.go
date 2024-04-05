@@ -31,7 +31,8 @@ func resourceWorkflowAction() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
 					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue", "jira_create_ticket",
-					"slack_create_incident_channel", "slack_archive_channel", "slack_message_channel", "slack_message_user"}, false),
+					"slack_create_incident_channel", "slack_archive_channel", "slack_message_channel", "slack_message_user",
+					"msteams_message_channel", "msteams_message_user"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -246,18 +247,18 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The name of the channel to be archived. (Only for Slack Archive Channel action)",
 				Optional:    true,
 			},
-			// Slack: Send message to channel
+			// Slack & MS-Team: Send message to channel
 			"channel_id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the channel to which the message is to be sent. (Only for Slack Message Channel action)",
+				Description: "The ID of the channel to which the message is to be sent. (Only for Slack/MS-Team Message Channel action)",
 				Optional:    true,
 			},
 			"message": {
 				Type:        schema.TypeString,
-				Description: "The message to be sent. (Only for Slack Message Channel action)",
+				Description: "The message to be sent. (Only for Slack/MS-Team Message Channel action)",
 				Optional:    true,
 			},
-			// Slack: Send message to user
+			// Slack & MS-Team: Send message to user
 			"member_id": {
 				Type:        schema.TypeString,
 				Description: "The ID of the user to which the message is to be sent. (Only for Slack Message User action)",

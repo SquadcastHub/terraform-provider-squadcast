@@ -53,10 +53,10 @@ type WorkflowActionData struct {
 	// Slack - Create channel
 	AutoName    bool   `json:"auto_name" tf:"auto_name"`
 	ChannelName string `json:"channel_name" tf:"channel_name"`
-	// Slack - Send message to channel
+	// Slack & MS-Teams - Send message to channel
 	ChannelID string `json:"channel_id" tf:"channel_id"`
 	Message   string `json:"message" tf:"message"`
-	// Slack - Send message to user
+	// Slack & MS-Team - Send message to user
 	MemberID string `json:"member_id" tf:"member_id"`
 }
 
