@@ -31,7 +31,7 @@ func resourceWorkflowAction() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"sq_add_incident_note", "sq_attach_runbooks",
 					"sq_mark_incident_slo_affecting", "sq_add_communication_channel", "sq_update_incident_priority",
 					"sq_make_http_call", "sq_send_email", "sq_trigger_manual_webhook", "sq_add_status_page_issue", "jira_create_ticket",
-					"slack_create_incident_channel", "slack_archive_channel", "slack_message_channel"}, false),
+					"slack_create_incident_channel", "slack_archive_channel", "slack_message_channel", "slack_message_user"}, false),
 			},
 			// Add Notes Action
 			"note": {
@@ -257,6 +257,13 @@ func resourceWorkflowAction() *schema.Resource {
 				Description: "The message to be sent. (Only for Slack Message Channel action)",
 				Optional:    true,
 			},
+			// Slack: Send message to user
+			"member_id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the user to which the message is to be sent. (Only for Slack Message User action)",
+				Optional:    true,
+			},
+			//message is needed for this as well
 		},
 	}
 }
@@ -319,6 +326,7 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 			ChannelName:        d.Get("channel_name").(string),
 			ChannelID:          d.Get("channel_id").(string),
 			Message:            d.Get("message").(string),
+			MemberID:           d.Get("member_id").(string),
 		},
 	}
 
@@ -393,6 +401,7 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 			ChannelName:        d.Get("channel_name").(string),
 			ChannelID:          d.Get("channel_id").(string),
 			Message:            d.Get("message").(string),
+			MemberID:           d.Get("member_id").(string),
 		},
 	}
 

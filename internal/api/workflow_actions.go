@@ -56,6 +56,8 @@ type WorkflowActionData struct {
 	// Slack - Send message to channel
 	ChannelID string `json:"channel_id" tf:"channel_id"`
 	Message   string `json:"message" tf:"message"`
+	// Slack - Send message to user
+	MemberID string `json:"member_id" tf:"member_id"`
 }
 
 type ComponentAndImpact struct {
@@ -121,6 +123,7 @@ type WorkflowActionDataRes struct {
 	ChannelName        string                  `json:"channel_name" tf:"channel_name"`
 	ChannelID          string                  `json:"channel_id" tf:"channel_id"`
 	Message            string                  `json:"message" tf:"message"`
+	MemberID           string                  `json:"member_id" tf:"member_id"`
 }
 
 type ComponentAndImpactRes struct {
