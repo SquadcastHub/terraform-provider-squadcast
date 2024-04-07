@@ -76,7 +76,6 @@ func (client *Client) GetWorkflowById(ctx context.Context, id string) (*Workflow
 
 func (client *Client) UpdateWorkflow(ctx context.Context, id string, workflowReq *Workflow) (*Workflow, error) {
 	url := fmt.Sprintf("%s/workflows/%s", client.BaseURLV3, id)
-	// url := "https://webhook.site/92de1537-f934-4c4b-b521-0a8ca6d0638f"
 	return Request[Workflow, Workflow](http.MethodPatch, url, client, ctx, workflowReq)
 }
 

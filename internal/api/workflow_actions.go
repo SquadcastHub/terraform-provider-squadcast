@@ -146,7 +146,6 @@ func (w *WorkflowActionRes) Encode() (tf.M, error) {
 }
 
 func (client *Client) CreateWorkflowAction(ctx context.Context, workflowID string, workflowAction *WorkflowAction) (*WorkflowActionRes, error) {
-	// url := "https://webhook.site/3ee9072d-5587-4bb3-95af-bed7db01fffa"
 	url := fmt.Sprintf("%s/workflows/%s/actions", client.BaseURLV3, workflowID)
 	return Request[WorkflowAction, WorkflowActionRes](http.MethodPost, url, client, ctx, workflowAction)
 }
