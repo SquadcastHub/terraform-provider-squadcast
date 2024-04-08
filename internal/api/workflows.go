@@ -10,13 +10,13 @@ import (
 )
 
 type Workflow struct {
-	ID          uint   `json:"id,omitempty" tf:"id,omitempty"`
-	Title       string `json:"title" tf:"title"`
-	Description string `json:"description" tf:"description"`
-	OwnerID     string `json:"owner_id" tf:"owner_id"`
-	Enabled     bool   `json:"enabled" tf:"enabled"`
-	Trigger     string `json:"trigger" tf:"trigger"`
-	// Filters     []*Filters  `json:"filters,omitempty" tf:"filters"`
+	ID          uint           `json:"id,omitempty" tf:"id,omitempty"`
+	Title       string         `json:"title" tf:"title"`
+	Description string         `json:"description" tf:"description"`
+	OwnerID     string         `json:"owner_id" tf:"owner_id"`
+	Enabled     bool           `json:"enabled" tf:"enabled"`
+	Trigger     string         `json:"trigger" tf:"trigger"`
+	Filters     *Filters       `json:"filters,omitempty" tf:"filters"`
 	EntityOwner EntityOwner    `json:"entity_owner" tf:"entity_owner"`
 	Tags        []*WorkflowTag `json:"tags,omitempty" tf:"-"`
 
@@ -24,16 +24,24 @@ type Workflow struct {
 	// Hence we are not encoding this field (tf:"-")
 	Actions []*WorkflowAction `json:"actions,omitempty" tf:"-"`
 }
+type Filters struct {
+	Condition string `json:"condition" tf:"condition"`
+	Filters   []struct {
+		Condition string `json:"condition" tf:"condition"`
+		Type      string `json:"type" tf:"type"`
+		Value     string `json:"value" tf:"value"`
+		Filters   []struct {
+			Type  string `json:"type" tf:"type"`
+			Key   string `json:"key" tf:"key"`
+			Value string `json:"value" tf:"value"`
+		} `json:"filters" tf:"filters"`
+	} `json:"filters" tf:"filters"`
+}
 
 type WorkflowTag struct {
 	Value string `json:"value" tf:"value"`
 	Color string `json:"color" tf:"color"`
 	Key   string `json:"key" tf:"key"`
-}
-
-type Filters struct {
-	Fields Field  `json:"fields" tf:"fields"`
-	Type   string `json:"type" tf:"type"`
 }
 
 type Field struct {

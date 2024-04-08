@@ -22,34 +22,46 @@ func resourceWorkflow() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,
+				Description:  "The ID of the user who owns the workflow",
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
 			"title": {
 				Type:         schema.TypeString,
+				Description:  "The title of the workflow",
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 150),
 			},
 			"description": {
 				Type:         schema.TypeString,
+				Description:  "The description of the workflow",
 				Optional:     true,
 				ValidateFunc: validation.StringLenBetween(1, 150),
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Description: "Whether the workflow is enabled or not",
+				Optional:    true,
+				Default:     true,
 			},
 			"trigger": {
 				Type:         schema.TypeString,
+				Description:  "The trigger for the workflow",
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"incident_created", "incident_triggered", "incident_acknowledged", "incident_resolved"}, false),
 			},
 			"filters": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:        schema.TypeList,
+				Description: "The filters to be applied on the workflow",
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"condition": {
+							Type:        schema.TypeString,
+							Description: "Condition to be applied on the filters (and / or)",
+							Required:    true,
+						},
 						"fields": {
 							Type:     schema.TypeList,
 							Required: true,
@@ -71,8 +83,9 @@ func resourceWorkflow() *schema.Resource {
 				},
 			},
 			"tags": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:        schema.TypeList,
+				Description: "The tags to be applied on the workflow",
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"color": {
@@ -91,8 +104,9 @@ func resourceWorkflow() *schema.Resource {
 				},
 			},
 			"entity_owner": {
-				Type:     schema.TypeList,
-				Required: true,
+				Type:        schema.TypeList,
+				Description: "The entity owner of the workflow",
+				Required:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {

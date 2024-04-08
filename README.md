@@ -49,3 +49,6 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```sh
 $ make testacc
 ```
+
+Individual test can be executed in the following manner after exporting token & region env variables
+go test ./... -run ^TestAccDataSourceService -v -count=1

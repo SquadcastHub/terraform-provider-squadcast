@@ -32,5 +32,3 @@ data "squadcast_team_role" "test" {
 - `abilities` (Set of String) All the abilities attached to a role.
 - `default` (Boolean) Role is default.
 - `id` (String) Role id.
-
-
