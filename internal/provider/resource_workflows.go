@@ -62,22 +62,46 @@ func resourceWorkflow() *schema.Resource {
 							Description: "Condition to be applied on the filters (and / or)",
 							Required:    true,
 						},
-						"fields": {
+						"filters": {
 							Type:     schema.TypeList,
-							Required: true,
-							MaxItems: 1,
+							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"condition": {
+										Type:        schema.TypeString,
+										Description: "Condition to be applied on the filters (and / or)",
+										Optional:    true,
+									},
+									"type": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 									"value": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
+									"filters": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"type": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"key": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"value": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
 								},
 							},
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Required: true,
 						},
 					},
 				},
@@ -146,20 +170,16 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 		},
 	}
 
-	// TODO: Support filters
-	// mfilters := d.Get("filters").([]any)
-	// tflog.Info(ctx, "Received filters are", tf.M{
-	// 	"filters1": mfilters,
-	// })
+	hfilters := d.Get("filters").([]any)
+	if len(hfilters) > 0 {
+		var filters []*api.HighLevelFilter
+		err := Decode(hfilters, &filters)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 
-	// if len(mfilters) > 0 {
-	// 	var filters []*api.Filters
-	// 	err := Decode(mfilters, &filters)
-	// 	if err != nil {
-	// 		return diag.FromErr(err)
-	// 	}
-	// 	workflowReq.Filters = filters
-	// }
+		workflowReq.Filters = filters[0]
+	}
 
 	mtags := d.Get("tags").([]any)
 	tflog.Info(ctx, "Length of tags from create are", tf.M{
@@ -230,6 +250,17 @@ func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta i
 			ID:   d.Get("entity_owner.0.id").(string),
 			Type: d.Get("entity_owner.0.type").(string),
 		},
+	}
+
+	hfilters := d.Get("filters").([]any)
+	if len(hfilters) > 0 {
+		var filters []*api.HighLevelFilter
+		err := Decode(hfilters, &filters)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		workflowReq.Filters = filters[0]
 	}
 
 	mtags := d.Get("tags").([]any)
