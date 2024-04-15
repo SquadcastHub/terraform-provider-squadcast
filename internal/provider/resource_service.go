@@ -216,6 +216,9 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, meta any
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)
+		if err != nil {
+			return diag.Errorf("unable to fetch alert sources")
+		}
 		for _, malertsource := range malertsources {
 			for _, alertSource := range alertSources {
 				if alertSource.Type == malertsource {
@@ -369,6 +372,9 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, meta any
 	if len(malertsources) > 0 {
 		var alertSourceIDs []string
 		alertSources, err := client.ListAlertSources(ctx)
+		if err != nil {
+			return diag.Errorf("unable to fetch alert sources")
+		}
 		for _, malertsource := range malertsources {
 			for _, alertSource := range alertSources {
 				if alertSource.Type == malertsource {

@@ -197,6 +197,9 @@ func resourceWebform() *schema.Resource {
 func resourceWebformImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
 	teamID, webformName, err := parse2PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
 
 	_, err = client.GetTeamById(ctx, teamID)
 	if err != nil {

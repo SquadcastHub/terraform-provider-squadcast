@@ -73,6 +73,7 @@ func New(version string) func() *schema.Provider {
 				"squadcast_status_page_component":      resourceStatusPageComponent(),
 				"squadcast_status_page_group":          resourceStatusPageGroup(),
 				"squadcast_suppression_rules":          resourceSuppressionRules(),
+				"squadcast_suppression_rules_v2":       resourceSuppressionRulesV2(),
 				"squadcast_tagging_rules":              resourceTaggingRules(),
 				"squadcast_team_member":                resourceTeamMember(),
 				"squadcast_team_role":                  resourceTeamRole(),

@@ -19,6 +19,7 @@ func (c *SuppressionRuleCondition) Encode() (tf.M, error) {
 }
 
 type SuppressionRule struct {
+	ID              string                      `json:"rule_id,omitempty" tf:"id"`
 	IsBasic         bool                        `json:"is_basic" tf:"is_basic"`
 	Description     string                      `json:"description" tf:"description"`
 	Expression      string                      `json:"expression" tf:"expression"`
@@ -72,6 +73,7 @@ func (r *SuppressionRule) Encode() (tf.M, error) {
 
 	if rtimeSlots == nil {
 		rtimeSlots = []*TimeSlot{}
+		m["is_timebased"] = false
 	} else {
 		for idx, t := range rtimeSlots {
 			mNewCustomField := tf.List(tf.M{})
@@ -94,6 +96,7 @@ type SuppressionRules struct {
 	ID        string             `json:"id" tf:"id"`
 	ServiceID string             `json:"service_id" tf:"service_id"`
 	Rules     []*SuppressionRule `json:"rules" tf:"-"`
+	Rule      *SuppressionRule   `json:"rule" tf:"-"`
 }
 
 func (s *SuppressionRules) Encode() (tf.M, error) {
@@ -124,4 +127,76 @@ type UpdateSuppressionRulesReq struct {
 func (client *Client) UpdateSuppressionRules(ctx context.Context, serviceID, teamID string, req *UpdateSuppressionRulesReq) (*SuppressionRules, error) {
 	url := fmt.Sprintf("%s/services/%s/suppression-rules", client.BaseURLV3, serviceID)
 	return Request[UpdateSuppressionRulesReq, SuppressionRules](http.MethodPost, url, client, ctx, req)
+}
+
+// suppression rules v2
+
+type CreateSuppressionRule struct {
+	Rule SuppressionRule `json:"rule"`
+}
+
+func (client *Client) CreateSuppressionRulesV2(ctx context.Context, serviceID string, req *CreateSuppressionRule) (*CreateSuppressionRule, error) {
+	url := fmt.Sprintf("%s/services/%s/suppression-rules/new", client.BaseURLV3, serviceID)
+	return Request[CreateSuppressionRule, CreateSuppressionRule](http.MethodPost, url, client, ctx, req)
+}
+
+func (client *Client) UpdateSuppressionRulesV2(ctx context.Context, serviceID, ruleID string, req *CreateSuppressionRule) (*CreateSuppressionRule, error) {
+	url := fmt.Sprintf("%s/services/%s/suppression-rules/%s", client.BaseURLV3, serviceID, ruleID)
+	return Request[CreateSuppressionRule, CreateSuppressionRule](http.MethodPut, url, client, ctx, req)
+}
+
+type SuppressionRuleV2 struct {
+	ID        string           `json:"rule_id" tf:"id"`
+	ServiceID string           `json:"service_id" tf:"service_id"`
+	Rule      *SuppressionRule `json:"rule" tf:"-"`
+}
+
+func (s *SuppressionRuleV2) Encode() (tf.M, error) {
+	m, err := tf.Encode(s.Rule)
+	if err != nil {
+		return nil, err
+	}
+
+	basicExpressions, err := tf.EncodeSlice(s.Rule.BasicExpression)
+	if err != nil {
+		return nil, err
+	}
+	m["basic_expressions"] = basicExpressions
+
+	rtimeSlots := s.Rule.TimeSlots
+
+	timeSlots, err := tf.EncodeSlice(rtimeSlots)
+	if err != nil {
+		return nil, err
+	}
+	m["timeslots"] = timeSlots
+
+	if len(rtimeSlots) > 0 {
+		for idx, t := range rtimeSlots {
+			m["timeslots"].([]interface{})[idx].(map[string]interface{})["custom"] = nil
+			if t.Repetition == "custom" {
+				mNewCustomField := tf.List(tf.M{
+					"repeats_count":       t.Custom.RepeatsCount,
+					"repeats":             t.Custom.Repeats,
+					"repeats_on_weekdays": t.Custom.RepeatsOnWeekdays,
+					"repeats_on_month":    t.Custom.RepeatsOnMonth,
+				})
+				m["timeslots"].([]interface{})[idx].(map[string]interface{})["custom"] = mNewCustomField
+			}
+		}
+	}
+
+	return m, nil
+}
+
+func (client *Client) GetSuppressionRuleByID(ctx context.Context, serviceID, ruleID string) (*SuppressionRuleV2, error) {
+	url := fmt.Sprintf("%s/services/%s/suppression-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, SuppressionRuleV2](http.MethodGet, url, client, ctx, nil)
+}
+
+func (client *Client) DeleteSuppressionRuleByID(ctx context.Context, serviceID, ruleID string) (any, error) {
+	url := fmt.Sprintf("%s/services/%s/suppression-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }
