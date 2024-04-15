@@ -78,7 +78,8 @@ func (w *Workflow) Encode() (tf.M, error) {
 
 	if w.Filters != nil {
 
-		filters := tf.List(tf.M{})
+		filters := []tf.M{}
+
 		for _, filter := range w.Filters.Filters {
 
 			fData := tf.M{}
@@ -145,7 +146,7 @@ func (w *Workflow) Encode() (tf.M, error) {
 
 func (client *Client) CreateWorkflow(ctx context.Context, workflowReq *Workflow) (*Workflow, error) {
 	url := fmt.Sprintf("%s/workflows", client.BaseURLV3)
-	// url := "https://webhook.site/9cc3df1e-7d1f-458d-9635-305300a9c1a5"
+	// url := "https://webhook.site/1fa8cfc4-922a-4144-b241-8fc7aa0c271d"
 	return Request[Workflow, Workflow](http.MethodPost, url, client, ctx, workflowReq)
 }
 
@@ -156,6 +157,7 @@ func (client *Client) GetWorkflowById(ctx context.Context, id string) (*Workflow
 
 func (client *Client) UpdateWorkflow(ctx context.Context, id string, workflowReq *Workflow) (*Workflow, error) {
 	url := fmt.Sprintf("%s/workflows/%s", client.BaseURLV3, id)
+	// url := "https://webhook.site/1fa8cfc4-922a-4144-b241-8fc7aa0c271d"
 	return Request[Workflow, Workflow](http.MethodPatch, url, client, ctx, workflowReq)
 }
 
