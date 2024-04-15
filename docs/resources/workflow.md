@@ -77,15 +77,30 @@ Read-Only:
 Required:
 
 - `condition` (String) Condition to be applied on the filters (and / or)
-- `fields` (Block List, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--filters--fields))
-- `type` (String)
-
-<a id="nestedblock--filters--fields"></a>
-### Nested Schema for `filters.fields`
 
 Optional:
 
+- `filters` (Block List) (see [below for nested schema](#nestedblock--filters--filters))
+
+<a id="nestedblock--filters--filters"></a>
+### Nested Schema for `filters.filters`
+
+Optional:
+
+- `condition` (String) Condition to be applied on the filters (and / or)
+- `filters` (Block List) (see [below for nested schema](#nestedblock--filters--filters--filters))
+- `type` (String)
 - `value` (String)
+
+<a id="nestedblock--filters--filters--filters"></a>
+### Nested Schema for `filters.filters.filters`
+
+Optional:
+
+- `key` (String)
+- `type` (String)
+- `value` (String)
+
 
 
 
