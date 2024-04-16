@@ -131,10 +131,10 @@ type ComponentAndImpactRes struct {
 	ImpactStatusID int `json:"impact_status_id" tf:"impact_status_id"`
 }
 
-// TODO: Check if we even need this??
 func (twc *WorkflowActionDataRes) Encode() (tf.M, error) {
 	return tf.Encode(twc)
 }
+
 func (w *WorkflowActionRes) Encode() (tf.M, error) {
 	m, err := tf.Encode(w)
 	if err != nil {

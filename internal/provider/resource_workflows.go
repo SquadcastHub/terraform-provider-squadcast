@@ -18,7 +18,6 @@ func resourceWorkflow() *schema.Resource {
 		ReadContext:   resourceWorkflowsRead,
 		UpdateContext: resourceWorkflowsUpdate,
 		DeleteContext: resourceWorkflowsDelete,
-		// TODO: Import
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,

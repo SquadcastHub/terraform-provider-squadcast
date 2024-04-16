@@ -66,7 +66,6 @@ func testAccResourceWorkflowsConfig(workflowTitle string) string {
 		owner_id = "63bfabae865e9c93cd31756e"
 		enabled = true
 		trigger = "incident_triggered"
-		# TODO: Needs to accomodate to the new structure
 		filters {
 			fields {
 				value = "P1"
@@ -94,7 +93,6 @@ func testAccResourceWorkflows_update(workflowTitle string) string {
 		owner_id = "63bfabae865e9c93cd31756e"
 		enabled = true
 		trigger = "incident_triggered"
-		# TODO: Needs to accomodate to the new structure
 		filters {
 			fields {
 				value = "P1"
