@@ -278,57 +278,9 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 		"worfklow_id": d.Get("workflow_id").(string),
 	})
 
-	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
-	channels := make([]api.Channels, 0)
-	headers := make([]api.Headers, 0)
-	componentAndImpact := make([]api.ComponentAndImpact, 0)
-	statusAndMessage := make([]api.StatusAndMessage, 0)
-
-	if err := Decode(d.Get("channels"), &channels); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("headers"), &headers); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("component_and_impact"), &componentAndImpact); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("status_and_message"), &statusAndMessage); err != nil {
-		return diag.FromErr(err)
-	}
-
-	workflowAction := &api.WorkflowAction{
-		Name: d.Get("name").(string),
-		Data: api.WorkflowActionData{
-			Note:               d.Get("note").(string),
-			SLO:                d.Get("slo").(int),
-			SLIs:               tf.ListToSlice[string](d.Get("slis")),
-			Priority:           d.Get("priority").(string),
-			Runbooks:           runbooks,
-			Channels:           channels,
-			Method:             d.Get("method").(string),
-			URL:                d.Get("url").(string),
-			Body:               d.Get("body").(string),
-			Headers:            headers,
-			To:                 tf.ListToSlice[string](d.Get("to")),
-			Subject:            d.Get("subject").(string),
-			WebhookID:          d.Get("webhook_id").(string),
-			StatusPageID:       d.Get("status_page_id").(int),
-			IssueTitle:         d.Get("issue_title").(string),
-			PageStatusID:       d.Get("page_status_id").(int),
-			ComponentAndImpact: componentAndImpact,
-			StatusAndMessage:   statusAndMessage,
-			Account:            d.Get("account").(string),
-			Project:            d.Get("project").(string),
-			IssueType:          d.Get("issue_type").(string),
-			Title:              d.Get("title").(string),
-			Description:        d.Get("description").(string),
-			AutoName:           d.Get("auto_name").(bool),
-			ChannelName:        d.Get("channel_name").(string),
-			ChannelID:          d.Get("channel_id").(string),
-			Message:            d.Get("message").(string),
-			MemberID:           d.Get("member_id").(string),
-		},
+	workflowAction, derr := createWorkflowAction(d)
+	if derr != nil {
+		return derr
 	}
 
 	workflowID := d.Get("workflow_id").(string)
@@ -353,57 +305,9 @@ func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, m
 		"action_id":   d.Id(),
 	})
 
-	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
-	channels := make([]api.Channels, 0)
-	headers := make([]api.Headers, 0)
-	componentAndImpact := make([]api.ComponentAndImpact, 0)
-	statusAndMessage := make([]api.StatusAndMessage, 0)
-
-	if err := Decode(d.Get("channels"), &channels); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("headers"), &headers); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("component_and_impact"), &componentAndImpact); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := Decode(d.Get("status_and_message"), &statusAndMessage); err != nil {
-		return diag.FromErr(err)
-	}
-
-	workflowAction := &api.WorkflowAction{
-		Name: d.Get("name").(string),
-		Data: api.WorkflowActionData{
-			Note:               d.Get("note").(string),
-			SLO:                d.Get("slo").(int),
-			SLIs:               tf.ListToSlice[string](d.Get("slis")),
-			Priority:           d.Get("priority").(string),
-			Runbooks:           runbooks,
-			Channels:           channels,
-			Method:             d.Get("method").(string),
-			URL:                d.Get("url").(string),
-			Body:               d.Get("body").(string),
-			Headers:            headers,
-			To:                 tf.ListToSlice[string](d.Get("to")),
-			Subject:            d.Get("subject").(string),
-			WebhookID:          d.Get("webhook_id").(string),
-			StatusPageID:       d.Get("status_page_id").(int),
-			IssueTitle:         d.Get("issue_title").(string),
-			PageStatusID:       d.Get("page_status_id").(int),
-			ComponentAndImpact: componentAndImpact,
-			StatusAndMessage:   statusAndMessage,
-			Account:            d.Get("account").(string),
-			Project:            d.Get("project").(string),
-			IssueType:          d.Get("issue_type").(string),
-			Title:              d.Get("title").(string),
-			Description:        d.Get("description").(string),
-			AutoName:           d.Get("auto_name").(bool),
-			ChannelName:        d.Get("channel_name").(string),
-			ChannelID:          d.Get("channel_id").(string),
-			Message:            d.Get("message").(string),
-			MemberID:           d.Get("member_id").(string),
-		},
+	workflowAction, derr := createWorkflowAction(d)
+	if derr != nil {
+		return derr
 	}
 
 	workflowID := d.Get("workflow_id").(string)
@@ -460,4 +364,60 @@ func resourceWorkflowActionDelete(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	return nil
+}
+
+func createWorkflowAction(d *schema.ResourceData) (*api.WorkflowAction, diag.Diagnostics) {
+
+	runbooks := tf.ListToSlice[string](d.Get("runbooks"))
+	channels := make([]api.Channels, 0)
+	headers := make([]api.Headers, 0)
+	componentAndImpact := make([]api.ComponentAndImpact, 0)
+	statusAndMessage := make([]api.StatusAndMessage, 0)
+
+	if err := Decode(d.Get("channels"), &channels); err != nil {
+		return nil, diag.FromErr(err)
+	}
+	if err := Decode(d.Get("headers"), &headers); err != nil {
+		return nil, diag.FromErr(err)
+	}
+	if err := Decode(d.Get("component_and_impact"), &componentAndImpact); err != nil {
+		return nil, diag.FromErr(err)
+	}
+	if err := Decode(d.Get("status_and_message"), &statusAndMessage); err != nil {
+		return nil, diag.FromErr(err)
+	}
+
+	return &api.WorkflowAction{
+		Name: d.Get("name").(string),
+		Data: api.WorkflowActionData{
+			Note:               d.Get("note").(string),
+			SLO:                d.Get("slo").(int),
+			SLIs:               tf.ListToSlice[string](d.Get("slis")),
+			Priority:           d.Get("priority").(string),
+			Runbooks:           runbooks,
+			Channels:           channels,
+			Method:             d.Get("method").(string),
+			URL:                d.Get("url").(string),
+			Body:               d.Get("body").(string),
+			Headers:            headers,
+			To:                 tf.ListToSlice[string](d.Get("to")),
+			Subject:            d.Get("subject").(string),
+			WebhookID:          d.Get("webhook_id").(string),
+			StatusPageID:       d.Get("status_page_id").(int),
+			IssueTitle:         d.Get("issue_title").(string),
+			PageStatusID:       d.Get("page_status_id").(int),
+			ComponentAndImpact: componentAndImpact,
+			StatusAndMessage:   statusAndMessage,
+			Account:            d.Get("account").(string),
+			Project:            d.Get("project").(string),
+			IssueType:          d.Get("issue_type").(string),
+			Title:              d.Get("title").(string),
+			Description:        d.Get("description").(string),
+			AutoName:           d.Get("auto_name").(bool),
+			ChannelName:        d.Get("channel_name").(string),
+			ChannelID:          d.Get("channel_id").(string),
+			Message:            d.Get("message").(string),
+			MemberID:           d.Get("member_id").(string),
+		},
+	}, nil
 }

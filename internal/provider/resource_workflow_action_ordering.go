@@ -58,8 +58,6 @@ func resourceWorkflowActionOrderingUpdate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
-	d.SetId(workflowActionOrdering.WorkflowID)
-
 	return resourceWorkflowActionOrderingRead(ctx, d, meta)
 }
 
