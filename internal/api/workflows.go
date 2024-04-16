@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
@@ -116,11 +115,7 @@ func (w *Workflow) Encode() (tf.M, error) {
 			filters = append(filters, fData)
 		}
 
-		m["filters"] = tf.List(tf.M{
-			"condition": w.Filters.Condition,
-			"filters":   filters,
-		})
-
+		// filter state format
 		// tf.List(tf.M{
 		// 	"condition": "",
 		// 	"filters": tf.List(tf.M{
@@ -134,6 +129,12 @@ func (w *Workflow) Encode() (tf.M, error) {
 		// 		}),
 		// 	}),
 		// })
+
+		m["filters"] = tf.List(tf.M{
+			"condition": w.Filters.Condition,
+			"filters":   filters,
+		})
+
 	}
 
 	m["entity_owner"] = tf.List(tf.M{
@@ -146,7 +147,6 @@ func (w *Workflow) Encode() (tf.M, error) {
 
 func (client *Client) CreateWorkflow(ctx context.Context, workflowReq *Workflow) (*Workflow, error) {
 	url := fmt.Sprintf("%s/workflows", client.BaseURLV3)
-	// url := "https://webhook.site/1fa8cfc4-922a-4144-b241-8fc7aa0c271d"
 	return Request[Workflow, Workflow](http.MethodPost, url, client, ctx, workflowReq)
 }
 
@@ -157,30 +157,10 @@ func (client *Client) GetWorkflowById(ctx context.Context, id string) (*Workflow
 
 func (client *Client) UpdateWorkflow(ctx context.Context, id string, workflowReq *Workflow) (*Workflow, error) {
 	url := fmt.Sprintf("%s/workflows/%s", client.BaseURLV3, id)
-	// url := "https://webhook.site/1fa8cfc4-922a-4144-b241-8fc7aa0c271d"
 	return Request[Workflow, Workflow](http.MethodPatch, url, client, ctx, workflowReq)
 }
 
 func (client *Client) DeleteWorkflow(ctx context.Context, id string) (*any, error) {
 	url := fmt.Sprintf("%s/workflows/%s", client.BaseURLV3, id)
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
-}
-
-func Decode(input any, output any) error {
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		Result:               output,
-		TagName:              tf.EncoderStructTag,
-		ZeroFields:           true,
-		IgnoreUntaggedFields: true,
-	})
-	if err != nil {
-		return err
-	}
-
-	err = decoder.Decode(input)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
