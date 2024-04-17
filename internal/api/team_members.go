@@ -15,10 +15,12 @@ func (client *Client) GetTeamMemberByID(ctx context.Context, teamID string, user
 type CreateTeamMemberReq struct {
 	UserID  string   `json:"user_id" tf:"user_id"`
 	RoleIDs []string `json:"role_ids" tf:"role_ids"`
+	Role    string   `json:"role" tf:"role"`
 }
 
 type UpdateTeamMemberReq struct {
 	RoleIDs []string `json:"role_ids" tf:"role_ids"`
+	Role    string   `json:"role" tf:"role"`
 }
 
 func (client *Client) CreateTeamMember(ctx context.Context, teamID string, req *CreateTeamMemberReq) (*TeamMember, error) {

@@ -143,11 +143,11 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 			client.AuthBaseURL = fmt.Sprintf("http://%s:8081/v3", client.Host)
 			client.IngestionBaseURL = fmt.Sprintf("http://%s:8458", client.Host)
 		} else {
-			client.BaseURLV4 = fmt.Sprintf("https://api.%s/v4", client.Host)
-			client.BaseURLV3 = fmt.Sprintf("https://api.%s/v3", client.Host)
-			client.BaseURLV2 = fmt.Sprintf("https://platform-backend.%s/v2", client.Host)
+			client.BaseURLV4 = fmt.Sprintf("https://api-uat3.%s/v4", client.Host)
+			client.BaseURLV3 = fmt.Sprintf("https://api-uat3.%s/v3", client.Host)
+			client.BaseURLV2 = fmt.Sprintf("https://platform-backend-uat3.%s/v2", client.Host)
 			client.AuthBaseURL = fmt.Sprintf("https://api.%s/v3", client.Host)
-			client.IngestionBaseURL = fmt.Sprintf("https://api.%s", client.Host)
+			client.IngestionBaseURL = fmt.Sprintf("https://api-uat3.%s", client.Host)
 		}
 
 		token, err := client.GetAccessToken(ctx)

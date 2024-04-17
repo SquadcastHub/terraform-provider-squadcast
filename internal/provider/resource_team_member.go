@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/squadcast/terraform-provider-squadcast/internal/api"
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
@@ -42,14 +43,19 @@ func resourceTeamMember() *schema.Resource {
 				ForceNew:     true,
 			},
 			"role_ids": {
-				Description: "role ids.",
+				Description: "role ids. (pass this if your org is using RBAC permission model)",
 				Type:        schema.TypeList,
-				Required:    true,
-				MinItems:    1,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
 					ValidateFunc: tf.ValidateObjectID,
 				},
+			},
+			"role": {
+				Description:  "role of the member (pass this if your org is using OBAC permission model)",
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"stakeholder", "owner", "member"}, false),
 			},
 		},
 	}
@@ -58,7 +64,9 @@ func resourceTeamMember() *schema.Resource {
 func resourceTeamMemberImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	client := meta.(*api.Client)
 	teamID, email, err := parse2PartImportID(d.Id())
-
+	if err != nil {
+		return nil, err
+	}
 	_, err = client.GetTeamById(ctx, teamID)
 	if err != nil {
 		return nil, err
@@ -78,10 +86,26 @@ func resourceTeamMemberImport(ctx context.Context, d *schema.ResourceData, meta 
 func resourceTeamMemberCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	teamMember, err := client.CreateTeamMember(ctx, d.Get("team_id").(string), &api.CreateTeamMemberReq{
-		UserID:  d.Get("user_id").(string),
-		RoleIDs: tf.ListToSlice[string](d.Get("role_ids")),
-	})
+	createReq := &api.CreateTeamMemberReq{
+		UserID: d.Get("user_id").(string),
+	}
+
+	roleIDs := tf.ListToSlice[string](d.Get("role_ids"))
+	role := d.Get("role").(string)
+
+	if len(roleIDs) > 0 && len(role) > 0 {
+		return diag.Errorf("role_ids and role cannot be passed")
+	}
+
+	if len(roleIDs) > 0 {
+		createReq.RoleIDs = roleIDs
+	}
+
+	if len(role) > 0 {
+		createReq.Role = role
+	}
+
+	teamMember, err := client.CreateTeamMember(ctx, d.Get("team_id").(string), createReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -112,10 +136,24 @@ func resourceTeamMemberRead(ctx context.Context, d *schema.ResourceData, meta an
 
 func resourceTeamMemberUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
+	updateReq := &api.UpdateTeamMemberReq{}
 
-	_, err := client.UpdateTeamMember(ctx, d.Get("team_id").(string), d.Id(), &api.UpdateTeamMemberReq{
-		RoleIDs: tf.ListToSlice[string](d.Get("role_ids")),
-	})
+	roleIDs := tf.ListToSlice[string](d.Get("role_ids"))
+	role := d.Get("role").(string)
+
+	if len(roleIDs) > 0 && len(role) > 0 {
+		return diag.Errorf("role_ids and role cannot be passed")
+	}
+
+	if len(roleIDs) > 0 {
+		updateReq.RoleIDs = roleIDs
+	}
+
+	if len(role) > 0 {
+		updateReq.Role = role
+	}
+
+	_, err := client.UpdateTeamMember(ctx, d.Get("team_id").(string), d.Id(), updateReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
