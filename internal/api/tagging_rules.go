@@ -29,7 +29,7 @@ func (tv *TaggingRuleTagValue) Encode() (tf.M, error) {
 }
 
 type TaggingRule struct {
-	ID              string                         `json:"rule_id,omitempty" tf:"id"`
+	ID              string                         `json:"rule_id,omitempty" tf:"-"`
 	IsBasic         bool                           `json:"is_basic" tf:"is_basic"`
 	Expression      string                         `json:"expression" tf:"expression"`
 	BasicExpression []*TaggingRuleCondition        `json:"basic_expression" tf:"basic_expressions"`
@@ -113,16 +113,6 @@ type CreateTaggingRule struct {
 	Rule TaggingRule `json:"rule"`
 }
 
-func (client *Client) CreateTaggingRulesV2(ctx context.Context, serviceID string, req *CreateTaggingRule) (*CreateTaggingRule, error) {
-	url := fmt.Sprintf("%s/services/%s/tagging-rules/new", client.BaseURLV3, serviceID)
-	return Request[CreateTaggingRule, CreateTaggingRule](http.MethodPost, url, client, ctx, req)
-}
-
-func (client *Client) UpdateTaggingRuleByID(ctx context.Context, serviceID, ruleID string, req *CreateTaggingRule) (*CreateTaggingRule, error) {
-	url := fmt.Sprintf("%s/services/%s/tagging-rules/%s", client.BaseURLV3, serviceID, ruleID)
-	return Request[CreateTaggingRule, CreateTaggingRule](http.MethodPut, url, client, ctx, req)
-}
-
 type TaggingRuleV2 struct {
 	ID        string       `json:"rule_id" tf:"id"`
 	ServiceID string       `json:"service_id" tf:"service_id"`
@@ -135,11 +125,32 @@ func (t *TaggingRuleV2) Encode() (tf.M, error) {
 		return nil, err
 	}
 
-	basicExpressions, err := tf.EncodeSlice(t.Rule.BasicExpression)
-	if err != nil {
-		return nil, err
+	if len(t.Rule.BasicExpression) > 0 {
+		basicExpressions, err := tf.EncodeSlice(t.Rule.BasicExpression)
+		if err != nil {
+			return nil, err
+		}
+		m["basic_expressions"] = basicExpressions
 	}
-	m["basic_expressions"] = basicExpressions
+
+	tags := make([]any, 0, len(t.Rule.Tags))
+
+	keys := make([]string, 0, len(t.Rule.Tags))
+	for k := range t.Rule.Tags {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := t.Rule.Tags[k]
+		mtag, err := v.Encode()
+		if err != nil {
+			return nil, err
+		}
+		mtag["key"] = k
+		tags = append(tags, mtag)
+	}
+	m["tags"] = tags
 
 	return m, nil
 }
@@ -148,6 +159,16 @@ func (client *Client) GetTaggingRuleByID(ctx context.Context, serviceID, ruleID 
 	url := fmt.Sprintf("%s/services/%s/tagging-rules/%s", client.BaseURLV3, serviceID, ruleID)
 
 	return Request[any, TaggingRuleV2](http.MethodGet, url, client, ctx, nil)
+}
+
+func (client *Client) CreateTaggingRulesV2(ctx context.Context, serviceID string, req *CreateTaggingRule) (*CreateTaggingRule, error) {
+	url := fmt.Sprintf("%s/services/%s/tagging-rules/new", client.BaseURLV3, serviceID)
+	return Request[CreateTaggingRule, CreateTaggingRule](http.MethodPost, url, client, ctx, req)
+}
+
+func (client *Client) UpdateTaggingRuleByID(ctx context.Context, serviceID, ruleID string, req *CreateTaggingRule) (*CreateTaggingRule, error) {
+	url := fmt.Sprintf("%s/services/%s/tagging-rules/%s", client.BaseURLV3, serviceID, ruleID)
+	return Request[CreateTaggingRule, CreateTaggingRule](http.MethodPut, url, client, ctx, req)
 }
 
 func (client *Client) DeleteTaggingRuleByID(ctx context.Context, serviceID, ruleID string) (any, error) {

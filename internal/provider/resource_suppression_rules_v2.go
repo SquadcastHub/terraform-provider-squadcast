@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -12,17 +13,17 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
-func resourceSuppressionRulesV2() *schema.Resource {
+func resourceSuppressionRuleV2() *schema.Resource {
 	return &schema.Resource{
 		Description: "[Suppression rules](https://support.squadcast.com/docs/alert-suppression) can help you avoid alert fatigue by suppressing notifications for non-actionable alerts." +
 			"Squadcast will suppress the incidents that match any of the Suppression Rules you create for your Services. These incidents will go into the Suppressed state and you will not get any notifications for them",
 
-		CreateContext: resourceSuppressionRulesCreateV2,
-		ReadContext:   resourceSuppressionRulesReadV2,
-		UpdateContext: resourceSuppressionRulesUpdateV2,
-		DeleteContext: resourceSuppressionRulesDeleteV2,
+		CreateContext: resourceSuppressionRuleCreateV2,
+		ReadContext:   resourceSuppressionRuleReadV2,
+		UpdateContext: resourceSuppressionRuleUpdateV2,
+		DeleteContext: resourceSuppressionRuleDeleteV2,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceSuppressionRulesImportV2,
+			StateContext: resourceSuppressionRuleImportV2,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -180,7 +181,7 @@ func resourceSuppressionRulesV2() *schema.Resource {
 	}
 }
 
-func resourceSuppressionRulesImportV2(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+func resourceSuppressionRuleImportV2(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	serviceID, ruleID, err := parse2PartImportID(d.Id())
 	if err != nil {
 		return nil, err
@@ -192,7 +193,7 @@ func resourceSuppressionRulesImportV2(ctx context.Context, d *schema.ResourceDat
 	return []*schema.ResourceData{d}, nil
 }
 
-func resourceSuppressionRulesCreateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceSuppressionRuleCreateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 	req := api.SuppressionRule{
 		IsBasic:     d.Get("is_basic").(bool),
@@ -201,87 +202,25 @@ func resourceSuppressionRulesCreateV2(ctx context.Context, d *schema.ResourceDat
 		IsTimeBased: false,
 	}
 
-	basicExpressionsReq := []*api.SuppressionRuleCondition{}
-	basicExpressions := d.Get("basic_expressions").([]interface{})
-	if req.IsBasic {
-		if len(basicExpressions) > 0 {
-			for _, expr := range basicExpressions {
-				basicExpression, ok := expr.(map[string]interface{})
-				if !ok {
-					return diag.Errorf("invalid basic expression format")
-				}
-				basicExpressionsReq = append(basicExpressionsReq, &api.SuppressionRuleCondition{
-					LHS: basicExpression["lhs"].(string),
-					Op:  basicExpression["op"].(string),
-					RHS: basicExpression["rhs"].(string),
-				})
-			}
-
-			req.BasicExpression = basicExpressionsReq
-		} else {
-			return diag.Errorf("basic_expressions is required when is_basic is set to true")
-		}
-	} else {
-		if len(basicExpressions) > 0 {
-			return diag.Errorf("basic_expressions can be passed only when is_basic is set to true")
-		}
+	basicExpressions, errx := decodeSuppressionRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
+	if errx != nil {
+		return errx
 	}
+	req.BasicExpression = basicExpressions
 
-	mtimeSlots := d.Get("timeslots").([]interface{})
-	if len(mtimeSlots) > 0 {
-		for _, mtimeSlot := range mtimeSlots {
-			mtimeSlot := mtimeSlot.(map[string]interface{})
-			if mtimeSlot["repetition"] != "custom" { // if repetition is not custom, skip
-				mtimeSlot["custom"] = nil
-				continue
-			}
-
-			if len(mtimeSlot["custom"].([]interface{})) == 0 {
-				return diag.Errorf("timeslots.custom cannot be empty when timeslots.repetition is set to 'custom'")
-			}
-			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-			mrepeats := mcustom["repeats"].(string)
-			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
-			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-			repeatsOnMonth := ""
-
-			// ? VALIDATION:
-			// if repeats is week, set repeats_on_weekdays to the value from tfstate
-			// if repeats is not week, set repeats_on_weekdays to nil
-			// if repeats is month, set repeats_on_month to date-occurrence
-
-			switch mrepeats {
-			case "week":
-				for i, v := range mrepeatOnWeekdays {
-					repeatOnWeekdays[i] = v.(int)
-				}
-			case "month":
-				repeatsOnMonth = "date-occurrence"
-			default:
-				if len(mrepeatOnWeekdays) != 0 {
-					return diag.Errorf("timeslots.custom.repeats_on_weekdays cannot be set when timeslots.custom.repeats is not set to 'week'")
-				}
-				repeatOnWeekdays = nil
-			}
-			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    repeatsOnMonth,
-				RepeatsOnWeekdays: repeatOnWeekdays,
-				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mrepeats,
-			}
-			mtimeSlot["is_custom"] = true
-		}
-		var timeslots []*api.TimeSlot
-		err := Decode(mtimeSlots, &timeslots)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		req.IsTimeBased = true
-		req.TimeSlots = timeslots
+	timeSlots, isTimeBased, errx := decodeSuppressionRulesTimeslots(d.Get("timeslots").([]interface{}))
+	if errx != nil {
+		return errx
 	}
+	if len(timeSlots) > 0 {
+		req.TimeSlots = timeSlots
+		req.IsTimeBased = isTimeBased
+	}
+	x, _ := json.Marshal(req)
 
 	tflog.Info(ctx, "Creating suppression_rules", tf.M{
-		"service_id": d.Get("service_id").(string),
+		"request_body": string(x),
+		"service_id":   d.Get("service_id").(string),
 	})
 
 	suppressionRule, err := client.CreateSuppressionRulesV2(ctx, d.Get("service_id").(string), &api.CreateSuppressionRule{Rule: req})
@@ -291,10 +230,10 @@ func resourceSuppressionRulesCreateV2(ctx context.Context, d *schema.ResourceDat
 
 	d.SetId(suppressionRule.Rule.ID)
 
-	return resourceSuppressionRulesReadV2(ctx, d, meta)
+	return resourceSuppressionRuleReadV2(ctx, d, meta)
 }
 
-func resourceSuppressionRulesReadV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceSuppressionRuleReadV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	serviceID, ok := d.GetOk("service_id")
@@ -318,7 +257,7 @@ func resourceSuppressionRulesReadV2(ctx context.Context, d *schema.ResourceData,
 	return nil
 }
 
-func resourceSuppressionRulesUpdateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceSuppressionRuleUpdateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 	req := api.SuppressionRule{
 		IsBasic:         d.Get("is_basic").(bool),
@@ -329,85 +268,22 @@ func resourceSuppressionRulesUpdateV2(ctx context.Context, d *schema.ResourceDat
 		BasicExpression: []*api.SuppressionRuleCondition{},
 	}
 
-	basicExpressionsReq := []*api.SuppressionRuleCondition{}
-	basicExpressions := d.Get("basic_expressions").([]interface{})
-	if req.IsBasic {
-		if len(basicExpressions) > 0 {
-			for _, expr := range basicExpressions {
-				basicExpression, ok := expr.(map[string]interface{})
-				if !ok {
-					return diag.Errorf("invalid basic expression format")
-				}
-				basicExpressionsReq = append(basicExpressionsReq, &api.SuppressionRuleCondition{
-					LHS: basicExpression["lhs"].(string),
-					Op:  basicExpression["op"].(string),
-					RHS: basicExpression["rhs"].(string),
-				})
-			}
+	basicExpressions, errx := decodeSuppressionRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
+	if errx != nil {
+		return errx
+	}
+	req.BasicExpression = basicExpressions
 
-			req.BasicExpression = basicExpressionsReq
-		} else {
-			return diag.Errorf("basic_expressions is required when is_basic is set to true")
-		}
-	} else {
-		if len(basicExpressions) > 0 {
-			return diag.Errorf("basic_expressions can be passed only when is_basic is set to true")
-		}
+	timeSlots, isTimeBased, errx := decodeSuppressionRulesTimeslots(d.Get("timeslots").([]interface{}))
+	if errx != nil {
+		return errx
+	}
+	if len(timeSlots) > 0 {
+		req.TimeSlots = timeSlots
+		req.IsTimeBased = isTimeBased
 	}
 
-	mtimeSlots := d.Get("timeslots").([]interface{})
-	if len(mtimeSlots) > 0 {
-		for _, mtimeSlot := range mtimeSlots {
-			mtimeSlot := mtimeSlot.(map[string]interface{})
-			if mtimeSlot["repetition"] != "custom" { // if repetition is not custom, skip
-				mtimeSlot["custom"] = nil
-				continue
-			}
-			if len(mtimeSlot["custom"].([]interface{})) == 0 {
-				return diag.Errorf("timeslots.custom cannot be empty when timeslots.repetition is set to 'custom'")
-			}
-			mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
-			mrepeats := mcustom["repeats"].(string)
-			mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
-			repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
-			repeatsOnMonth := ""
-
-			// ? VALIDATION:
-			// if repeats is week, set repeats_on_weekdays to the value from tfstate
-			// if repeats is not week, set repeats_on_weekdays to nil
-			// if repeats is month, set repeats_on_month to date-occurrence
-
-			switch mrepeats {
-			case "week":
-				for i, v := range mrepeatOnWeekdays {
-					repeatOnWeekdays[i] = v.(int)
-				}
-			case "month":
-				repeatsOnMonth = "date-occurrence"
-			default:
-				if len(mrepeatOnWeekdays) != 0 {
-					return diag.Errorf("timeslots.custom.repeats_on_weekdays cannot be set when timeslots.custom.repeats is not set to 'week'")
-				}
-				repeatOnWeekdays = nil
-			}
-			mtimeSlot["custom"] = api.CustomTime{
-				RepeatsOnMonth:    repeatsOnMonth,
-				RepeatsOnWeekdays: repeatOnWeekdays,
-				RepeatsCount:      mcustom["repeats_count"].(int),
-				Repeats:           mrepeats,
-			}
-			mtimeSlot["is_custom"] = true
-		}
-		var timeslots []*api.TimeSlot
-		err := Decode(mtimeSlots, &timeslots)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		req.IsTimeBased = true
-		req.TimeSlots = timeslots
-	}
-
-	tflog.Info(ctx, "Creating suppression_rules", tf.M{
+	tflog.Info(ctx, "Updating suppression_rules", tf.M{
 		"service_id": d.Get("service_id").(string),
 	})
 
@@ -416,10 +292,10 @@ func resourceSuppressionRulesUpdateV2(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 
-	return resourceSuppressionRulesReadV2(ctx, d, meta)
+	return resourceSuppressionRuleReadV2(ctx, d, meta)
 }
 
-func resourceSuppressionRulesDeleteV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceSuppressionRuleDeleteV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	_, err := client.DeleteSuppressionRuleByID(ctx, d.Get("service_id").(string), d.Id())
@@ -432,4 +308,78 @@ func resourceSuppressionRulesDeleteV2(ctx context.Context, d *schema.ResourceDat
 	}
 
 	return nil
+}
+
+func decodeSuppressionRuleBasicExpression(isBasic bool, basicExpressions []interface{}) ([]*api.SuppressionRuleCondition, diag.Diagnostics) {
+	basicExpressionsReq := []*api.SuppressionRuleCondition{}
+	if (!isBasic && len(basicExpressions) > 0) || (isBasic && len(basicExpressions) == 0) {
+		return nil, diag.Errorf("basic_expressions should be provided when is_basic is set to true, and should not be provided otherwise")
+	}
+	for _, expr := range basicExpressions {
+		basicExpression, ok := expr.(map[string]interface{})
+		if !ok {
+			return nil, diag.Errorf("invalid basic expression format")
+		}
+		basicExpressionsReq = append(basicExpressionsReq, &api.SuppressionRuleCondition{
+			LHS: basicExpression["lhs"].(string),
+			Op:  basicExpression["op"].(string),
+			RHS: basicExpression["rhs"].(string),
+		})
+	}
+	return basicExpressionsReq, nil
+}
+
+func decodeSuppressionRulesTimeslots(mtimeSlots []interface{}) ([]*api.TimeSlot, bool, diag.Diagnostics) {
+	if len(mtimeSlots) == 0 {
+		return nil, false, nil
+	}
+	for _, mtimeSlot := range mtimeSlots {
+		mtimeSlot := mtimeSlot.(map[string]interface{})
+		if mtimeSlot["repetition"] != "custom" { // if repetition is not custom, skip
+			mtimeSlot["custom"] = nil
+			continue
+		}
+
+		if len(mtimeSlot["custom"].([]interface{})) == 0 {
+			return nil, false, diag.Errorf("timeslots.custom cannot be empty when timeslots.repetition is set to 'custom'")
+		}
+		mcustom := mtimeSlot["custom"].([]interface{})[0].(map[string]interface{})
+		mrepeats := mcustom["repeats"].(string)
+		mrepeatOnWeekdays := mcustom["repeats_on_weekdays"].([]interface{})
+		repeatOnWeekdays := make([]int, len(mrepeatOnWeekdays))
+		repeatsOnMonth := ""
+
+		// ? VALIDATION:
+		// if repeats is week, set repeats_on_weekdays to the value from tfstate
+		// if repeats is not week, set repeats_on_weekdays to nil
+		// if repeats is month, set repeats_on_month to date-occurrence
+
+		switch mrepeats {
+		case "week":
+			for i, v := range mrepeatOnWeekdays {
+				repeatOnWeekdays[i] = v.(int)
+			}
+		case "month":
+			repeatsOnMonth = "date-occurrence"
+		default:
+			if len(mrepeatOnWeekdays) != 0 {
+				return nil, false, diag.Errorf("timeslots.custom.repeats_on_weekdays cannot be set when timeslots.custom.repeats is not set to 'week'")
+			}
+			repeatOnWeekdays = nil
+		}
+		mtimeSlot["custom"] = api.CustomTime{
+			RepeatsOnMonth:    repeatsOnMonth,
+			RepeatsOnWeekdays: repeatOnWeekdays,
+			RepeatsCount:      mcustom["repeats_count"].(int),
+			Repeats:           mrepeats,
+		}
+		mtimeSlot["is_custom"] = true
+	}
+	var timeslots []*api.TimeSlot
+	err := Decode(mtimeSlots, &timeslots)
+	if err != nil {
+		return nil, false, diag.FromErr(err)
+	}
+
+	return timeslots, true, nil
 }

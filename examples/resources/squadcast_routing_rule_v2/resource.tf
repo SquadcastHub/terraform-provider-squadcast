@@ -21,27 +21,23 @@ data "squadcast_squad" "example_squad" {
   team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_routing_rules" "example_routing_rules" {
-  team_id    = data.squadcast_team.example_team.id
-  service_id = data.squadcast_service.example_service.id
-
-  rules {
+resource "squadcast_routing_rule_v2" "example_routing_rules" {
+    service_id = data.squadcast_service.example_service.id
     is_basic   = false
     expression = "payload[\"event_id\"] == 40"
 
-    route_to_id   = data.squadcast_escalation_policy.example_escalaion_policy.id
-    route_to_type = "escalationpolicy" # user, squad
-  }
+    route_to_id   = data.squadcast_user.example_user.id
+    route_to_type = "user"
+}
 
-  rules {
-    is_basic = true
-
+resource "squadcast_routing_rule_v2" "example_routing_rules_basic" {
+    service_id = data.squadcast_service.example_service.id
+    is_basic   = true
     basic_expressions {
       lhs = "payload[\"foo\"]"
       rhs = "bar"
     }
 
-    route_to_id   = data.squadcast_user.example_user.id
-    route_to_type = "user"
-  }
+    route_to_id   = data.squadcast_user.example_escalaion_policy.id
+    route_to_type = "escalationpolicy"
 }

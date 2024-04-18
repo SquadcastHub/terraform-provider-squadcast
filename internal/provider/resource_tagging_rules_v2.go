@@ -11,16 +11,16 @@ import (
 	"github.com/squadcast/terraform-provider-squadcast/internal/tf"
 )
 
-func resourceTaggingRulesV2() *schema.Resource {
+func resourceTaggingRuleV2() *schema.Resource {
 	return &schema.Resource{
 		Description: "[Tagging](https://support.squadcast.com/docs/event-tagging) is a rule-based, auto-tagging system with which you can define customised tags based on incident payloads, that get automatically assigned to incidents when they are triggered.",
 
-		CreateContext: resourceTaggingRulesCreateV2,
-		ReadContext:   resourceTaggingRulesReadV2,
-		UpdateContext: resourceTaggingRulesUpdateV2,
-		DeleteContext: resourceTaggingRulesDeleteV2,
+		CreateContext: resourceTaggingRuleCreateV2,
+		ReadContext:   resourceTaggingRuleReadV2,
+		UpdateContext: resourceTaggingRuleUpdateV2,
+		DeleteContext: resourceTaggingRuleDeleteV2,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceTaggingRulesImportV2,
+			StateContext: resourceTaggingRuleImportV2,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -100,7 +100,7 @@ func resourceTaggingRulesV2() *schema.Resource {
 	}
 }
 
-func resourceTaggingRulesImportV2(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+func resourceTaggingRuleImportV2(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	serviceID, ruleID, err := parse2PartImportID(d.Id())
 	if err != nil {
 		return nil, err
@@ -111,54 +111,23 @@ func resourceTaggingRulesImportV2(ctx context.Context, d *schema.ResourceData, m
 	return []*schema.ResourceData{d}, nil
 }
 
-func resourceTaggingRulesCreateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceTaggingRuleCreateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 	req := api.TaggingRule{
 		IsBasic:    d.Get("is_basic").(bool),
 		Expression: d.Get("expression").(string),
 	}
-	basicExpressionsReq := []*api.TaggingRuleCondition{}
-	basicExpressions := d.Get("basic_expressions").([]interface{})
-	if req.IsBasic {
-		if len(basicExpressions) > 0 {
-			for _, expr := range basicExpressions {
-				basicExpression, ok := expr.(map[string]interface{})
-				if !ok {
-					return diag.Errorf("invalid basic expression format")
-				}
-				basicExpressionsReq = append(basicExpressionsReq, &api.TaggingRuleCondition{
-					LHS: basicExpression["lhs"].(string),
-					Op:  basicExpression["op"].(string),
-					RHS: basicExpression["rhs"].(string),
-				})
-			}
-
-			req.BasicExpression = basicExpressionsReq
-		} else {
-			return diag.Errorf("basic_expressions is required when is_basic is set to true")
-		}
-	} else {
-		if len(basicExpressions) > 0 {
-			return diag.Errorf("basic_expressions can be passed only when is_basic is set to true")
-		}
+	basicExpressions, errx := decodeTaggingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
+	if errx != nil {
+		return errx
 	}
+	req.BasicExpression = basicExpressions
 
-	mtags := d.Get("tags").([]any)
-	tags := make(map[string]api.TaggingRuleTagValue, len(mtags))
-
-	if len(mtags) > 0 {
-		for _, mtag := range mtags {
-			var tagvalue api.TaggingRuleTagValue
-			err := Decode(mtag, &tagvalue)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			key := mtag.(tf.M)["key"].(string)
-
-			tags[key] = tagvalue
-		}
-
+	tags, errx := decodeTaggingRuleTags(d.Get("tags").([]interface{}))
+	if errx != nil {
+		return errx
+	}
+	if len(tags) > 0 {
 		req.Tags = tags
 	}
 
@@ -175,10 +144,10 @@ func resourceTaggingRulesCreateV2(ctx context.Context, d *schema.ResourceData, m
 
 	d.SetId(taggingRule.Rule.ID)
 
-	return resourceTaggingRulesReadV2(ctx, d, meta)
+	return resourceTaggingRuleReadV2(ctx, d, meta)
 }
 
-func resourceTaggingRulesReadV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceTaggingRuleReadV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	serviceID, ok := d.GetOk("service_id")
@@ -190,19 +159,19 @@ func resourceTaggingRulesReadV2(ctx context.Context, d *schema.ResourceData, met
 		"id":         d.Id(),
 		"service_id": d.Get("service_id").(string),
 	})
-	taggingRules, err := client.GetTaggingRuleByID(ctx, serviceID.(string), d.Id())
+	taggingRule, err := client.GetTaggingRuleByID(ctx, serviceID.(string), d.Id())
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err = tf.EncodeAndSet(taggingRules, d); err != nil {
+	if err = tf.EncodeAndSet(taggingRule, d); err != nil {
 		return diag.FromErr(err)
 	}
 
 	return nil
 }
 
-func resourceTaggingRulesUpdateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceTaggingRuleUpdateV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	req := api.TaggingRule{
@@ -211,48 +180,17 @@ func resourceTaggingRulesUpdateV2(ctx context.Context, d *schema.ResourceData, m
 		BasicExpression: []*api.TaggingRuleCondition{},
 		Tags:            map[string]api.TaggingRuleTagValue{},
 	}
-	basicExpressionsReq := []*api.TaggingRuleCondition{}
-	basicExpressions := d.Get("basic_expressions").([]interface{})
-	if req.IsBasic {
-		if len(basicExpressions) > 0 {
-			for _, expr := range basicExpressions {
-				basicExpression, ok := expr.(map[string]interface{})
-				if !ok {
-					return diag.Errorf("invalid basic expression format")
-				}
-				basicExpressionsReq = append(basicExpressionsReq, &api.TaggingRuleCondition{
-					LHS: basicExpression["lhs"].(string),
-					Op:  basicExpression["op"].(string),
-					RHS: basicExpression["rhs"].(string),
-				})
-			}
-
-			req.BasicExpression = basicExpressionsReq
-		} else {
-			return diag.Errorf("basic_expressions is required when is_basic is set to true")
-		}
-	} else {
-		if len(basicExpressions) > 0 {
-			return diag.Errorf("basic_expressions can be passed only when is_basic is set to true")
-		}
+	basicExpressions, errx := decodeTaggingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
+	if errx != nil {
+		return errx
 	}
+	req.BasicExpression = basicExpressions
 
-	mtags := d.Get("tags").([]any)
-	tags := make(map[string]api.TaggingRuleTagValue, len(mtags))
-
-	if len(mtags) > 0 {
-		for _, mtag := range mtags {
-			var tagvalue api.TaggingRuleTagValue
-			err := Decode(mtag, &tagvalue)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			key := mtag.(tf.M)["key"].(string)
-
-			tags[key] = tagvalue
-		}
-
+	tags, errx := decodeTaggingRuleTags(d.Get("tags").([]interface{}))
+	if errx != nil {
+		return errx
+	}
+	if len(tags) > 0 {
 		req.Tags = tags
 	}
 
@@ -266,10 +204,10 @@ func resourceTaggingRulesUpdateV2(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	return resourceTaggingRulesReadV2(ctx, d, meta)
+	return resourceTaggingRuleReadV2(ctx, d, meta)
 }
 
-func resourceTaggingRulesDeleteV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+func resourceTaggingRuleDeleteV2(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	_, err := client.DeleteTaggingRuleByID(ctx, d.Get("service_id").(string), d.Id())
@@ -278,4 +216,44 @@ func resourceTaggingRulesDeleteV2(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	return nil
+}
+
+func decodeTaggingRuleBasicExpression(isBasic bool, basicExpressions []interface{}) ([]*api.TaggingRuleCondition, diag.Diagnostics) {
+	basicExpressionsReq := []*api.TaggingRuleCondition{}
+	if (!isBasic && len(basicExpressions) > 0) || (isBasic && len(basicExpressions) == 0) {
+		return nil, diag.Errorf("basic_expressions should be provided when is_basic is set to true, and should not be provided otherwise")
+	}
+
+	for _, expr := range basicExpressions {
+		basicExpression, ok := expr.(map[string]interface{})
+		if !ok {
+			return nil, diag.Errorf("invalid basic expression format")
+		}
+		basicExpressionsReq = append(basicExpressionsReq, &api.TaggingRuleCondition{
+			LHS: basicExpression["lhs"].(string),
+			Op:  basicExpression["op"].(string),
+			RHS: basicExpression["rhs"].(string),
+		})
+	}
+	return basicExpressionsReq, nil
+}
+
+func decodeTaggingRuleTags(mtags []interface{}) (map[string]api.TaggingRuleTagValue, diag.Diagnostics) {
+	tags := make(map[string]api.TaggingRuleTagValue, len(mtags))
+
+	if len(mtags) > 0 {
+		for _, mtag := range mtags {
+			var tagvalue api.TaggingRuleTagValue
+			err := Decode(mtag, &tagvalue)
+			if err != nil {
+				return nil, diag.FromErr(err)
+			}
+			key := mtag.(tf.M)["key"].(string)
+			tags[key] = tagvalue
+		}
+
+		return tags, nil
+	}
+
+	return tags, nil
 }

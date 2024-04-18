@@ -19,6 +19,7 @@ func (c *DeduplicationRuleCondition) Encode() (tf.M, error) {
 }
 
 type DeduplicationRule struct {
+	ID                      string                        `json:"rule_id,omitempty" tf:"id"`
 	IsBasic                 bool                          `json:"is_basic" tf:"is_basic"`
 	Description             string                        `json:"description" tf:"description"`
 	Expression              string                        `json:"expression" tf:"expression"`
@@ -77,4 +78,52 @@ type UpdateDeduplicationRulesReq struct {
 func (client *Client) UpdateDeduplicationRules(ctx context.Context, serviceID, teamID string, req *UpdateDeduplicationRulesReq) (*DeduplicationRules, error) {
 	url := fmt.Sprintf("%s/services/%s/deduplication-rules", client.BaseURLV3, serviceID)
 	return Request[UpdateDeduplicationRulesReq, DeduplicationRules](http.MethodPost, url, client, ctx, req)
+}
+
+// deduplication rules v2
+
+type CreateDeduplicationRule struct {
+	Rule DeduplicationRule `json:"rule"`
+}
+type DeduplicationRuleV2 struct {
+	ID        string             `json:"rule_id" tf:"id"`
+	ServiceID string             `json:"service_id" tf:"service_id"`
+	Rule      *DeduplicationRule `json:"rule" tf:"-"`
+}
+
+func (s *DeduplicationRuleV2) Encode() (tf.M, error) {
+	m, err := tf.Encode(s.Rule)
+	if err != nil {
+		return nil, err
+	}
+
+	basicExpressions, err := tf.EncodeSlice(s.Rule.BasicExpression)
+	if err != nil {
+		return nil, err
+	}
+	m["basic_expressions"] = basicExpressions
+
+	return m, nil
+}
+
+func (client *Client) CreateDeduplicationRulesV2(ctx context.Context, serviceID string, req *CreateDeduplicationRule) (*CreateDeduplicationRule, error) {
+	url := fmt.Sprintf("%s/services/%s/deduplication-rules/new", client.BaseURLV3, serviceID)
+	return Request[CreateDeduplicationRule, CreateDeduplicationRule](http.MethodPost, url, client, ctx, req)
+}
+
+func (client *Client) UpdateDeduplicationRuleByID(ctx context.Context, serviceID, ruleID string, req *CreateDeduplicationRule) (*CreateDeduplicationRule, error) {
+	url := fmt.Sprintf("%s/services/%s/deduplication-rules/%s", client.BaseURLV3, serviceID, ruleID)
+	return Request[CreateDeduplicationRule, CreateDeduplicationRule](http.MethodPut, url, client, ctx, req)
+}
+
+func (client *Client) GetDeduplicationRuleByID(ctx context.Context, serviceID, ruleID string) (*DeduplicationRuleV2, error) {
+	url := fmt.Sprintf("%s/services/%s/deduplication-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, DeduplicationRuleV2](http.MethodGet, url, client, ctx, nil)
+}
+
+func (client *Client) DeleteDeduplicationRuleByID(ctx context.Context, serviceID, ruleID string) (any, error) {
+	url := fmt.Sprintf("%s/services/%s/deduplication-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }

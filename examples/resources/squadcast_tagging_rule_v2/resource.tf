@@ -3,7 +3,7 @@ data "squadcast_service" "example_service" {
   team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_tagging_rules_v2" "example_tagging_rule" {
+resource "squadcast_tagging_rule_v2" "example_tagging_rule" {
   service_id = data.squadcast_service.example_service.id
 
   is_basic   = false
@@ -20,7 +20,7 @@ resource "squadcast_tagging_rules_v2" "example_tagging_rule" {
   }
 }
 
-resource "squadcast_tagging_rules_v2" "example_basic_tagging_rule" {
+resource "squadcast_tagging_rule_v2" "example_basic_tagging_rule" {
   service_id = data.squadcast_service.example_service.id
   is_basic = true
   basic_expressions {
@@ -37,7 +37,7 @@ resource "squadcast_tagging_rules_v2" "example_basic_tagging_rule" {
 
 
 # addTags must be set in expression when tags are not passed
-resource "squadcast_tagging_rules_v2" "example_tagging_rules_resource_withouttags" {
+resource "squadcast_tagging_rule_v2" "example_tagging_rules_resource_withouttags" {
   service_id = data.squadcast_service.example_service.id
   is_basic   = false
   expression = "addTag(\"EventType\", payload.details.event_type_key, \"#037916\")"

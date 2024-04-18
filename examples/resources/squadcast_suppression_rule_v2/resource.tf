@@ -7,7 +7,7 @@ data "squadcast_service" "example_service" {
   team_id = data.squadcast_team.example_team.id
 }
 
-resource "squadcast_suppression_rules_v2" "example_basic_suppression_rules" {
+resource "squadcast_suppression_rule_v2" "example_basic_suppression_rules" {
   service_id = data.squadcast_service.example_service.id
   is_basic    = true
   description = "sample basic expression"
@@ -18,14 +18,14 @@ resource "squadcast_suppression_rules_v2" "example_basic_suppression_rules" {
   }
 }
 
-resource "squadcast_suppression_rules_v2" "example_suppression_rules" {
+resource "squadcast_suppression_rule_v2" "example_suppression_rules" {
   service_id = data.squadcast_service.example_service.id
   is_basic    = false
   description = "not basic"
   expression  = "payload[\"event_id\"] == 40"
 }
 
-resource "squadcast_suppression_rules_v2" "example_time_based_suppression_rules" {
+resource "squadcast_suppression_rule_v2" "example_time_based_suppression_rules" {
   service_id = data.squadcast_service.example_service.id
   is_basic    = false
   description = "not basic"
@@ -42,7 +42,7 @@ resource "squadcast_suppression_rules_v2" "example_time_based_suppression_rules"
 }
 
 
-resource "squadcast_suppression_rules_v2" "example_time_based_suppression_rules_custom_repetition" {
+resource "squadcast_suppression_rule_v2" "example_time_based_suppression_rules_custom_repetition" {
   service_id = data.squadcast_service.example_service.id
   is_basic    = false
   description = "not basic"

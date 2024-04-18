@@ -25,7 +25,7 @@ type SuppressionRule struct {
 	Expression      string                      `json:"expression" tf:"expression"`
 	BasicExpression []*SuppressionRuleCondition `json:"basic_expression" tf:"basic_expressions"`
 	IsTimeBased     bool                        `json:"is_timebased" tf:"is_timebased"`
-	TimeSlots       []*TimeSlot                 `json:"timeslots" tf:"timeslots"`
+	TimeSlots       []*TimeSlot                 `json:"timeslots,omitempty" tf:"timeslots"`
 }
 
 type TimeSlot struct {
