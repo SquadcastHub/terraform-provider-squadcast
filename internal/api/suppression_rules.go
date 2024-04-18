@@ -140,7 +140,7 @@ func (client *Client) CreateSuppressionRulesV2(ctx context.Context, serviceID st
 	return Request[CreateSuppressionRule, CreateSuppressionRule](http.MethodPost, url, client, ctx, req)
 }
 
-func (client *Client) UpdateSuppressionRulesV2(ctx context.Context, serviceID, ruleID string, req *CreateSuppressionRule) (*CreateSuppressionRule, error) {
+func (client *Client) UpdateSuppressionRuleByID(ctx context.Context, serviceID, ruleID string, req *CreateSuppressionRule) (*CreateSuppressionRule, error) {
 	url := fmt.Sprintf("%s/services/%s/suppression-rules/%s", client.BaseURLV3, serviceID, ruleID)
 	return Request[CreateSuppressionRule, CreateSuppressionRule](http.MethodPut, url, client, ctx, req)
 }

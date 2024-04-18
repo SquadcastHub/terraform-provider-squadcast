@@ -411,7 +411,7 @@ func resourceSuppressionRulesUpdateV2(ctx context.Context, d *schema.ResourceDat
 		"service_id": d.Get("service_id").(string),
 	})
 
-	_, err := client.UpdateSuppressionRulesV2(ctx, d.Get("service_id").(string), d.Id(), &api.CreateSuppressionRule{Rule: req})
+	_, err := client.UpdateSuppressionRuleByID(ctx, d.Get("service_id").(string), d.Id(), &api.CreateSuppressionRule{Rule: req})
 	if err != nil {
 		return diag.FromErr(err)
 	}
