@@ -105,6 +105,10 @@ func resourceRoutingRuleCreateV2(ctx context.Context, d *schema.ResourceData, me
 		},
 	}
 
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
+	}
+
 	basicExpressions, errx := decodeRoutingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
 	if errx != nil {
 		return errx
@@ -160,6 +164,10 @@ func resourceRoutingRuleUpdateV2(ctx context.Context, d *schema.ResourceData, me
 			EntityType: d.Get("route_to_type").(string),
 		},
 		BasicExpression: []*api.RoutingRuleCondition{},
+	}
+
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
 	}
 
 	basicExpressions, err := decodeRoutingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))

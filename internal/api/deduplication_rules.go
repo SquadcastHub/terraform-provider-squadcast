@@ -19,7 +19,7 @@ func (c *DeduplicationRuleCondition) Encode() (tf.M, error) {
 }
 
 type DeduplicationRule struct {
-	ID                      string                        `json:"rule_id,omitempty" tf:"id"`
+	ID                      string                        `json:"rule_id,omitempty" tf:"-"`
 	IsBasic                 bool                          `json:"is_basic" tf:"is_basic"`
 	Description             string                        `json:"description" tf:"description"`
 	Expression              string                        `json:"expression" tf:"expression"`

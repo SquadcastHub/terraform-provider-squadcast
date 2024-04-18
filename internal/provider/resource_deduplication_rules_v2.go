@@ -123,6 +123,10 @@ func resourceDeduplicationRuleCreateV2(ctx context.Context, d *schema.ResourceDa
 		TimeWindow:              d.Get("time_window").(int),
 	}
 
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
+	}
+
 	basicExpressions, errx := decodeDeduplicationRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
 	if errx != nil {
 		return errx
@@ -178,6 +182,10 @@ func resourceDeduplicationRuleUpdateV2(ctx context.Context, d *schema.ResourceDa
 		DependencyDeduplication: d.Get("dependency_deduplication").(bool),
 		TimeUnit:                d.Get("time_unit").(string),
 		TimeWindow:              d.Get("time_window").(int),
+	}
+
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
 	}
 
 	basicExpressions, errx := decodeDeduplicationRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))

@@ -202,6 +202,10 @@ func resourceSuppressionRuleCreateV2(ctx context.Context, d *schema.ResourceData
 		IsTimeBased: false,
 	}
 
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
+	}
+
 	basicExpressions, errx := decodeSuppressionRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
 	if errx != nil {
 		return errx
@@ -266,6 +270,10 @@ func resourceSuppressionRuleUpdateV2(ctx context.Context, d *schema.ResourceData
 		IsTimeBased:     false,
 		TimeSlots:       []*api.TimeSlot{},
 		BasicExpression: []*api.SuppressionRuleCondition{},
+	}
+
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
 	}
 
 	basicExpressions, errx := decodeSuppressionRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))

@@ -117,6 +117,9 @@ func resourceTaggingRuleCreateV2(ctx context.Context, d *schema.ResourceData, me
 		IsBasic:    d.Get("is_basic").(bool),
 		Expression: d.Get("expression").(string),
 	}
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
+	}
 	basicExpressions, errx := decodeTaggingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
 	if errx != nil {
 		return errx
@@ -179,6 +182,10 @@ func resourceTaggingRuleUpdateV2(ctx context.Context, d *schema.ResourceData, me
 		Expression:      d.Get("expression").(string),
 		BasicExpression: []*api.TaggingRuleCondition{},
 		Tags:            map[string]api.TaggingRuleTagValue{},
+	}
+
+	if req.IsBasic && len(req.Expression) > 0 {
+		return diag.Errorf("expression should be passed only when is_basic is set to true")
 	}
 	basicExpressions, errx := decodeTaggingRuleBasicExpression(req.IsBasic, d.Get("basic_expressions").([]interface{}))
 	if errx != nil {
