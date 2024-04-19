@@ -15,7 +15,8 @@ const routingRulesID = "routing_rules"
 
 func resourceRoutingRules() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Routing rules](https://support.squadcast.com/docs/alert-routing) allows you to ensure that alerts are routed to the right responder with the help of `event tags` attached to them.",
+		Description:        "[Routing rules](https://support.squadcast.com/docs/alert-routing) allows you to ensure that alerts are routed to the right responder with the help of `event tags` attached to them.",
+		DeprecationMessage: "[DEPRECATED] This resource is deprecated, please use `squadcast_routing_rule_v2` instead.",
 
 		CreateContext: resourceRoutingRulesCreate,
 		ReadContext:   resourceRoutingRulesRead,
