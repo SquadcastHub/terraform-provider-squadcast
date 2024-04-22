@@ -32,5 +32,3 @@ data "squadcast_schedule" "test" {
 - `color` (String) Calendar color scheme for this schedule, hex values.
 - `description` (String) Detailed description about the schedule.
 - `id` (String) Schedule id.
-
-
