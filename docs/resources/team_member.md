@@ -38,9 +38,13 @@ resource "squadcast_team_member" "example_team_member" {
 
 ### Required
 
-- `role_ids` (List of String) role ids.
 - `team_id` (String) Team id.
 - `user_id` (String) user id (ObjectId).
+
+### Optional
+
+- `role` (String) role of the member (pass this if your org is using OBAC permission model)
+- `role_ids` (List of String) role ids. (pass this if your org is using RBAC permission model)
 
 ### Read-Only
 

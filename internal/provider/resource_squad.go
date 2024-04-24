@@ -117,6 +117,7 @@ func resourceSquadCreate(ctx context.Context, d *schema.ResourceData, meta any) 
 		for _, memberID := range memberIDs {
 			membersArr = append(membersArr, api.Member{
 				UserID: memberID,
+				Role:   "member",
 			})
 		}
 		createReq.Members = membersArr
@@ -178,64 +179,45 @@ func resourceSquadRead(ctx context.Context, d *schema.ResourceData, meta any) di
 func resourceSquadUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
+	updateReq := &api.UpdateSquadReq{
+		Name: d.Get("name").(string),
+	}
 	memberIDs := tf.ListToSlice[string](d.Get("member_ids"))
 	members := d.Get("members").([]interface{})
 
-	if len(members) > 0 && len(memberIDs) > 0 {
-		return diag.Errorf("member_ids and members cannot be passed at once")
-	}
+	// if len(members) > 0 && len(memberIDs) > 0 {
+	// 	return diag.Errorf("member_ids and members cannot be passed at once")
+	// }
 
-	if d.HasChange("members") {
-		old, new := d.GetChange("members")
-
-		oldMembers := make([]api.Member, 0)
-		for _, v := range old.([]interface{}) {
-			m := v.(map[string]interface{})
-			user := api.Member{
-				Role:   m["role"].(string),
-				UserID: m["user_id"].(string),
+	if len(members) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, member := range members {
+			mem, ok := member.(map[string]interface{})
+			if !ok {
+				return diag.Errorf("invalid member")
 			}
-			oldMembers = append(oldMembers, user)
-		}
-
-		newMembers := make([]api.Member, 0)
-		for _, v := range new.([]interface{}) {
-			m := v.(map[string]interface{})
-			user := api.Member{
-				Role:   m["role"].(string),
-				UserID: m["user_id"].(string),
-			}
-			newMembers = append(newMembers, user)
-		}
-
-		if len(oldMembers) > len(newMembers) {
-			// removedMembers := findRemovedMembers(oldMembers, newMembers)
-			// _, err := client.RemoveSquadMember(ctx, d.Id(), )
-		} else {
-			addedMembers := findAddedMembers(oldMembers, newMembers)
-
-			_, err := client.AddSquadMembers(ctx, d.Id(), &api.AddSquadMemberReq{
-				Members: addedMembers,
+			membersArr = append(membersArr, api.Member{
+				UserID: mem["user_id"].(string),
+				Role:   mem["role"].(string),
 			})
-			if err != nil {
-				return diag.FromErr(err)
-			}
 		}
-
-		tflog.Info(ctx, "Updating squad", tf.M{
-			"oldmembers": oldMembers,
-			"newmembers": newMembers,
-		})
+		updateReq.Members = membersArr
 	}
 
-	if d.HasChange("name") {
-		_, err := client.UpdateSquad(ctx, d.Id(), &api.UpdateSquadReq{
-			Name: d.Get("name").(string),
-			// MemberIDs: tf.ListToSlice[string](d.Get("member_ids")),
-		})
-		if err != nil {
-			return diag.FromErr(err)
+	if len(memberIDs) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, memberID := range memberIDs {
+			membersArr = append(membersArr, api.Member{
+				UserID: memberID,
+				Role:   "member",
+			})
 		}
+		updateReq.Members = membersArr
+	}
+
+	_, err := client.UpdateSquad(ctx, d.Id(), updateReq)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	return resourceSquadRead(ctx, d, meta)
@@ -254,38 +236,4 @@ func resourceSquadDelete(ctx context.Context, d *schema.ResourceData, meta any) 
 	}
 
 	return nil
-}
-
-func findRemovedMembers(oldMembers, newMembers []api.Member) []api.Member {
-	removedMembers := make([]api.Member, 0)
-	for _, member := range oldMembers {
-		found := false
-		for _, newMember := range newMembers {
-			if member.UserID == newMember.UserID && member.Role == newMember.Role {
-				found = true
-				break
-			}
-		}
-		if !found {
-			removedMembers = append(removedMembers, member)
-		}
-	}
-	return removedMembers
-}
-
-func findAddedMembers(oldMembers, newMembers []api.Member) []api.Member {
-	addedMembers := make([]api.Member, 0)
-	for _, member := range newMembers {
-		found := false
-		for _, oldMember := range oldMembers {
-			if member.UserID == oldMember.UserID && member.Role == oldMember.Role {
-				found = true
-				break
-			}
-		}
-		if !found {
-			addedMembers = append(addedMembers, member)
-		}
-	}
-	return addedMembers
 }

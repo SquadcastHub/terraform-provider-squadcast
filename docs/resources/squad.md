@@ -32,13 +32,28 @@ resource "squadcast_squad" "example_squad" {
 
 ### Required
 
-- `member_ids` (List of String) User ObjectId.
 - `name` (String) Name of the Squad.
 - `team_id` (String) Team id.
+
+### Optional
+
+- `member_ids` (List of String, Deprecated) User ObjectId.
+- `members` (Block List) list of members belonging to this squad (see [below for nested schema](#nestedblock--members))
 
 ### Read-Only
 
 - `id` (String) Squad id.
+
+<a id="nestedblock--members"></a>
+### Nested Schema for `members`
+
+Required:
+
+- `user_id` (String) user id.
+
+Optional:
+
+- `role` (String) role of the user (pass this if your org is using OBAC permission model)
 
 ## Import
 

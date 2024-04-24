@@ -71,40 +71,25 @@ type Member struct {
 	Role   string `json:"role,omitempty" tf:"role"`
 }
 
-type UpdateSquadReq struct {
-	Name string `json:"name"`
-}
-
 func (client *Client) CreateSquad(ctx context.Context, req *CreateSquadReq) (*Squad, error) {
 	url := fmt.Sprintf("%s/squads", client.BaseURLV4)
 
 	return Request[CreateSquadReq, Squad](http.MethodPost, url, client, ctx, req)
 }
 
-func (client *Client) UpdateSquad(ctx context.Context, id string, req *UpdateSquadReq) (*Squad, error) {
-	url := fmt.Sprintf("%s/squads/%s/name", client.BaseURLV4, id)
+type UpdateSquadReq struct {
+	Name    string   `json:"name"`
+	Members []Member `json:"members"`
+}
+
+func (client *Client) UpdateSquad(ctx context.Context, squadID string, req *UpdateSquadReq) (*Squad, error) {
+	url := fmt.Sprintf("%s/squads/%s", client.BaseURLV4, squadID)
 
 	return Request[UpdateSquadReq, Squad](http.MethodPut, url, client, ctx, req)
 }
 
-type AddSquadMemberReq struct {
-	Members []Member `json:"members"`
-}
-
-func (client *Client) AddSquadMembers(ctx context.Context, id string, req *AddSquadMemberReq) (*Squad, error) {
-	url := fmt.Sprintf("%s/squads/%s/members", client.BaseURLV4, id)
-
-	return Request[AddSquadMemberReq, Squad](http.MethodPost, url, client, ctx, req)
-}
-
-func (client *Client) RemoveSquadMember(ctx context.Context, id, memberID string) (any, error) {
-	url := fmt.Sprintf("%s/squads/%s/members/%s", client.BaseURLV4, id, memberID)
-
-	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
-}
-
-func (client *Client) DeleteSquad(ctx context.Context, id string) (*any, error) {
-	url := fmt.Sprintf("%s/squads/%s", client.BaseURLV3, id)
+func (client *Client) DeleteSquad(ctx context.Context, squadID string) (*any, error) {
+	url := fmt.Sprintf("%s/squads/%s", client.BaseURLV3, squadID)
 
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }
