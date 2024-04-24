@@ -28,7 +28,7 @@ func resourceSuppressionRules() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceSuppressionRulesImport,
 		},
-
+		DeprecationMessage: "[DEPRECATED] This resource is deprecated, please use `squadcast_suppression_rule_v2` instead.",
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "id.",

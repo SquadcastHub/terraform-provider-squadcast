@@ -51,5 +51,3 @@ Read-Only:
 - `default` (Boolean)
 - `id` (String)
 - `name` (String)
-
-

@@ -23,6 +23,7 @@ type RouteTo struct {
 }
 
 type RoutingRule struct {
+	ID              string                  `json:"rule_id,omitempty" tf:"-"`
 	IsBasic         bool                    `json:"is_basic" tf:"is_basic"`
 	Expression      string                  `json:"expression" tf:"expression"`
 	BasicExpression []*RoutingRuleCondition `json:"basic_expression" tf:"basic_expressions"`
@@ -48,6 +49,7 @@ type RoutingRules struct {
 	ID        string         `json:"id" tf:"id"`
 	ServiceID string         `json:"service_id" tf:"service_id"`
 	Rules     []*RoutingRule `json:"rules" tf:"-"`
+	Rule      *RoutingRule   `json:"rule" tf:"-"`
 }
 
 func (s *RoutingRules) Encode() (tf.M, error) {
@@ -78,4 +80,53 @@ type UpdateRoutingRulesReq struct {
 func (client *Client) UpdateRoutingRules(ctx context.Context, serviceID, teamID string, req *UpdateRoutingRulesReq) (*RoutingRules, error) {
 	url := fmt.Sprintf("%s/services/%s/routing-rules", client.BaseURLV3, serviceID)
 	return Request[UpdateRoutingRulesReq, RoutingRules](http.MethodPost, url, client, ctx, req)
+}
+
+// routing rules v2
+
+type CreateRoutingRule struct {
+	Rule RoutingRule `json:"rule"`
+}
+
+func (client *Client) CreateRoutingRulesV2(ctx context.Context, serviceID string, req *CreateRoutingRule) (*CreateRoutingRule, error) {
+	url := fmt.Sprintf("%s/services/%s/routing-rules/new", client.BaseURLV3, serviceID)
+	return Request[CreateRoutingRule, CreateRoutingRule](http.MethodPost, url, client, ctx, req)
+}
+
+func (client *Client) UpdateRoutingRuleByID(ctx context.Context, serviceID, ruleID string, req *CreateRoutingRule) (*CreateRoutingRule, error) {
+	url := fmt.Sprintf("%s/services/%s/routing-rules/%s", client.BaseURLV3, serviceID, ruleID)
+	return Request[CreateRoutingRule, CreateRoutingRule](http.MethodPut, url, client, ctx, req)
+}
+
+type RoutingRuleV2 struct {
+	ID        string       `json:"rule_id" tf:"id"`
+	ServiceID string       `json:"service_id" tf:"service_id"`
+	Rule      *RoutingRule `json:"rule" tf:"-"`
+}
+
+func (s *RoutingRuleV2) Encode() (tf.M, error) {
+	m, err := tf.Encode(s.Rule)
+	if err != nil {
+		return nil, err
+	}
+
+	basicExpressions, err := tf.EncodeSlice(s.Rule.BasicExpression)
+	if err != nil {
+		return nil, err
+	}
+	m["basic_expressions"] = basicExpressions
+
+	return m, nil
+}
+
+func (client *Client) GetRoutingRuleByID(ctx context.Context, serviceID, ruleID string) (*RoutingRuleV2, error) {
+	url := fmt.Sprintf("%s/services/%s/routing-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, RoutingRuleV2](http.MethodGet, url, client, ctx, nil)
+}
+
+func (client *Client) DeleteRoutingRuleByID(ctx context.Context, serviceID, ruleID string) (any, error) {
+	url := fmt.Sprintf("%s/services/%s/routing-rules/%s", client.BaseURLV3, serviceID, ruleID)
+
+	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }

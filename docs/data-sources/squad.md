@@ -31,5 +31,3 @@ data "squadcast_squad" "test" {
 
 - `id` (String) Squad id.
 - `member_ids` (List of String)
-
-

@@ -57,5 +57,3 @@ Read-Only:
 
 - `delay_minutes` (Number)
 - `type` (String)
-
-

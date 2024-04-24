@@ -14,7 +14,8 @@ const taggingRulesID = "tagging_rules"
 
 func resourceTaggingRules() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Tagging](https://support.squadcast.com/docs/event-tagging) is a rule-based, auto-tagging system with which you can define customised tags based on incident payloads, that get automatically assigned to incidents when they are triggered.",
+		Description:        "[Tagging](https://support.squadcast.com/docs/event-tagging) is a rule-based, auto-tagging system with which you can define customised tags based on incident payloads, that get automatically assigned to incidents when they are triggered.",
+		DeprecationMessage: "[DEPRECATED] This resource is deprecated, please use `squadcast_tagging_rule_v2` instead.",
 
 		CreateContext: resourceTaggingRulesCreate,
 		ReadContext:   resourceTaggingRulesRead,
