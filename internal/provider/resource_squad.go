@@ -66,9 +66,10 @@ func resourceSquad() *schema.Resource {
 							Required:    true,
 						},
 						"role": {
-							Description: "role of the user (pass this if your org is using OBAC permission model)",
-							Type:        schema.TypeString,
-							Optional:    true,
+							Description:  "Role of the user. Supported values are 'owner' or 'member' (pass this if your org is using OBAC permission model)",
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"owner", "member"}, false),
 						},
 					},
 				},

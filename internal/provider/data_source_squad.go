@@ -41,6 +41,25 @@ func dataSourceSquad() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"members": {
+				Description: "list of members belonging to this squad",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"user_id": {
+							Description: "user id.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"role": {
+							Description: "Role of the user.",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 		},
 	}
 }

@@ -43,7 +43,7 @@ func resourceTeamMember() *schema.Resource {
 				ForceNew:     true,
 			},
 			"role_ids": {
-				Description: "role ids. (pass this if your org is using RBAC permission model)",
+				Description: "role ids (pass this if your org is using RBAC permission model)",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Schema{
@@ -52,7 +52,7 @@ func resourceTeamMember() *schema.Resource {
 				},
 			},
 			"role": {
-				Description:  "role of the member (pass this if your org is using OBAC permission model)",
+				Description:  "Role of the member. Supported values are 'stakeholder', 'member' or 'owner' (pass this if your org is using OBAC permission model)",
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"stakeholder", "owner", "member"}, false),
