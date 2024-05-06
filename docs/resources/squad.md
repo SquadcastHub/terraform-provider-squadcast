@@ -43,7 +43,7 @@ resource "squadcast_squad" "example_squad_rbac" {
 }
 
 # OBAC permission model
-resource "squadcast_squad" "example_squad_rbac" {
+resource "squadcast_squad" "example_squad_obac" {
   name       = "example obac squad"
   team_id    = data.squadcast_team.example_team.id
   members {

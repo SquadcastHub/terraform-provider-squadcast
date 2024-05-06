@@ -60,9 +60,8 @@ func (client *Client) ListSquads(ctx context.Context, teamID string) ([]*Squad, 
 }
 
 type CreateSquadReq struct {
-	Name   string `json:"name"`
-	TeamID string `json:"owner_id"`
-	// MemberIDs []string `json:"members"`
+	Name    string   `json:"name"`
+	TeamID  string   `json:"owner_id"`
 	Members []Member `json:"members"`
 }
 

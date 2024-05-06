@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -93,7 +94,7 @@ func resourceTeamMemberCreate(ctx context.Context, d *schema.ResourceData, meta 
 	roleIDs := tf.ListToSlice[string](d.Get("role_ids"))
 	role := d.Get("role").(string)
 
-	if len(roleIDs) > 0 && len(role) > 0 {
+	if len(roleIDs) > 0 && strings.TrimSpace(role) != "" {
 		return diag.Errorf("role_ids and role cannot be passed")
 	}
 
@@ -101,7 +102,7 @@ func resourceTeamMemberCreate(ctx context.Context, d *schema.ResourceData, meta 
 		createReq.RoleIDs = roleIDs
 	}
 
-	if len(role) > 0 {
+	if strings.TrimSpace(role) != "" {
 		createReq.Role = role
 	}
 
@@ -141,7 +142,7 @@ func resourceTeamMemberUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	roleIDs := tf.ListToSlice[string](d.Get("role_ids"))
 	role := d.Get("role").(string)
 
-	if len(roleIDs) > 0 && len(role) > 0 {
+	if len(roleIDs) > 0 && strings.TrimSpace(role) != "" {
 		return diag.Errorf("role_ids and role cannot be passed")
 	}
 
@@ -149,7 +150,7 @@ func resourceTeamMemberUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		updateReq.RoleIDs = roleIDs
 	}
 
-	if len(role) > 0 {
+	if strings.TrimSpace(role) != "" {
 		updateReq.Role = role
 	}
 

@@ -186,10 +186,6 @@ func resourceSquadUpdate(ctx context.Context, d *schema.ResourceData, meta any) 
 	memberIDs := tf.ListToSlice[string](d.Get("member_ids"))
 	members := d.Get("members").([]interface{})
 
-	// if len(members) > 0 && len(memberIDs) > 0 {
-	// 	return diag.Errorf("member_ids and members cannot be passed at once")
-	// }
-
 	if len(members) > 0 {
 		membersArr := make([]api.Member, 0)
 		for _, member := range members {
