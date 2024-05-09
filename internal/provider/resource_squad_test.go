@@ -59,7 +59,7 @@ func testAccCheckSquadDestroy(s *terraform.State) error {
 			continue
 		}
 
-		_, err := client.GetSquadById(context.Background(), rs.Primary.Attributes["team_id"], rs.Primary.ID)
+		_, err := client.GetSquadById(context.Background(), rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("expected squad to be destroyed, %s found", rs.Primary.ID)
 		}

@@ -47,10 +47,31 @@ func resourceSquad() *schema.Resource {
 			"member_ids": {
 				Description: "User ObjectId.",
 				Type:        schema.TypeList,
-				Required:    true,
-				MinItems:    1,
+				Deprecated:  "Use `members` instead of `member_ids`.",
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
+				},
+			},
+			"members": {
+				Description: "list of members belonging to this squad",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"user_id": {
+							Description: "user id.",
+							Type:        schema.TypeString,
+							Required:    true,
+						},
+						"role": {
+							Description:  "Role of the user. Supported values are 'owner' or 'member' (pass this if your org is using OBAC permission model)",
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"owner", "member"}, false),
+						},
+					},
 				},
 			},
 		},
@@ -81,15 +102,47 @@ func resourceSquadImport(ctx context.Context, d *schema.ResourceData, meta any) 
 
 func resourceSquadCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
+	createReq := &api.CreateSquadReq{
+		Name:   d.Get("name").(string),
+		TeamID: d.Get("team_id").(string),
+	}
+	memberIDs := tf.ListToSlice[string](d.Get("member_ids"))
+	members := d.Get("members").([]interface{})
+
+	if len(members) > 0 && len(memberIDs) > 0 {
+		return diag.Errorf("member_ids and members cannot be passed at once")
+	}
+
+	if len(memberIDs) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, memberID := range memberIDs {
+			membersArr = append(membersArr, api.Member{
+				UserID: memberID,
+				Role:   "member",
+			})
+		}
+		createReq.Members = membersArr
+	}
+
+	if len(members) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, member := range members {
+			mem, ok := member.(map[string]interface{})
+			if !ok {
+				return diag.Errorf("invalid member")
+			}
+			membersArr = append(membersArr, api.Member{
+				UserID: mem["user_id"].(string),
+				Role:   mem["role"].(string),
+			})
+		}
+		createReq.Members = membersArr
+	}
 
 	tflog.Info(ctx, "Creating squad", tf.M{
 		"name": d.Get("name").(string),
 	})
-	squad, err := client.CreateSquad(ctx, &api.CreateSquadReq{
-		Name:      d.Get("name").(string),
-		MemberIDs: tf.ListToSlice[string](d.Get("member_ids")),
-		TeamID:    d.Get("team_id").(string),
-	})
+	squad, err := client.CreateSquad(ctx, createReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -104,16 +157,11 @@ func resourceSquadRead(ctx context.Context, d *schema.ResourceData, meta any) di
 
 	id := d.Id()
 
-	teamID, ok := d.GetOk("team_id")
-	if !ok {
-		return diag.Errorf("invalid team id provided")
-	}
-
 	tflog.Info(ctx, "Reading squad", tf.M{
 		"id":   d.Id(),
 		"name": d.Get("name").(string),
 	})
-	squad, err := client.GetSquadById(ctx, teamID.(string), id)
+	squad, err := client.GetSquadById(ctx, id)
 	if err != nil {
 		if api.IsResourceNotFoundError(err) {
 			d.SetId("")
@@ -132,10 +180,39 @@ func resourceSquadRead(ctx context.Context, d *schema.ResourceData, meta any) di
 func resourceSquadUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	client := meta.(*api.Client)
 
-	_, err := client.UpdateSquad(ctx, d.Id(), &api.UpdateSquadReq{
-		Name:      d.Get("name").(string),
-		MemberIDs: tf.ListToSlice[string](d.Get("member_ids")),
-	})
+	updateReq := &api.UpdateSquadReq{
+		Name: d.Get("name").(string),
+	}
+	memberIDs := tf.ListToSlice[string](d.Get("member_ids"))
+	members := d.Get("members").([]interface{})
+
+	if len(members) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, member := range members {
+			mem, ok := member.(map[string]interface{})
+			if !ok {
+				return diag.Errorf("invalid member")
+			}
+			membersArr = append(membersArr, api.Member{
+				UserID: mem["user_id"].(string),
+				Role:   mem["role"].(string),
+			})
+		}
+		updateReq.Members = membersArr
+	}
+
+	if len(memberIDs) > 0 {
+		membersArr := make([]api.Member, 0)
+		for _, memberID := range memberIDs {
+			membersArr = append(membersArr, api.Member{
+				UserID: memberID,
+				Role:   "member",
+			})
+		}
+		updateReq.Members = membersArr
+	}
+
+	_, err := client.UpdateSquad(ctx, d.Id(), updateReq)
 	if err != nil {
 		return diag.FromErr(err)
 	}

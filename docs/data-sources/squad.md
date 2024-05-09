@@ -31,3 +31,12 @@ data "squadcast_squad" "test" {
 
 - `id` (String) Squad id.
 - `member_ids` (List of String)
+- `members` (List of Object) list of members belonging to this squad (see [below for nested schema](#nestedatt--members))
+
+<a id="nestedatt--members"></a>
+### Nested Schema for `members`
+
+Read-Only:
+
+- `role` (String)
+- `user_id` (String)
