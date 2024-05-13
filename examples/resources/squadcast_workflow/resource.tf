@@ -1,10 +1,17 @@
-resource "squadcast_workflow" "example_workflow" {
+data "squadcast_user" "example_user" {
+  email = "test@example.com"
+}
+
+data "squadcast_team" "example_team" {
+  name = "example team name"
+}
+
+resource "squadcast_workflow" "example_workflow_with_simple_filters" {
    title = "test workflow"
    description = "Test workflow description"
-   owner_id = "63bfabae865e9c93cd31756e"
+   owner_id = data.squadcast_team.example_team.id
    enabled = true
    trigger = "incident_triggered"
-
    filters {
       fields {
          value = "P1"
@@ -13,7 +20,7 @@ resource "squadcast_workflow" "example_workflow" {
    }
    entity_owner {
       type = "user" 
-      id = "63209531af0f36245bfac82f"
+      id = data.squadcast_user.example_user.id
    }
    tags {
       key = "tagKey"
@@ -22,11 +29,10 @@ resource "squadcast_workflow" "example_workflow" {
    }
 }
 
-
-resource "squadcast_workflow" "example_workflow_with_advaced_filters" {
+resource "squadcast_workflow" "example_workflow_with_advanced_filters" {
    title = "test workflow"
    description = "Test workflow description"
-   owner_id = "63bfabae865e9c93cd31756e"
+   owner_id = data.squadcast_team.example_team.id
    enabled = true
    trigger = "incident_triggered"
    filters {
@@ -35,23 +41,23 @@ resource "squadcast_workflow" "example_workflow_with_advaced_filters" {
          condition = "and"
          filters {
             type = "tag_is"
-            key = "hello1"
-            value = "world1"            
+            key = "hello"
+            value = "world"            
          }         
          filters {
             type = "tag_is"
-            key = "hello"
-            value = "world"            
+            key = "service"
+            value = "payment-gw"            
          }
       }
       filters {
          type = "priority_is"
-         value = "P3"
+         value = "P1"
       }
    }
    entity_owner {
       type = "user" 
-      id = "63209531af0f36245bfac82f"
+      id = data.squadcast_user.example_user.id
    }
    tags {
       key = "tagKey"
