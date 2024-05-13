@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -220,11 +219,9 @@ func resourceSuppressionRuleCreateV2(ctx context.Context, d *schema.ResourceData
 		req.TimeSlots = timeSlots
 		req.IsTimeBased = isTimeBased
 	}
-	x, _ := json.Marshal(req)
 
 	tflog.Info(ctx, "Creating suppression_rules", tf.M{
-		"request_body": string(x),
-		"service_id":   d.Get("service_id").(string),
+		"service_id": d.Get("service_id").(string),
 	})
 
 	suppressionRule, err := client.CreateSuppressionRulesV2(ctx, d.Get("service_id").(string), &api.CreateSuppressionRule{Rule: req})
