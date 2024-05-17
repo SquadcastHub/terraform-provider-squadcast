@@ -49,7 +49,7 @@ func resourceGlobalOncallReminderRules() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Description:  "medium of notification - Email or Push",
+							Description:  "medium of notification. Supported values are 'Email' & 'Push'",
 							Type:         schema.TypeString,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"Email", "Push"}, false),

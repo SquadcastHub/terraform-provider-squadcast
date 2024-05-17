@@ -54,7 +54,7 @@ resource "squadcast_global_oncall_reminder_rules" "example_config" {
 Required:
 
 - `time` (Number) time (in minutes) when the notification needs to be sent before the start of an on-call shift. Max value is 10080 minutes (7 days).
-- `type` (String) medium of notification - Email or Push
+- `type` (String) medium of notification. Supported values are 'Email' & 'Push'
 
 ## Import
 
