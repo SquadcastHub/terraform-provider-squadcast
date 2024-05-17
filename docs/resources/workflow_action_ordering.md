@@ -13,7 +13,6 @@ description: |-
 ## Example Usage
 
 ```terraform
-
 data "squadcast_user" "example_user" {
   email = "test@example.com"
 }

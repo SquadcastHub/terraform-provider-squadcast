@@ -1,0 +1,2 @@
+# teamID
+terraform import squadcast_global_oncall_reminder_rules.sample_resource 663c6e6e27f04ef4fdf582d8

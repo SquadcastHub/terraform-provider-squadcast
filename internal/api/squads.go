@@ -48,7 +48,7 @@ func (client *Client) GetSquadById(ctx context.Context, id string) (*Squad, erro
 }
 
 func (client *Client) GetSquadByName(ctx context.Context, teamID string, name string) (*Squad, error) {
-	url := fmt.Sprintf("%s/squads/by-name?name=%s&owner_id=%s", client.BaseURLV3, url.QueryEscape(name), teamID)
+	url := fmt.Sprintf("%s/squads/by-name?name=%s&team_id=%s", client.BaseURLV4, url.QueryEscape(name), teamID)
 
 	return Request[any, Squad](http.MethodGet, url, client, ctx, nil)
 }

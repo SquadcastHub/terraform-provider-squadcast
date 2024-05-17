@@ -1,7 +1,15 @@
+data "squadcast_user" "example_user" {
+  email = "test@example.com"
+}
+
+data "squadcast_team" "example_team" {
+  name = "example team name"
+}
+
 resource "squadcast_workflow" "example_workflow" {
    title = "test workflow"
    description = "Test workflow description"
-   owner_id = "63bfabae865e9c93cd31756e"
+   owner_id = data.squadcast_team.example_team.id
    enabled = true
    trigger = "incident_triggered"
    filters {
@@ -12,7 +20,7 @@ resource "squadcast_workflow" "example_workflow" {
    }
    entity_owner {
       type = "user" 
-      id = "63209531af0f36245bfac82f"
+      id = data.squadcast_user.example_user.id
    }
    tags {
       key = "tagKey"
