@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/hasura/go-graphql-client"
@@ -37,10 +38,10 @@ type ErrorDetails struct {
 }
 
 type AppError struct {
-	Status       int           `json:"status"`
-	Message      string        `json:"error_message,omitempty"`
-	ConflictData *any          `json:"conflict_data,omitempty"`
-	ErrorDetails *ErrorDetails `json:"error_details,omitempty"`
+	Status       int                    `json:"status"`
+	Message      string                 `json:"error_message,omitempty"`
+	ConflictData map[string]interface{} `json:"conflict_data,omitempty"`
+	ErrorDetails *ErrorDetails          `json:"error_details,omitempty"`
 }
 
 var GraphQLClient *graphql.Client
@@ -56,6 +57,42 @@ func (err *AppError) Error() string {
 // Meta holds the status of the request informations
 type Meta struct {
 	Meta AppError `json:"meta,omitempty"`
+}
+
+func toHumanReadable(key string) string {
+	words := strings.Split(key, "_")
+	for i, word := range words {
+		words[i] = strings.Title(word)
+	}
+	return strings.Join(words, " ")
+}
+
+func buildErrorMessage(meta AppError, method, url string) error {
+	if meta.ConflictData == nil {
+		return fmt.Errorf("%s %s returned an error:\n%s", method, url, meta.Error())
+	}
+
+	nonEmptyFields := make(map[string]interface{})
+	for key, value := range meta.ConflictData {
+		v := reflect.ValueOf(value)
+		if (v.Kind() == reflect.Slice || v.Kind() == reflect.Map) && v.Len() > 0 {
+			nonEmptyFields[key] = value
+		} else if v.Kind() == reflect.Int && v.Int() > 0 {
+			nonEmptyFields[key] = value
+		}
+	}
+
+	errorMessage := fmt.Sprintf("%s %s returned an error:\n%s", method, url, meta.Error())
+	if len(nonEmptyFields) > 0 {
+		conflictDataMessage := " Conflict data details:\n"
+		for key, value := range nonEmptyFields {
+			humanReadableKey := toHumanReadable(key)
+			conflictDataMessage += fmt.Sprintf("%s: %+v\n", humanReadableKey, value)
+
+		}
+		errorMessage += conflictDataMessage
+	}
+	return fmt.Errorf(errorMessage)
 }
 
 func Request[TReq any, TRes any](method string, url string, client *Client, ctx context.Context, payload *TReq) (*TRes, error) {
@@ -114,7 +151,7 @@ func Request[TReq any, TRes any](method string, url string, client *Client, ctx 
 
 	if resp.StatusCode > 299 {
 		if response.Meta != nil {
-			return nil, fmt.Errorf("%s %s returned an error:\n%s", method, url, response.Meta.Meta.Error())
+			return nil, buildErrorMessage(response.Meta.Meta, method, url)
 		} else {
 			return nil, fmt.Errorf("%s %s returned %d with an unexpected error: %#v", method, url, resp.StatusCode, response)
 		}
