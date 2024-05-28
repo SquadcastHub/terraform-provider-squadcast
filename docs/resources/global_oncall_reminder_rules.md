@@ -3,12 +3,12 @@
 page_title: "squadcast_global_oncall_reminder_rules Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  Global Oncall Reminder Rules https://support.squadcast.com/docs/ implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.
+  Global Oncall Reminder Rules https://support.squadcast.com/manage-users/on-call-reminder-rules#global-on-call-reminder-rules-api-first-feature implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.
 ---
 
 # squadcast_global_oncall_reminder_rules (Resource)
 
-[Global Oncall Reminder Rules](https://support.squadcast.com/docs/) implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.
+[Global Oncall Reminder Rules](https://support.squadcast.com/manage-users/on-call-reminder-rules#global-on-call-reminder-rules-api-first-feature) implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.
 
 ## Example Usage
 
