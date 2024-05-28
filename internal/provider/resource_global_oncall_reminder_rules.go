@@ -13,7 +13,7 @@ import (
 
 func resourceGlobalOncallReminderRules() *schema.Resource {
 	return &schema.Resource{
-		Description: "[Global Oncall Reminder Rules](https://support.squadcast.com/docs/) implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.",
+		Description: "[Global Oncall Reminder Rules](https://support.squadcast.com/manage-users/on-call-reminder-rules#global-on-call-reminder-rules-api-first-feature) implements a global setting for on-call reminder rules to ensure adherence to internal policies and SLAs within a team.",
 
 		CreateContext: resourceGlobalOncallReminderRulesCreate,
 		ReadContext:   resourceGlobalOncallReminderRulesRead,
