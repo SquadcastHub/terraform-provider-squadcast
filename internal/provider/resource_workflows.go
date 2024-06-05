@@ -59,7 +59,7 @@ func resourceWorkflow() *schema.Resource {
 						"condition": {
 							Type:        schema.TypeString,
 							Description: "Condition to be applied on the filters (and / or)",
-							Required:    true,
+							Optional:    true,
 						},
 						"filters": {
 							Type:     schema.TypeList,
@@ -72,6 +72,10 @@ func resourceWorkflow() *schema.Resource {
 										Optional:    true,
 									},
 									"type": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"key": {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
@@ -180,10 +184,11 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 		workflowReq.Filters = filters[0]
 	}
 
+	if len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
+		return diag.Errorf("condition cannot be empty when more than one filter is being added")
+	}
+
 	mtags := d.Get("tags").([]any)
-	tflog.Info(ctx, "Length of tags from create are", tf.M{
-		"tagsLen": len(mtags),
-	})
 
 	if len(mtags) > 0 {
 		var tags []*api.WorkflowTag
@@ -194,10 +199,6 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 
 		workflowReq.Tags = tags
 	}
-
-	tflog.Info(ctx, "Atleast the basic init is done", tf.M{
-		"title": d.Get("title").(string),
-	})
 
 	workflow, err := client.CreateWorkflow(ctx, &workflowReq)
 	if err != nil {
@@ -260,6 +261,10 @@ func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		}
 
 		workflowReq.Filters = filters[0]
+	}
+
+	if len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
+		return diag.Errorf("condition cannot be empty when more than one filter is being added")
 	}
 
 	mtags := d.Get("tags").([]any)

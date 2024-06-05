@@ -123,12 +123,9 @@ Read-Only:
 <a id="nestedblock--filters"></a>
 ### Nested Schema for `filters`
 
-Required:
-
-- `condition` (String) Condition to be applied on the filters (and / or)
-
 Optional:
 
+- `condition` (String) Condition to be applied on the filters (and / or)
 - `filters` (Block List) (see [below for nested schema](#nestedblock--filters--filters))
 
 <a id="nestedblock--filters--filters"></a>
@@ -138,6 +135,7 @@ Optional:
 
 - `condition` (String) Condition to be applied on the filters (and / or)
 - `filters` (Block List) (see [below for nested schema](#nestedblock--filters--filters--filters))
+- `key` (String)
 - `type` (String)
 - `value` (String)
 
