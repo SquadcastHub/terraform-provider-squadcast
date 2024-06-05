@@ -13,10 +13,15 @@ resource "squadcast_workflow" "example_workflow_with_simple_filters" {
    enabled = true
    trigger = "incident_triggered"
    filters {
-      fields {
-         value = "P1"
+      condition = "or"
+      filters {
+        type = "priority_is"
+        value = "P1"
       }
-      type = "priority_is"
+      filters {
+         type = "priority_is"
+         value = "UNSET"
+      }
    }
    entity_owner {
       type = "user" 
