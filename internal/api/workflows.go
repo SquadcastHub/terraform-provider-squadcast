@@ -34,6 +34,7 @@ type HighLevelFilter struct {
 
 type FilterGroup struct {
 	Condition string          `json:"condition,omitempty" tf:"condition"`
+	Key       string          `json:"key" tf:"key"`
 	Type      string          `json:"type,omitempty" tf:"type"`
 	Value     string          `json:"value,omitempty" tf:"value"`
 	Filters   []*ChildFilters `json:"filters,omitempty" tf:"filters"`
@@ -94,8 +95,12 @@ func (w *Workflow) Encode() (tf.M, error) {
 				fData["value"] = filter.Value
 			}
 
+			if filter.Key != "" {
+				fData["key"] = filter.Key
+			}
+
 			if filter.Filters != nil {
-				childFilters := tf.List(tf.M{})
+				childFilters := []tf.M{}
 				for _, childFilter := range filter.Filters {
 					childFilterData := tf.M{}
 					if childFilter.Type != "" {
