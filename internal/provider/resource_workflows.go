@@ -58,7 +58,7 @@ func resourceWorkflow() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"condition": {
 							Type:        schema.TypeString,
-							Description: "Condition to be applied on the filters (and / or)",
+							Description: "Condition to be applied on the filters (and / or). Pass only while passing multiple filters.",
 							Optional:    true,
 						},
 						"filters": {
