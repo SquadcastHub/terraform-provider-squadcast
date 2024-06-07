@@ -222,10 +222,6 @@ func resourceWorkflowsRead(ctx context.Context, d *schema.ResourceData, meta int
 		return diag.FromErr(err)
 	}
 
-	tflog.Info(ctx, "debug: Called getByWorkflowID", tf.M{
-		"id": d.Id(),
-	})
-
 	if err = tf.EncodeAndSet(workflow, d); err != nil {
 		return diag.FromErr(err)
 	}
@@ -268,9 +264,6 @@ func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	mtags := d.Get("tags").([]any)
-	tflog.Info(ctx, "Received tags from update are", tf.M{
-		"tags1": mtags,
-	})
 
 	if len(mtags) > 0 {
 		var tags []*api.WorkflowTag
