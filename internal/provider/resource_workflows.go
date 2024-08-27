@@ -45,7 +45,7 @@ func resourceWorkflow() *schema.Resource {
 			},
 			"trigger": {
 				Type:        schema.TypeString,
-				Description: "The trigger for the workflow",
+				Description: "The trigger for the workflow. Supported values: incident_created, incident_triggered, incident_acknowledged, incident_resolved, incident_tag_updated, incident_priority_updated, incident_note_added",
 				Required:    true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"incident_created",
