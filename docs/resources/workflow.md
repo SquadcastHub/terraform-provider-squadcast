@@ -139,7 +139,7 @@ resource "squadcast_workflow" "example_workflow_with_advanced_filters" {
 - `entity_owner` (Block List, Min: 1) The entity owner of the workflow (see [below for nested schema](#nestedblock--entity_owner))
 - `owner_id` (String) The ID of the user who owns the workflow
 - `title` (String) The title of the workflow
-- `trigger` (String) The trigger for the workflow
+- `trigger` (String) The trigger for the workflow. Supported values: `incident_created`, `incident_triggered`, `incident_acknowledged`, `incident_resolved`, `incident_tag_updated`, `incident_priority_updated`, `incident_note_added`
 
 ### Optional
 
