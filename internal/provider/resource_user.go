@@ -13,8 +13,7 @@ import (
 
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
-		Description:        "User resource.",
-		DeprecationMessage: "[DEPRECATED] This resource is deprecated, please use `squadcast_user_membership` instead. We are introducing invite as an additional step in the user onboarding flow to enhance security. The new resource will be used to invite users to an organization.",
+		Description: "User resource.",
 
 		CreateContext: resourceUserCreate,
 		ReadContext:   resourceUserRead,
