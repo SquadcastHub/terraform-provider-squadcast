@@ -116,6 +116,10 @@ func resourceGlobalOncallReminderRulesRead(ctx context.Context, d *schema.Resour
 
 	globalOncallReminderRules, err := client.GetGlobalOncallReminderRules(ctx, teamID.(string))
 	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
 
