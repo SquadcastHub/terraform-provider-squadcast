@@ -248,6 +248,10 @@ func resourceSuppressionRuleReadV2(ctx context.Context, d *schema.ResourceData, 
 	})
 	suppressionRule, err := client.GetSuppressionRuleByID(ctx, serviceID.(string), d.Id())
 	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
 

@@ -162,6 +162,10 @@ func resourceDeduplicationRuleReadV2(ctx context.Context, d *schema.ResourceData
 
 	deduplicationRules, err := client.GetDeduplicationRuleByID(ctx, serviceID.(string), d.Id())
 	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
 
