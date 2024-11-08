@@ -192,7 +192,7 @@ func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta i
 		workflowReq.Filters = filters[0]
 	}
 
-	if len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
+	if workflowReq.Filters != nil && len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
 		return diag.Errorf("condition cannot be empty when more than one filter is being added")
 	}
 
@@ -267,7 +267,7 @@ func resourceWorkflowsUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		workflowReq.Filters = filters[0]
 	}
 
-	if len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
+	if workflowReq.Filters != nil && len(workflowReq.Filters.Filters) > 1 && workflowReq.Filters.Condition == "" {
 		return diag.Errorf("condition cannot be empty when more than one filter is being added")
 	}
 
