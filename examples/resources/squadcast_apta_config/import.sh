@@ -1,0 +1,2 @@
+# serviceID
+terraform import squadcast_apta_config.apta_config 62d2fe23a57381088224d726

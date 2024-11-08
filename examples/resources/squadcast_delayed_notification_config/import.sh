@@ -1,0 +1,2 @@
+# serviceID
+terraform import squadcast_delayed_notification_config.notif_config 62d2fe23a57381088224d726
