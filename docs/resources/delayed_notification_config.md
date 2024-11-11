@@ -101,8 +101,11 @@ resource "squadcast_delayed_notification_config" "custom_timeslot" {
 
 Required:
 
+- `type` (String) The type of the assignee. (user, squad, escalation_policy, default_escalation_policy)
+
+Optional:
+
 - `id` (String) The id of the assignee.
-- `type` (String) The type of the assignee. (user, squad, escalation_policy, service_owner, default_escalation_policy)
 
 
 <a id="nestedblock--custom_timeslots"></a>

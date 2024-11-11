@@ -118,14 +118,15 @@ func resourceDelayedNotificationConfig() *schema.Resource {
 						"id": {
 							Description:  "The id of the assignee.",
 							Type:         schema.TypeString,
-							Required:     true,
+							Optional:     true,
+							Computed:     true,
 							ValidateFunc: tf.ValidateObjectID,
 						},
 						"type": {
-							Description:  "The type of the assignee. (user, squad, escalation_policy, service_owner, default_escalation_policy)",
+							Description:  "The type of the assignee. (user, squad, escalation_policy, default_escalation_policy)",
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "escalation_policy", "service_owner", "default_escalation_policy"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "squad", "escalation_policy", "default_escalation_policy"}, false),
 						},
 					},
 				},
@@ -150,6 +151,10 @@ func resourceDelayedNotificationConfigCreateOrUpdate(ctx context.Context, d *sch
 	cfg, err := decodeDelayNotificationConfig(d)
 	if err != nil {
 		return err
+	}
+
+	if cfg.AssignedTo.Type != "default_escalation_policy" && cfg.AssignedTo.ID == "" {
+		return diag.Errorf("assigned_to id is required.")
 	}
 
 	tflog.Info(ctx, "Updating delayed notification config for service", tf.M{
