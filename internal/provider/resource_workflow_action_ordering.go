@@ -16,7 +16,9 @@ func resourceWorkflowActionOrdering() *schema.Resource {
 		ReadContext:   resourceWorkflowActionOrderingRead,
 		UpdateContext: resourceWorkflowActionOrderingUpdate,
 		DeleteContext: resourceWorkflowActionOrderingDelete,
-		// Import: Not required for this resource
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceWorkflowActionOrderingImport,
+		},
 		Schema: map[string]*schema.Schema{
 			"workflow_id": {
 				Type:        schema.TypeString,
@@ -33,6 +35,11 @@ func resourceWorkflowActionOrdering() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourceWorkflowActionOrderingImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	d.Set("workflow_id", d.Id())
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourceWorkflowActionOrderingUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
