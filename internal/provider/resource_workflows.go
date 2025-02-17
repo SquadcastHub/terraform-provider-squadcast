@@ -21,7 +21,7 @@ func resourceWorkflow() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,
-				Description:  "The ID of the user who owns the workflow",
+				Description:  "The ID of the team that the workflow belongs to",
 				Required:     true,
 				ValidateFunc: tf.ValidateObjectID,
 			},
