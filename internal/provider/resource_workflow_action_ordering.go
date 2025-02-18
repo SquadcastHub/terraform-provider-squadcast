@@ -18,6 +18,11 @@ func resourceWorkflowActionOrdering() *schema.Resource {
 		DeleteContext: resourceWorkflowActionOrderingDelete,
 		// Import: Not required for this resource
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of this resource.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"workflow_id": {
 				Type:        schema.TypeString,
 				Description: "The ID of the workflow",
@@ -58,6 +63,8 @@ func resourceWorkflowActionOrderingUpdate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
+	d.SetId(workflowActionOrdering.WorkflowID)
+
 	return resourceWorkflowActionOrderingRead(ctx, d, meta)
 }
 
@@ -65,10 +72,10 @@ func resourceWorkflowActionOrderingRead(ctx context.Context, d *schema.ResourceD
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Reading workflow action ordering", tf.M{
-		"workflow_id": d.Get("workflow_id").(string),
+		"workflow_id": d.Id(),
 	})
 
-	workflowActionOrdering, err := client.GetWorkflowActionOrdering(ctx, d.Get("workflow_id").(string))
+	workflowActionOrdering, err := client.GetWorkflowActionOrdering(ctx, d.Id())
 	if err != nil {
 		return diag.FromErr(err)
 	}
