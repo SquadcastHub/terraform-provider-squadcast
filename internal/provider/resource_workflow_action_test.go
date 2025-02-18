@@ -72,10 +72,10 @@ func testAccResourceWorkflowActionConfig(workflowTitle string) string {
 		enabled = true
 		trigger = "incident_triggered"
 		filters {
-			fields {
+			filters {
+				type = "priority_is"
 				value = "P1"
 			}
-			type = "priority_is"
 		}
 		entity_owner {
 			type = "user" 
@@ -106,10 +106,10 @@ func testAccResourceWorkflowAction_update(workflowTitle string) string {
 		enabled = true
 		trigger = "incident_triggered"
 		filters {
-			fields {
+			filters {
+				type = "priority_is"
 				value = "P1"
 			}
-			type = "priority_is"
 		}
 		entity_owner {
 			type = "user" 
