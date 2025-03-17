@@ -131,29 +131,6 @@ func dataSourceWebform() *schema.Resource {
 					},
 				},
 			},
-			"severity": {
-				Description: "Severity of the Incident.",
-				Type:        schema.TypeList,
-				Computed:    true,
-				Deprecated:  "Use `input_field` instead of `severity`.",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Description: "Severity type.",
-							Type:        schema.TypeString,
-							Computed:    true,
-						},
-						"description": {
-							Description: "Severity description.",
-							Type:        schema.TypeString,
-							Computed:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-					},
-				},
-			},
 			"input_field": {
 				Description: "Input Fields added to Webforms. Added as tags to incident based on selection.",
 				Type:        schema.TypeList,
