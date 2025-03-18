@@ -50,8 +50,6 @@ func TestAccDataSourceWebform(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "footer_text", "test footer"),
 					resource.TestCheckResourceAttr(resourceName, "footer_link", "https://www.squadcast.com"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.type", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "severity.0.description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.service_id", "6389ba2ec31b7df1caecd579"),
 					resource.TestCheckResourceAttr(resourceName, "services.0.name", "Test"),
 					resource.TestCheckResourceAttr(resourceName, "email_on.0", "triggered"),

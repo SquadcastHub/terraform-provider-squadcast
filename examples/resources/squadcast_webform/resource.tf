@@ -77,10 +77,6 @@ resource "squadcast_webform" "example_webform" {
   footer_text        = "footerText"
   footer_link        = "footerLink"
   email_on           = ["acknowledged", "resolved", "triggered"]
-  severity { # deprecated - use input_field instead
-    type = "critical"
-    label = "critical"
-  }
   tags = {
     tagKey  = "tagValue"
     tagKey2 = "tagValue2"

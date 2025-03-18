@@ -92,10 +92,6 @@ resource "squadcast_webform" "example_webform" {
   footer_text        = "footerText"
   footer_link        = "footerLink"
   email_on           = ["acknowledged", "resolved", "triggered"]
-  severity { # deprecated - use input_field instead
-    type = "critical"
-    label = "critical"
-  }
   tags = {
     tagKey  = "tagValue"
     tagKey2 = "tagValue2"
@@ -123,7 +119,6 @@ resource "squadcast_webform" "example_webform" {
 - `footer_link` (String) Footer link.
 - `footer_text` (String) Footer text.
 - `input_field` (Block List, Max: 10) Input Fields added to Webforms. Added as tags to incident based on selection. (see [below for nested schema](#nestedblock--input_field))
-- `severity` (Block List, Deprecated) Severity of the incident. (see [below for nested schema](#nestedblock--severity))
 - `tags` (Map of String) Webform Tags.
 
 ### Read-Only
@@ -167,18 +162,6 @@ Optional:
 
 - `label` (String) Input field Label.
 - `options` (List of String) Input field options.
-
-
-<a id="nestedblock--severity"></a>
-### Nested Schema for `severity`
-
-Required:
-
-- `type` (String) Severity type.
-
-Optional:
-
-- `description` (String) Severity description.
 
 ## Import
 
