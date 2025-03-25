@@ -17,6 +17,9 @@ func resourceDedupKeyOverlay() *schema.Resource {
 		ReadContext:   resourceDedupKeyOverlayRead,
 		UpdateContext: resourceDedupKeyOverlayUpdate,
 		DeleteContext: resourceDedupKeyOverlayDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceDedupKeyOverlayImport,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "The ID of this resource.",
@@ -52,6 +55,24 @@ func resourceDedupKeyOverlay() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourceDedupKeyOverlayImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	serviceID, alertSourceName, err := parse2PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
+
+	alertSource, err := api.GetAlertSourceDetailsByName(meta.(*api.Client), ctx, alertSourceName)
+	if err != nil {
+		return nil, err
+	}
+	d.Set("service_id", serviceID)
+	d.Set("alert_source_shortname", alertSource.ShortName)
+	d.Set("alert_source", alertSourceName)
+	d.SetId(serviceID)
+
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourceDedupKeyOverlayCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

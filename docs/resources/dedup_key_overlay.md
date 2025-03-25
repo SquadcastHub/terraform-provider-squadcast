@@ -44,3 +44,12 @@ resource "squadcast_dedup_key_overlay" "example" {
 
 - `alert_source_shortname` (String) Shortname of the linked alert source.
 - `id` (String) The ID of this resource.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# serviceID:"alert source name"
+terraform import squadcast_dedup_key_overlay.sample 6731ef12d648e43996fe552c:"Airbrake"
+```
