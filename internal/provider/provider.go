@@ -56,9 +56,11 @@ func New(version string) func() *schema.Provider {
 			},
 			ResourcesMap: map[string]*schema.Resource{
 				"squadcast_apta_config":                  resourceAPTAConfig(),
+				"squadcast_custom_content_template":      resourceCustomContentTemplate(),
 				"squadcast_deduplication_rules":          resourceDeduplicationRules(),
 				"squadcast_deduplication_rule_v2":        resourceDeduplicationRuleV2(),
 				"squadcast_delayed_notification_config":  resourceDelayedNotificationConfig(),
+				"squadcast_dedup_key_overlay":            resourceDedupKeyOverlay(),
 				"squadcast_escalation_policy":            resourceEscalationPolicy(),
 				"squadcast_ger":                          resourceGER(),
 				"squadcast_ger_ruleset":                  resourceGERRuleset(),
