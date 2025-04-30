@@ -145,6 +145,7 @@ func resourceScheduleRotationV2() *schema.Resource {
 				Description: "Defines the end date of the schedule rotation.",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 			"ends_after_iterations": {
 				Description: "Defines the number of iterations of the schedule rotation.",
