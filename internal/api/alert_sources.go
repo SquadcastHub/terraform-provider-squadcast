@@ -14,10 +14,9 @@ type AlertSource struct {
 	DisplayKeyOnly bool   `json:"displayKeyOnly"`
 	ShortName      string `json:"shortName"`
 	Version        string `json:"version"`
-
-	IsValid      bool `json:"isValid"`
-	IsPrivate    bool `json:"isPrivate"`
-	IsDeprecated bool `json:"deprecated"`
+	IsValid        bool   `json:"isValid"`
+	IsPrivate      bool   `json:"isPrivate"`
+	IsDeprecated   bool   `json:"deprecated"`
 }
 
 type AlertSourcesList []*AlertSource
