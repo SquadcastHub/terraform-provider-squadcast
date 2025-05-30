@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -70,7 +69,7 @@ func (alertSource *AlertSource) Endpoint(ingestionBaseURL string, service *Servi
 }
 
 func (client *Client) ListAlertSources(ctx context.Context) (AlertSourcesList, error) {
-	url := fmt.Sprintf("%s/public/integrations", client.BaseURLV2)
+	url := fmt.Sprintf("%s/public/alert-sources", client.BaseURLV3)
 
 	return RequestSlice[any, AlertSource](http.MethodGet, url, client, ctx, nil)
 }
@@ -90,7 +89,7 @@ func GetAlertSourceDetailsByName(client *Client, ctx context.Context, alertSourc
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast on https://www.squadcast.com/integrations", alertSourceName))
+		return nil, fmt.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast on https://www.squadcast.com/integrations", alertSourceName)
 	}
 	return alertSource, nil
 }
