@@ -68,7 +68,7 @@ func (alertSource *AlertSource) Endpoint(ingestionBaseURL string, service *Servi
 }
 
 func (client *Client) ListAlertSources(ctx context.Context) (AlertSourcesList, error) {
-	url := fmt.Sprintf("%s/public/alert-sources", client.BaseURLV3)
+	url := fmt.Sprintf("%s/alert-sources", client.BaseURLV3)
 
 	return RequestSlice[any, AlertSource](http.MethodGet, url, client, ctx, nil)
 }
