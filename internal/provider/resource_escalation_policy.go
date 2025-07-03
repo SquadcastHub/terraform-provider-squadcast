@@ -124,7 +124,7 @@ func resourceEscalationPolicy() *schema.Resource {
 							},
 						},
 						"notification_channels": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Description: "Notification channels to notify the targets. (SMS, Phone, Email, Push)",
 							Optional:    true,
 							Elem: &schema.Schema{
@@ -263,7 +263,7 @@ func decodeEscalationPolicyRules(mrules []tf.M) ([]api.EscalationPolicyRule, err
 		}
 		rule.Targets = targets
 
-		rule.Via = tf.ListToSlice[string](mrule["notification_channels"])
+		rule.Via = tf.ExpandStringSet(mrule["notification_channels"].(*schema.Set))
 
 		rules = append(rules, rule)
 	}
