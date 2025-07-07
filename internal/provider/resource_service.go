@@ -299,10 +299,12 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 	}
 
 	var activeAlertSourcesMap = make(map[string]string, len(activeAlertSources.AlertSources))
+	var alertSourceList []string
 	for _, alertSource := range activeAlertSources.AlertSources {
 		for _, malertsource := range alertSources {
 			if alertSource.ID == malertsource.ID {
 				activeAlertSourcesMap[malertsource.ShortName] = malertsource.Endpoint(client.IngestionBaseURL, service)
+				alertSourceList = append(alertSourceList, malertsource.Type)
 			}
 		}
 	}
@@ -310,6 +312,8 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, meta any) 
 	service.ActiveAlertSources = activeAlertSourcesMap
 
 	service.AlertSources = alertSources.Available().EndpointMap(client.IngestionBaseURL, service)
+
+	d.Set("alert_sources", alertSourceList)
 
 	if err = tf.EncodeAndSet(service, d); err != nil {
 		return diag.FromErr(err)
