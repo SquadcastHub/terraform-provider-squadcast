@@ -242,6 +242,7 @@ func resourceSloImport(ctx context.Context, d *schema.ResourceData, meta any) ([
 	}
 	idStr := strconv.FormatUint(uint64(slo.ID), 10)
 	d.SetId(idStr)
+	d.Set("team_id", teamID)
 
 	return []*schema.ResourceData{d}, nil
 }
