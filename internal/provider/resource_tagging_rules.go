@@ -197,6 +197,10 @@ func resourceTaggingRulesRead(ctx context.Context, d *schema.ResourceData, meta 
 	})
 	taggingRules, err := client.GetTaggingRules(ctx, serviceID.(string), teamID.(string))
 	if err != nil {
+		if api.IsResourceNotFoundError(err) {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
 
