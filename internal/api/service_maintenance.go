@@ -9,15 +9,15 @@ import (
 )
 
 type ServiceMaintenanceWindow struct {
-	From              string `json:"maintenanceFrom" tf:"from"`
-	Till              string `json:"maintenanceTill" tf:"till"`
-	RepeatTill        string `json:"repeatTill" tf:"repeat_till"`
+	From              string `json:"maintenance_from" tf:"from"`
+	Till              string `json:"maintenance_till" tf:"till"`
+	RepeatTill        string `json:"repeat_till" tf:"repeat_till"`
 	RepeatFrequency   string `json:"-" tf:"repeat_frequency"`
-	RepeatDaily       bool   `json:"repetitionDaily" tf:"-"`
-	RepeatWeekly      bool   `json:"repetitionWeekly" tf:"-"`
-	RepeatTwoWeekly   bool   `json:"repetitionTwoWeekly" tf:"-"`
-	RepeatThreeWeekly bool   `json:"repetitionThreeWeekly" tf:"-"`
-	RepeatMonthly     bool   `json:"repetitionMonthly" tf:"-"`
+	RepeatDaily       bool   `json:"repetition_daily" tf:"-"`
+	RepeatWeekly      bool   `json:"repetition_weekly" tf:"-"`
+	RepeatTwoWeekly   bool   `json:"repetition_two_weekly" tf:"-"`
+	RepeatThreeWeekly bool   `json:"repetition_three_weekly" tf:"-"`
+	RepeatMonthly     bool   `json:"repetition_monthly" tf:"-"`
 }
 
 func (s *ServiceMaintenanceWindow) Encode() (tf.M, error) {
@@ -46,7 +46,7 @@ func (s *ServiceMaintenanceWindow) Encode() (tf.M, error) {
 }
 
 func (client *Client) GetServiceMaintenanceWindows(ctx context.Context, serviceID string) ([]*ServiceMaintenanceWindow, error) {
-	url := fmt.Sprintf("%s/organizations/%s/services/%s/maintenance", client.BaseURLV2, client.OrganizationID, serviceID)
+	url := fmt.Sprintf("%s/services/%s/maintenance", client.BaseURLV3, serviceID)
 
 	return RequestSlice[any, ServiceMaintenanceWindow](http.MethodGet, url, client, ctx, nil)
 }
