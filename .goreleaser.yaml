@@ -58,5 +58,5 @@ release:
   # draft: true
   disable: false
 
-changelog:
-  skip: true
+# changelog:
+#   skip: true
