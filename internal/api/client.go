@@ -23,7 +23,6 @@ type Client struct {
 	OrganizationID string
 
 	UserAgent        string
-	BaseURLV2        string
 	BaseURLV3        string
 	BaseURLV4        string
 	AuthBaseURL      string

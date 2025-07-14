@@ -244,7 +244,7 @@ func (client *Client) UpdateService(ctx context.Context, id string, req *UpdateS
 }
 
 func (client *Client) UpdateServiceDependencies(ctx context.Context, id string, req *UpdateServiceDependenciesReq) (*any, error) {
-	url := fmt.Sprintf("%s/organizations/%s/services/%s/dependencies", client.BaseURLV2, client.OrganizationID, id)
+	url := fmt.Sprintf("%s/services/%s/dependencies", client.BaseURLV3, id)
 	return Request[UpdateServiceDependenciesReq, any](http.MethodPost, url, client, ctx, req)
 }
 

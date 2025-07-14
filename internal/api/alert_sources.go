@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -15,10 +14,9 @@ type AlertSource struct {
 	DisplayKeyOnly bool   `json:"displayKeyOnly"`
 	ShortName      string `json:"shortName"`
 	Version        string `json:"version"`
-
-	IsValid      bool `json:"isValid"`
-	IsPrivate    bool `json:"isPrivate"`
-	IsDeprecated bool `json:"deprecated"`
+	IsValid        bool   `json:"isValid"`
+	IsPrivate      bool   `json:"isPrivate"`
+	IsDeprecated   bool   `json:"deprecated"`
 }
 
 type AlertSourcesList []*AlertSource
@@ -70,7 +68,7 @@ func (alertSource *AlertSource) Endpoint(ingestionBaseURL string, service *Servi
 }
 
 func (client *Client) ListAlertSources(ctx context.Context) (AlertSourcesList, error) {
-	url := fmt.Sprintf("%s/public/integrations", client.BaseURLV2)
+	url := fmt.Sprintf("%s/alert-sources", client.BaseURLV3)
 
 	return RequestSlice[any, AlertSource](http.MethodGet, url, client, ctx, nil)
 }
@@ -90,7 +88,7 @@ func GetAlertSourceDetailsByName(client *Client, ctx context.Context, alertSourc
 		}
 	}
 	if !isValidAlertSource {
-		return nil, errors.New(fmt.Sprintf("%s is not a valid alert source name. Find all alert sources supported on Squadcast on https://www.squadcast.com/integrations", alertSourceName))
+		return nil, fmt.Errorf("%s is not a valid alert source name. Find all alert sources supported on Squadcast on https://www.squadcast.com/integrations", alertSourceName)
 	}
 	return alertSource, nil
 }
