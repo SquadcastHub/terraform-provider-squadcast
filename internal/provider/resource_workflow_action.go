@@ -18,6 +18,9 @@ func resourceWorkflowAction() *schema.Resource {
 		ReadContext:   resourceWorkflowActionRead,
 		UpdateContext: resourceWorkflowActionUpdate,
 		DeleteContext: resourceWorkflowActionDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceWorkflowActionImport,
+		},
 		Schema: map[string]*schema.Schema{
 			"workflow_id": {
 				Type:        schema.TypeString,
@@ -269,13 +272,24 @@ func resourceWorkflowAction() *schema.Resource {
 	}
 }
 
-func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceWorkflowActionImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	workflowID, actionID, err := parse2PartImportID(d.Id())
+	if err != nil {
+		return nil, err
+	}
 
+	d.Set("workflow_id", workflowID)
+	d.SetId(actionID)
+
+	return []*schema.ResourceData{d}, nil
+}
+
+func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating a new workflow action", tf.M{
 		"name":        d.Get("name").(string),
-		"worfklow_id": d.Get("workflow_id").(string),
+		"workflow_id": d.Get("workflow_id").(string),
 	})
 
 	workflowAction, derr := createWorkflowAction(d)
@@ -297,11 +311,10 @@ func resourceWorkflowActionCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceWorkflowActionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Updating workflow action", tf.M{
-		"worfklow_id": d.Get("workflow_id").(string),
+		"workflow_id": d.Get("workflow_id").(string),
 		"action_id":   d.Id(),
 	})
 
@@ -326,7 +339,7 @@ func resourceWorkflowActionRead(ctx context.Context, d *schema.ResourceData, met
 	tflog.Info(ctx, "Reading workflow action", tf.M{
 		"name":        d.Get("name").(string),
 		"action_id":   d.Id(),
-		"worfklow_id": d.Get("workflow_id").(string),
+		"workflow_id": d.Get("workflow_id").(string),
 	})
 
 	workflowID := d.Get("workflow_id").(string)
@@ -348,7 +361,7 @@ func resourceWorkflowActionDelete(ctx context.Context, d *schema.ResourceData, m
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Deleting workflow action", tf.M{
-		"worfklow_id": d.Get("workflow_id").(string),
+		"workflow_id": d.Get("workflow_id").(string),
 		"action_id":   d.Id(),
 	})
 
