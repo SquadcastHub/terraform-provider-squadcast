@@ -37,10 +37,10 @@ type ErrorDetails struct {
 }
 
 type AppError struct {
-	Status       int                    `json:"status"`
-	Message      string                 `json:"error_message,omitempty"`
-	ConflictData map[string]interface{} `json:"conflict_data,omitempty"`
-	ErrorDetails *ErrorDetails          `json:"error_details,omitempty"`
+	Status       int           `json:"status"`
+	Message      string        `json:"error_message,omitempty"`
+	ConflictData interface{}   `json:"conflict_data,omitempty"`
+	ErrorDetails *ErrorDetails `json:"error_details,omitempty"`
 }
 
 var GraphQLClient *graphql.Client
@@ -61,7 +61,9 @@ type Meta struct {
 func toHumanReadable(key string) string {
 	words := strings.Split(key, "_")
 	for i, word := range words {
-		words[i] = strings.Title(word)
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(string(word[0])) + strings.ToLower(word[1:])
+		}
 	}
 	return strings.Join(words, " ")
 }
@@ -71,27 +73,51 @@ func buildErrorMessage(meta AppError, method, url string) error {
 		return fmt.Errorf("%s %s returned an error:\n%s", method, url, meta.Error())
 	}
 
-	nonEmptyFields := make(map[string]interface{})
-	for key, value := range meta.ConflictData {
-		v := reflect.ValueOf(value)
-		if (v.Kind() == reflect.Slice || v.Kind() == reflect.Map) && v.Len() > 0 {
-			nonEmptyFields[key] = value
-		} else if v.Kind() == reflect.Int && v.Int() > 0 {
-			nonEmptyFields[key] = value
+	var conflictItems []string
+
+	switch data := meta.ConflictData.(type) {
+	case map[string]interface{}:
+		for key, value := range data {
+			v := reflect.ValueOf(value)
+			switch v.Kind() {
+			case reflect.Slice, reflect.Map:
+				if v.Len() > 0 {
+					conflictItems = append(conflictItems, fmt.Sprintf("%s: %v", toHumanReadable(key), value))
+				}
+			case reflect.Int:
+				if v.Int() > 0 {
+					conflictItems = append(conflictItems, fmt.Sprintf("%s: %v", toHumanReadable(key), value))
+				}
+			}
+		}
+	case []interface{}:
+		for _, item := range data {
+			if itemMap, ok := item.(map[string]interface{}); ok {
+				name, _ := itemMap["name"].(string)
+				id, _ := itemMap["id"].(string)
+
+				switch {
+				case name != "" && id != "":
+					conflictItems = append(conflictItems, fmt.Sprintf("%s (%s)", name, id))
+				case name != "":
+					conflictItems = append(conflictItems, name)
+				case id != "":
+					conflictItems = append(conflictItems, id)
+				}
+			}
 		}
 	}
 
-	errorMessage := fmt.Sprintf("%s %s returned an error:\n%s", method, url, meta.Error())
-	if len(nonEmptyFields) > 0 {
-		conflictDataMessage := " Conflict data details:\n"
-		for key, value := range nonEmptyFields {
-			humanReadableKey := toHumanReadable(key)
-			conflictDataMessage += fmt.Sprintf("%s: %+v\n", humanReadableKey, value)
-
+	var builder strings.Builder
+	builder.WriteString(fmt.Sprintf("%s %s returned an error:\n%s", method, url, meta.Error()))
+	if len(conflictItems) > 0 {
+		builder.WriteString("\n\nConflict Details:")
+		for _, item := range conflictItems {
+			builder.WriteString(fmt.Sprintf("\n  • %s", item))
 		}
-		errorMessage += conflictDataMessage
 	}
-	return fmt.Errorf(errorMessage)
+
+	return errors.New(builder.String())
 }
 
 func Request[TReq any, TRes any](method string, url string, client *Client, ctx context.Context, payload *TReq) (*TRes, error) {
