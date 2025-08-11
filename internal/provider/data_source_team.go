@@ -85,6 +85,11 @@ func dataSourceTeam() *schema.Resource {
 					},
 				},
 			},
+			"default_user_id": {
+				Description: "ID of the default user of the team.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 		},
 	}
 }
