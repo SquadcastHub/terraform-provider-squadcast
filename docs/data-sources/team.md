@@ -28,6 +28,7 @@ data "squadcast_team" "test" {
 ### Read-Only
 
 - `default` (Boolean) Squadcast has one default team and this field let's us know if this is the default team.
+- `default_user_id` (String) ID of the default user of the team.
 - `description` (String) Detailed description about the Team.
 - `id` (String) Team id.
 - `members` (List of Object) (see [below for nested schema](#nestedatt--members))
