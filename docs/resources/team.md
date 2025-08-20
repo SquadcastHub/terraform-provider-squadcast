@@ -32,7 +32,7 @@ resource "squadcast_team" "example_team" {
 
 ### Optional
 
-- `default_user_id` (String) ID of the default user of the team.
+- `default_user_id` (String) ID of the default user of the team. This user will be used as a replacement for any user being removed from the team with dependencies.
 - `description` (String) Team description.
 
 ### Read-Only

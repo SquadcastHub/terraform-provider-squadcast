@@ -54,7 +54,7 @@ func resourceTeam() *schema.Resource {
 				},
 			},
 			"default_user_id": {
-				Description: "ID of the default user of the team.",
+				Description: "ID of the default user of the team. This user will be used as a replacement for any user being removed from the team with dependencies.",
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
