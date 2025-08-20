@@ -15,11 +15,12 @@ type teamMetaRole struct {
 }
 
 type TeamMeta struct {
-	ID          string          `json:"id" tf:"id"`
-	Name        string          `json:"name" tf:"name"`
-	Description string          `json:"description" tf:"description"`
-	Default     bool            `json:"default" tf:"default"`
-	Roles       []*teamMetaRole `json:"roles" tf:"-"`
+	ID          string             `json:"id" tf:"id"`
+	Name        string             `json:"name" tf:"name"`
+	Description string             `json:"description" tf:"description"`
+	Default     bool               `json:"default" tf:"default"`
+	Roles       []*teamMetaRole    `json:"roles" tf:"-"`
+	DefaultUser DefaultUserForTeam `json:"default_user" tf:"-"`
 }
 
 func (t *TeamMeta) Encode() (tf.M, error) {
@@ -44,6 +45,8 @@ func (t *TeamMeta) Encode() (tf.M, error) {
 		}
 	}
 	m["default_role_ids"] = roles
+
+	m["default_user_id"] = t.DefaultUser.ID
 
 	return m, nil
 }
@@ -70,6 +73,7 @@ func (client *Client) GetTeamMetaById(ctx context.Context, id string) (*TeamMeta
 		Description: team.Description,
 		Default:     team.Default,
 		Roles:       roles,
+		DefaultUser: team.DefaultUser,
 	}, nil
 
 }
@@ -86,8 +90,9 @@ func (client *Client) CreateTeam(ctx context.Context, req *CreateTeamReq) (*Team
 }
 
 type UpdateTeamMetaReq struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	DefaultUser DefaultUserForTeam `json:"default_user"`
 }
 
 func (client *Client) UpdateTeamMeta(ctx context.Context, id string, req *UpdateTeamMetaReq) (*TeamMeta, error) {

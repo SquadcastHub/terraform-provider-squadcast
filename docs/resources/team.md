@@ -13,8 +13,13 @@ Use this resource to manage the Team meta details like Name, description etc. Th
 ## Example Usage
 
 ```terraform
+data "squadcast_user" "example_user" {
+  email = "user@example.com"
+}
+
 resource "squadcast_team" "example_team" {
-  name = "example team name"
+  name            = "example team name"
+  default_user_id = data.squadcast_user.example_user.id
 }
 ```
 
@@ -27,6 +32,7 @@ resource "squadcast_team" "example_team" {
 
 ### Optional
 
+- `default_user_id` (String) ID of the default user of the team. This user will be used as a replacement for any user being removed from the team with dependencies.
 - `description` (String) Team description.
 
 ### Read-Only

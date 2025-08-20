@@ -157,11 +157,8 @@ resource "squadcast_workflow" "example_workflow_with_advanced_filters" {
 
 Required:
 
+- `id` (String)
 - `type` (String)
-
-Read-Only:
-
-- `id` (String) The ID of this resource.
 
 
 <a id="nestedblock--filters"></a>

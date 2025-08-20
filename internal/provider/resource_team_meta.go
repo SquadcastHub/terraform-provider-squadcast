@@ -53,6 +53,12 @@ func resourceTeam() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"default_user_id": {
+				Description: "ID of the default user of the team. This user will be used as a replacement for any user being removed from the team with dependencies.",
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -117,6 +123,9 @@ func resourceTeamUpdate(ctx context.Context, d *schema.ResourceData, meta any) d
 	_, err := client.UpdateTeamMeta(ctx, d.Id(), &api.UpdateTeamMetaReq{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
+		DefaultUser: api.DefaultUserForTeam{
+			ID: d.Get("default_user_id").(string),
+		},
 	})
 	if err != nil {
 		return diag.FromErr(err)

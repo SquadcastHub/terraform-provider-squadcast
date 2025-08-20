@@ -168,7 +168,7 @@ func (client *Client) UpdateUser(ctx context.Context, id string, req *UpdateUser
 }
 
 func (client *Client) DeleteUser(ctx context.Context, id string) (*any, error) {
-	url := fmt.Sprintf("%s/users/%s", client.BaseURLV3, id)
+	url := fmt.Sprintf("%s/users/%s?assignDependenciesToDefaultUsers=true", client.BaseURLV3, id)
 
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }

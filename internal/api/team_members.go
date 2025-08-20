@@ -36,7 +36,7 @@ func (client *Client) UpdateTeamMember(ctx context.Context, teamID string, userI
 }
 
 func (client *Client) DeleteTeamMember(ctx context.Context, teamID string, userID string) (*any, error) {
-	url := fmt.Sprintf("%s/teams/%s/members/%s?owner_id=%s", client.BaseURLV3, teamID, userID, teamID)
+	url := fmt.Sprintf("%s/teams/%s/members/%s?assignDependenciesToDefaultUser=true", client.BaseURLV3, teamID, userID)
 
 	return Request[any, any](http.MethodDelete, url, client, ctx, nil)
 }

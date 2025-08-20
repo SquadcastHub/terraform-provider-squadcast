@@ -10,12 +10,17 @@ import (
 )
 
 type Team struct {
-	ID          string            `json:"id" tf:"id"`
-	Name        string            `json:"name" tf:"name"`
-	Description string            `json:"description" tf:"description"`
-	Default     bool              `json:"default" tf:"default"`
-	Members     []*DataTeamMember `json:"members" tf:"-"`
-	Roles       []*TeamRole       `json:"roles" tf:"-"`
+	ID          string             `json:"id" tf:"id"`
+	Name        string             `json:"name" tf:"name"`
+	Description string             `json:"description" tf:"description"`
+	Default     bool               `json:"default" tf:"default"`
+	Members     []*DataTeamMember  `json:"members" tf:"-"`
+	Roles       []*TeamRole        `json:"roles" tf:"-"`
+	DefaultUser DefaultUserForTeam `json:"default_user" tf:"-"`
+}
+
+type DefaultUserForTeam struct {
+	ID string `json:"id" tf:"-"`
 }
 
 func (t *Team) Encode() (tf.M, error) {
@@ -35,6 +40,8 @@ func (t *Team) Encode() (tf.M, error) {
 		return nil, err
 	}
 	m["roles"] = roles
+
+	m["default_user_id"] = t.DefaultUser.ID
 
 	return m, nil
 }
