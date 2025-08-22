@@ -3,12 +3,12 @@
 page_title: "squadcast_workflow Resource - terraform-provider-squadcast"
 subcategory: ""
 description: |-
-  
+  Workflows https://support.squadcast.com/workflows/workflows configure a predefined set of actions to automate responses to incidents.
 ---
 
 # squadcast_workflow (Resource)
 
-
+[Workflows](https://support.squadcast.com/workflows/workflows) configure a predefined set of actions to automate responses to incidents.
 
 ## Example Usage
 
@@ -200,3 +200,12 @@ Required:
 - `color` (String)
 - `key` (String)
 - `value` (String)
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# workflowID
+terraform import squadcast_workflow.example_workflow 11308
+```
