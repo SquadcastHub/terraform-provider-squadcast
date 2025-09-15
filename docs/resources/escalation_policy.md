@@ -145,7 +145,7 @@ Required:
 
 Optional:
 
-- `notification_channels` (List of String) Notification channels to notify the targets. (SMS, Phone, Email, Push)
+- `notification_channels` (Set of String) Notification channels to notify the targets. (SMS, Phone, Email, Push)
 - `repeat` (Block List, Max: 1) repeat this rule (see [below for nested schema](#nestedblock--rules--repeat))
 - `round_robin` (Block List, Max: 1) (see [below for nested schema](#nestedblock--rules--round_robin))
 

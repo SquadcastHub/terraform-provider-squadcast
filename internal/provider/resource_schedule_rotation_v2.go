@@ -73,7 +73,7 @@ func resourceScheduleRotationV2() *schema.Resource {
 				},
 			},
 			"start_date": {
-				Description: "Defines the start date of the rotation.",
+				Description: "Defines the start date of the rotation in UTC. Format: YYYY-MM-DDT00:00:00Z (time must be exactly 00:00:00).",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
