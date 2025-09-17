@@ -135,6 +135,7 @@ func resourceEscalationPolicy() *schema.Resource {
 						},
 						"round_robin": {
 							Type:     schema.TypeList,
+							Computed: true,
 							Optional: true,
 							MinItems: 1,
 							MaxItems: 1,
