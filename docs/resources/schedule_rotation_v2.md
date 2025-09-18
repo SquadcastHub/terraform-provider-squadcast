@@ -103,7 +103,7 @@ resource "squadcast_schedule_rotation_v2" "rotations_with_custom_period" {
 - `period` (String) Rotation period (none, daily, weekly, monthly, custom). Defines how often the rotation repeats.
 - `schedule_id` (Number) id of the schedule that the rotation belongs to.
 - `shift_timeslots` (Block List, Min: 1) Timeslots where the rotation is active. (see [below for nested schema](#nestedblock--shift_timeslots))
-- `start_date` (String) Defines the start date of the rotation.
+- `start_date` (String) Defines the start date of the rotation in UTC. Format: YYYY-MM-DDT00:00:00Z (time must be exactly 00:00:00).
 
 ### Optional
 

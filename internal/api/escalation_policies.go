@@ -70,6 +70,10 @@ func (r *EscalationPolicyRule) Encode() (tf.M, error) {
 		}
 
 		m["round_robin"] = tf.List(rr)
+	} else {
+		m["round_robin"] = tf.List(tf.M{
+			"enabled": false,
+		})
 	}
 
 	targets, err := tf.EncodeSlice(r.Targets)
