@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/hasura/go-graphql-client"
 )
@@ -121,68 +122,128 @@ func buildErrorMessage(meta AppError, method, url string) error {
 }
 
 func Request[TReq any, TRes any](method string, url string, client *Client, ctx context.Context, payload *TReq) (*TRes, error) {
-	var req *http.Request
-	var err error
+	const maxAttempts = 3
 
-	if method == "GET" {
-		req, err = http.NewRequestWithContext(ctx, method, url, nil)
-	} else {
-		buf := &bytes.Buffer{}
-		if payload != nil {
-			body, err := json.Marshal(payload)
-			if err != nil {
-				return nil, err
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		// Build request each attempt to avoid reusing body readers
+		var req *http.Request
+		var err error
+
+		if method == http.MethodGet {
+			req, err = http.NewRequestWithContext(ctx, method, url, nil)
+		} else {
+			buf := &bytes.Buffer{}
+			if payload != nil {
+				body, err := json.Marshal(payload)
+				if err != nil {
+					return nil, err
+				}
+				buf = bytes.NewBuffer(body)
 			}
-			buf = bytes.NewBuffer(body)
+			req, err = http.NewRequestWithContext(ctx, method, url, buf)
+			req.Header.Set("Content-Type", "application/json;charset=UTF-8")
 		}
-		req, err = http.NewRequestWithContext(ctx, method, url, buf)
-		req.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	}
 
-	if err != nil {
-		return nil, err
-	}
+		if err != nil {
+			return nil, err
+		}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.AccessToken))
-	req.Header.Set("User-Agent", client.UserAgent)
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.AccessToken))
+		req.Header.Set("User-Agent", client.UserAgent)
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			// Network or transport error - retry
+			lastErr = err
+			if attempt == maxAttempts {
+				break
+			}
+			backoff := time.Duration(1<<uint(attempt-1)) * time.Second // 1s,2s
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(backoff):
+				continue
+			}
+		}
 
-	var response struct {
-		Data *TRes `json:"data"`
-		*Meta
-	}
+		var response struct {
+			Data *TRes `json:"data"`
+			*Meta
+		}
 
-	defer resp.Body.Close()
-	bytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+		func() {
+			defer func() {
+				if resp != nil && resp.Body != nil {
+					resp.Body.Close()
+				}
+			}()
 
-	if len(bytes) == 0 {
-		if resp.StatusCode > 299 {
-			return nil, fmt.Errorf("%s %s returned an unexpected error with no body", method, url)
-		} else {
-			return nil, nil
+			bytes, readErr := io.ReadAll(resp.Body)
+			if readErr != nil {
+				lastErr = readErr
+				return
+			}
+
+			if len(bytes) == 0 {
+				if resp.StatusCode > 299 {
+					lastErr = fmt.Errorf("%s %s returned an unexpected error with no body", method, url)
+					return
+				}
+				// Success with empty body
+				response.Data = nil
+				lastErr = nil
+				// do not retry
+				// return from closure
+				return
+			}
+
+			if unmarshalErr := json.Unmarshal(bytes, &response); unmarshalErr != nil {
+				lastErr = unmarshalErr
+				return
+			}
+
+			if resp.StatusCode > 299 {
+				// Decide if we retry based on status code
+				shouldRetry := resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusTooManyRequests ||
+					resp.StatusCode == http.StatusRequestTimeout ||
+					(resp.StatusCode >= 500 && resp.StatusCode != http.StatusNotImplemented) // 5xx except 501
+
+				if response.Meta != nil {
+					lastErr = buildErrorMessage(response.Meta.Meta, method, url)
+				} else {
+					lastErr = fmt.Errorf("%s %s returned %d with an unexpected error", method, url, resp.StatusCode)
+				}
+
+				if shouldRetry && attempt < maxAttempts {
+					backoff := time.Duration(1<<uint(attempt-1)) * time.Second
+					select {
+					case <-ctx.Done():
+						return
+					case <-time.After(backoff):
+						// proceed to next attempt
+						return
+					}
+				}
+				return
+			}
+
+			lastErr = nil
+		}()
+
+		if lastErr == nil {
+			return response.Data, nil
+		}
+
+		// If we reach here and attempts remain
+		// loop will retry unless context cancelled
+		if attempt == maxAttempts {
+			break
 		}
 	}
 
-	if err := json.Unmarshal(bytes, &response); err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode > 299 {
-		if response.Meta != nil {
-			return nil, buildErrorMessage(response.Meta.Meta, method, url)
-		} else {
-			return nil, fmt.Errorf("%s %s returned %d with an unexpected error: %#v", method, url, resp.StatusCode, response)
-		}
-	}
-
-	return response.Data, nil
+	return nil, lastErr
 }
 
 func RequestSlice[TReq any, TRes any](method string, url string, client *Client, ctx context.Context, payload *TReq) ([]*TRes, error) {
