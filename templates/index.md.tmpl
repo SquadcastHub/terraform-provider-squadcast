@@ -1,14 +1,16 @@
 ---
 layout: ""
-page_title: "Provider: Squadcast"
+page_title: "Provider: SolarWinds Incident Response"
 description: |-
-  The Squadcast provider provides resources to interact with a Squadcast APIs.
+  The SolarWinds Incident Response (SWIR) provider provides resources to interact with SWIR APIs.
 ---
 
-# Squadcast Provider
+# SolarWinds Incident Response Provider
 
-Squadcast is an end-to-end incident management software that's designed to help you promote SRE best practices. 
-The Squadcast provider provides resources to interact with Squadcast APIs.
+> **Note:** Squadcast is now called **SolarWinds Incident Response**. This provider continues to work as before — only the product name has changed.
+
+SolarWinds Incident Response (SWIR, formerly Squadcast) is an end-to-end incident management software that's designed to help you promote SRE best practices.
+The SWIR provider provides resources to interact with SWIR APIs.
 
 ## Example Usage
 

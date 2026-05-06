@@ -1,6 +1,9 @@
-# Terraform Provider Squadcast
-Squadcast is an end-to-end incident management software that's designed to help you promote SRE best practices. 
-The Squadcast provider provides resources to interact with Squadcast APIs.
+# Terraform Provider SolarWinds Incident Response
+
+> **Note:** Squadcast is now called **SolarWinds Incident Response**. This provider continues to work as before — only the product name has changed.
+
+SolarWinds Incident Response (SWIR, formerly Squadcast) is an end-to-end incident management software that's designed to help you promote SRE best practices.
+The SWIR provider provides resources to interact with SWIR APIs.
 
 ## Requirements
 
