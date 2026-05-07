@@ -1,6 +1,6 @@
 ---
 layout: ""
-page_title: "Provider: SolarWinds Incident Response"
+page_title: "Provider: SolarWinds Incident Response (formerly Squadcast)"
 description: |-
   The SolarWinds Incident Response (SWIR) provider provides resources to interact with SWIR APIs.
 ---
