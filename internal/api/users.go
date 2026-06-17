@@ -22,8 +22,9 @@ type Ability struct {
 }
 
 type PersonalNotificationRule struct {
-	Type         string `json:"type" tf:"type"`
-	DelayMinutes int    `json:"time" tf:"delay_minutes"`
+	Type            string `json:"type" tf:"type"`
+	DelayMinutes    int    `json:"time" tf:"delay_minutes"`
+	NotifySecondary bool   `json:"notify_secondary" tf:"notify_secondary"`
 }
 
 func (r *PersonalNotificationRule) Encode() (tf.M, error) {
@@ -43,16 +44,19 @@ type DataSourceUser struct {
 	AbilitiesSlugs            []string                    `json:"-" tf:"abilities"`
 	Name                      string                      `json:"-" tf:"name"`
 	PhoneNumber               string                      `json:"-" tf:"phone"`
+	SecondaryPhoneNumber      string                      `json:"-" tf:"secondary_phone"`
 	ID                        string                      `json:"id" tf:"id"`
 	Abilities                 []*Ability                  `json:"abilities" tf:"-"`
 	Bio                       string                      `json:"bio" tf:"-"`
 	Contact                   Contact                     `json:"contact" tf:"-"`
+	SecondaryContact          Contact                     `json:"secondary_contact" tf:"-"`
 	Email                     string                      `json:"email" tf:"email"`
 	FirstName                 string                      `json:"first_name" tf:"first_name"`
 	IsEmailVerified           bool                        `json:"email_verified" tf:"is_email_verified"`
 	IsInGracePeriod           bool                        `json:"in_grace_period" tf:"-"`
 	IsOverrideDnDEnabled      bool                        `json:"is_override_dnd_enabled" tf:"is_override_dnd_enabled"`
 	IsPhoneVerified           bool                        `json:"phone_verified" tf:"is_phone_verified"`
+	IsSecondaryPhoneVerified  bool                        `json:"secondary_phone_verified" tf:"is_secondary_phone_verified"`
 	IsTrialSignup             bool                        `json:"is_trial_signup" tf:"-"`
 	LastName                  string                      `json:"last_name" tf:"last_name"`
 	OncallReminderRules       []*OncallReminderRule       `json:"oncall_reminder_rules" tf:"-"`
@@ -67,6 +71,10 @@ func (u *DataSourceUser) Encode() (tf.M, error) {
 
 	if u.Contact.DialCode != "" && u.Contact.PhoneNumber != "" {
 		u.PhoneNumber = u.Contact.DialCode + u.Contact.PhoneNumber
+	}
+
+	if u.SecondaryContact.DialCode != "" && u.Contact.PhoneNumber != "" {
+		u.SecondaryPhoneNumber = u.SecondaryContact.DialCode + u.SecondaryContact.PhoneNumber
 	}
 
 	for _, v := range u.Abilities {

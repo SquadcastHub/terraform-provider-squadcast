@@ -54,8 +54,18 @@ func dataSourceUser() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"secondary_phone": {
+				Description: "User secondary phone number",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"is_phone_verified": {
 				Description: "Denotes if the user has verified their phone number or not.",
+				Type:        schema.TypeBool,
+				Computed:    true,
+			},
+			"is_secondary_phone_verified": {
+				Description: "Denotes if the user has verified their secondary phone number or not.",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
@@ -96,6 +106,11 @@ func dataSourceUser() *schema.Resource {
 						"delay_minutes": {
 							Description: "notification rule delay_minutes, (to be deprecated).",
 							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+						"notify_secondary": {
+							Description: "Notification will be sent to secondary phone number",
+							Type:        schema.TypeBool,
 							Computed:    true,
 						},
 					},
