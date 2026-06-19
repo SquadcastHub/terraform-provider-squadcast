@@ -200,3 +200,12 @@ Required:
 Optional:
 
 - `messages` (List of String) The messages to be set for the issue
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# workflowID:actionID
+terraform import squadcast_workflow.example_workflow 11308:21119
+```
