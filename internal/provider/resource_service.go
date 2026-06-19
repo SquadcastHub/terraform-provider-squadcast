@@ -63,6 +63,7 @@ func resourceService() *schema.Resource {
 				Description: "Unique API key of this service.",
 				Type:        schema.TypeString,
 				Computed:    true,
+				Sensitive:   true,
 			},
 			"email": {
 				Description: "Email.",
@@ -131,6 +132,7 @@ func resourceService() *schema.Resource {
 				Description: "Active alert source endpoints.",
 				Type:        schema.TypeMap,
 				Computed:    true,
+				Sensitive:   true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -139,6 +141,7 @@ func resourceService() *schema.Resource {
 				Description: "All available alert source endpoints.",
 				Type:        schema.TypeMap,
 				Computed:    true,
+				Sensitive:   true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
