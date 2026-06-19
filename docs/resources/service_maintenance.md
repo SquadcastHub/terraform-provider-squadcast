@@ -60,12 +60,12 @@ resource "squadcast_service_maintenance" "example_service_maintenance" {
 Required:
 
 - `from` (String) Starting Time
-- `till` (String) End Time.
 
 Optional:
 
 - `repeat_frequency` (String) repeat frequency. ('day', 'week', '2 weeks', '3 weeks', 'month')
 - `repeat_till` (String) Till when you want to repeat this Maintenance mode
+- `till` (String) End Time.
 
 ## Import
 
