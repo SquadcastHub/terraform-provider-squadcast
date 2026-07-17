@@ -14,10 +14,16 @@ import (
 
 func resourceWorkflow() *schema.Resource {
 	return &schema.Resource{
+		Description: "[Workflows](https://support.squadcast.com/workflows/workflows) configure a predefined set of actions to automate responses to incidents.",
+
 		CreateContext: resourceWorkflowsCreate,
 		ReadContext:   resourceWorkflowsRead,
 		UpdateContext: resourceWorkflowsUpdate,
 		DeleteContext: resourceWorkflowsDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceWorkflowsImport,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"owner_id": {
 				Type:         schema.TypeString,
@@ -161,8 +167,11 @@ func resourceWorkflow() *schema.Resource {
 	}
 }
 
-func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceWorkflowsImport(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+	return []*schema.ResourceData{d}, nil
+}
 
+func resourceWorkflowsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 
 	tflog.Info(ctx, "Creating a new workflow", tf.M{

@@ -97,3 +97,12 @@ resource "squadcast_workflow_action_ordering" "def" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# workflowID
+terraform import squadcast_workflow_action_ordering.example_workflow_action_ordering 11308
+```
