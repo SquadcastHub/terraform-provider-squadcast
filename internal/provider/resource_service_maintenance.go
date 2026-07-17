@@ -53,7 +53,7 @@ func resourceServiceMaintenance() *schema.Resource {
 						"till": {
 							Description:  "End Time.",
 							Type:         schema.TypeString,
-							Required:     true,
+							Optional:     true,
 							ValidateFunc: validation.IsRFC3339Time,
 						},
 						"repeat_till": {
