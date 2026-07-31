@@ -24,7 +24,9 @@ type Workflow struct {
 
 	// Should be used only for action ordering resource
 	// Hence we are not encoding this field (tf:"-")
-	Actions []*WorkflowAction `json:"actions,omitempty" tf:"-"`
+	// Uses the response shape, since the API returns action data
+	// in a different form than it accepts on write
+	Actions []*WorkflowActionRes `json:"actions,omitempty" tf:"-"`
 }
 
 type HighLevelFilter struct {
